@@ -60,7 +60,6 @@ SOFTWARE.
 
 String TIMEDBKEY = "";                  // // Your API Key from https://timezonedb.com/register
 String APIKEY = ""; // Your API Key from http://openweathermap.org/
-// Default City Location (use http://openweathermap.org/find to find city ID)
 String CityName = "Mesa,US"; // Default Mesa,US
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
 String WeatherLanguage = "en"; // Default (en) English
@@ -77,8 +76,6 @@ int minutesBetweenDataRefresh = 60;     // Time in minutes between data refresh 
 int minutesBetweenScrolling = 10;       // Time in minutes between scrolling data (default 1 minutes and max is 10)
 int displayScrollSpeed = 25;            // In milliseconds -- Configurable by the web UI (slow = 35, normal = 25, fast = 15, very fast = 5)
 boolean flashOnSeconds = false;         // when true the : character in the time will flash on and off as a seconds indicator
-
-boolean ENABLE_SCROLL = true; // True → Enable Scrolling Message. False → Disable Scrolling Message.
 
 // Display Settings
 // CLK -> D5 (SCK)
@@ -101,14 +98,32 @@ int ledRotation = 3;
 String timeDisplayTurnsOn = "08:00";  // 24 Hour Format HH:MM -- Leave blank for always on. (ie 05:30)
 String timeDisplayTurnsOff = "00:00"; // 24 Hour Format HH:MM -- Leave blank for always on. Both must be set to work.
 
+boolean ENABLE_SCROLL = true; // True → Enable Scrolling Message. False → Disable Scrolling Message.
+boolean SHOW_DATE = true;
+boolean SHOW_CITY = true;
+boolean SHOW_CONDITION = true;
+boolean SHOW_HUMIDITY = true;
+boolean SHOW_WIND = true;
+boolean SHOW_PRESSURE = true;
+boolean SHOW_HIGHLOW = true;
+boolean SHOW_AIR_POLLUTION = true;
+boolean SHOW_TIMEZONE = true;
+boolean SHOW_RISE_SET = true;
+boolean SHOW_TEMP = true;
+boolean SHOW_FEEL_TEMP = true;
+
 // Prayers Time Client -- Shows prayer times according to address.
 boolean PRAYERS_ENABLED = true;
 String prayersMethod = "13"; // https://aladhan.com/calculation-methods
+boolean SHOW_PRAYERS = true;
 
 // World Time Client -- Shows the current time of the chosen cities.
 boolean WORLD_TIME_ENABLED = true;
 // Please enter city names in ENGLISH.
 String WorldCityName1 = "London,UK"; // Default City: London,UK
+boolean SHOW_WORLD_CITY1 = true;
+String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
+boolean SHOW_WORLD_CITY2 = true;
 
 // Currency Converter Client
 boolean CURRENCY_ENABLED = false;
@@ -118,6 +133,10 @@ String BaseCurrency1 = "EUR";  // Default Currency: Euro (EUR)
 String BaseCurrency2 = "USD";  // Default Currency: United States Dollar (USD)
 String BaseCurrency3 = "GBP";  // Default Currency: British Pound (GBP)
 String TargetCurrency = "TRY"; // Default Currency: Turkish Lira (TRY)
+boolean SHOW_CURRENCY1 = true;
+boolean SHOW_CURRENCY2 = true;
+boolean SHOW_CURRENCY3 = true;
+boolean SHOW_CURRENCY4 = true;
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
@@ -129,9 +148,9 @@ String OctoAuthUser = "";    // only used if you have haproxy or basic athentint
 String OctoAuthPass = "";    // only used with haproxy or basic auth (only needed if you must authenticate)
 
 // Pi-hole Client -- monitor basic stats from your Pi-hole server (see http://pi-hole.net)
-boolean USE_PIHOLE = false;                                                               // Set true to display your Pi-hole details
-String PiHoleServer = "";                                                    // IP or Address only (DO NOT include http://)
-int PiHolePort = 80;                                                                      // Port of your Pi-hole address (default 80)
+boolean USE_PIHOLE = false; // Set true to display your Pi-hole details
+String PiHoleServer = ""; // IP or Address only (DO NOT include http://)
+int PiHolePort = 80; // Port of your Pi-hole address (default 80)
 String PiHoleApiKey = ""; // Optional -- only needed to see top blocked clients
 
 boolean ENABLE_OTA = true; // this will allow you to load firmware to the device over WiFi (see OTA for ESP8266)
