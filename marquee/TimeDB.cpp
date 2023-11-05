@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "TimeDB.h"
 
-int comm_timeout = 1000;
+int comm_timeout = 10000;
 
 TimeDB::TimeDB(String apiKey)
 {
@@ -69,6 +69,7 @@ time_t TimeDB::getTime()
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[0].errorMessage = "timeout waiting for data";
       client.stop();
       return 20;
     }
@@ -100,6 +101,7 @@ time_t TimeDB::getTime()
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[0].errorMessage = "timeout waiting for data";
       client.stop();
       return 20;
     }
@@ -117,10 +119,9 @@ time_t TimeDB::getTime()
   DynamicJsonDocument root(bufferSize);
   deserializeJson(root, jsonArray);
 
-  errorMessage = root["message"].as<String>();
-
   for (int inx = 0; inx < 1; inx++)
   {
+    timeStruct[inx].errorMessage = root["message"].as<String>();
     timeStruct[inx].status = root["status"].as<String>();
     timeStruct[inx].message = root["message"].as<String>();
     timeStruct[inx].countryCode = root["countryCode"].as<String>();
@@ -146,7 +147,7 @@ time_t TimeDB::getTime()
     Serial.println("zoneName: " + timeStruct[inx].zoneName);
     Serial.println("abbreviation: " + timeStruct[inx].abbreviation);
     Serial.println("formatted: " + timeStruct[inx].formatted);
-    Serial.println("timestamp: " + timeStruct[inx].timestamp);
+    Serial.println("timestamp: " + timeStruct[inx].timestamp + " | " + getTimestamp2Date(inx));
     Serial.println("gmtOffset: " + String(getGmtOffset(inx)));
     Serial.println("dst: " + useDST(inx));
     Serial.println("zoneStart: " + timeStruct[inx].zoneStart + " | " + getZoneStart(inx));
@@ -186,6 +187,8 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
   {
     Serial.println("connection for time data failed"); // error message if no client connect
     Serial.println();
+    timeStruct[index].errorMessage = "connection for time data failed";
+    return;
   }
 
   int delay_counter = 0;
@@ -198,6 +201,7 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[index].errorMessage = "timeout waiting for data";
       client.stop();
       return;
     }
@@ -229,6 +233,7 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[index].errorMessage = "timeout waiting for data";
       client.stop();
       return;
     }
@@ -246,7 +251,7 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
   DynamicJsonDocument root(bufferSize);
   deserializeJson(root, jsonArray);
 
-  errorMessage = root["message"].as<String>();
+  timeStruct[index].errorMessage = root["message"].as<String>();
 
   timeStruct[index].status = root["status"].as<String>();
   timeStruct[index].message = root["message"].as<String>();
@@ -272,7 +277,7 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
   Serial.println("cityName: " + timeStruct[index].cityName);
   Serial.println("zoneName: " + timeStruct[index].zoneName);
   Serial.println("abbreviation: " + timeStruct[index].abbreviation);
-  Serial.println("timestamp: " + timeStruct[index].timestamp);
+  Serial.println("timestamp: " + timeStruct[index].timestamp + " | " + getTimestamp2Date(index));
   Serial.println("formatted: " + timeStruct[index].formatted);
   Serial.println("gmtOffset: " + String(getGmtOffset(index)));
   Serial.println("dst: " + useDST(index));
@@ -301,6 +306,8 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
   {
     Serial.println("connection for time data failed"); // error message if no client connect
     Serial.println();
+    timeStruct[index].errorMessage = "connection for time data failed";
+    return;
   }
 
   int delay_counter = 0;
@@ -314,6 +321,7 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[index].errorMessage = "timeout waiting for data";
       client.stop();
       return;
     }
@@ -345,6 +353,7 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
     {
       Serial.println("timeout waiting for data"); // error message if timeout
       Serial.println();
+      timeStruct[index].errorMessage = "timeout waiting for data";
       client.stop();
       return;
     }
@@ -362,7 +371,7 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
   DynamicJsonDocument root(bufferSize);
   deserializeJson(root, jsonArray);
 
-  errorMessage = root["message"].as<String>();
+  timeStruct[index].errorMessage = root["message"].as<String>();
 
   timeStruct[index].status = root["status"].as<String>();
   timeStruct[index].message = root["message"].as<String>();
@@ -387,9 +396,9 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
   Serial.println();
 }
 
-String TimeDB::getError()
+String TimeDB::getError(int index)
 {
-  return errorMessage;
+  return timeStruct[index].errorMessage;
 }
 
 String TimeDB::getAbbreviation(int index)
@@ -411,6 +420,95 @@ String TimeDB::getFormatted(int index)
     return rtnValue;
   }
   rtnValue = timeStruct[index].formatted;
+  return rtnValue;
+}
+
+String TimeDB::getTimestamp2Date(int index)
+{
+  String rtnValue = "";
+  String monthValue = "";
+  String weekdayValue = "";
+
+  if (timeStruct[index].timestamp == "null")
+  {
+    return rtnValue;
+  }
+
+  long epoc = timeStruct[index].timestamp.toInt();
+  time_t epoch_time_as_time_t = epoc;
+  struct tm *time_local = localtime(&epoch_time_as_time_t);
+
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = "Ocak";
+    break;
+  case 2:
+    monthValue = "Şubat";
+    break;
+  case 3:
+    monthValue = "Mart";
+    break;
+  case 4:
+    monthValue = "Nisan";
+    break;
+  case 5:
+    monthValue = "Mayıs";
+    break;
+  case 6:
+    monthValue = "Haziran";
+    break;
+  case 7:
+    monthValue = "Temmuz";
+    break;
+  case 8:
+    monthValue = "Ağustos";
+    break;
+  case 9:
+    monthValue = "Eylül";
+    break;
+  case 10:
+    monthValue = "Ekim";
+    break;
+  case 11:
+    monthValue = "Kasım";
+    break;
+  case 12:
+    monthValue = "Aralık";
+    break;
+  default:
+    rtnValue = "";
+  }
+
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = "Pazar";
+    break;
+  case 2:
+    weekdayValue = "Pazartesi";
+    break;
+  case 3:
+    weekdayValue = "Salı";
+    break;
+  case 4:
+    weekdayValue = "Çarşamba";
+    break;
+  case 5:
+    weekdayValue = "Perşembe";
+    break;
+  case 6:
+    weekdayValue = "Cuma";
+    break;
+  case 7:
+    weekdayValue = "Cumartesi";
+    break;
+  default:
+    weekdayValue = "";
+  }
+
+  rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
+
   return rtnValue;
 }
 
