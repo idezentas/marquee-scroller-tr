@@ -23,10 +23,11 @@ SOFTWARE.
 
 #pragma once
 #include <ESP8266WiFi.h>
-#include "libs/ArduinoJson/ArduinoJson.h"
+#include <ArduinoJson.h>
 #include <base64.h>
 
-class OctoPrintClient {
+class OctoPrintClient
+{
 
 private:
   char myServer[100];
@@ -36,10 +37,11 @@ private:
 
   void resetPrintData();
   boolean validate();
-  
+
   String result;
 
-  typedef struct {
+  typedef struct
+  {
     String averagePrintTime;
     String estimatedPrintTime;
     String fileName;
@@ -55,7 +57,6 @@ private:
 
   PrinterStruct printerData;
 
-  
 public:
   OctoPrintClient(String ApiKey, String server, int port, String user, String pass);
   void getPrinterJobResults();
