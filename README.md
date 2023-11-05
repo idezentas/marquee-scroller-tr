@@ -1,4 +1,53 @@
-# Marquee Scroller (Clock, Weather, News, and More)
+# Marquee Scroller (Clock, Weather, News, and More) Turkish Version
+
+## Changes Betwwen the Original Project
+--- In Turkish ---
+* ArduinoJson kütüphanesi versiyon 6'ya güncellendi.
+* Wemos D1 Mini yerine NodeMCU kullanılmaktadır. 
+* Web sayfası ve dot matrix yazıları Türkçeleştirilmiştir.
+* Yerel namaz vakitleri eklenmiştir.
+* Dünya saatleri özelliği (OpenWeatherMap ve TimeZoneDB kullanılarak) eklenmiştir.
+* CityID yerine şehir ismi ile hava durumu bilgisi elde edilmektedir.
+* Hava kirliliği özelliği eklenmiştir.
+* Hissedilen sıcaklık eklenmiştir.
+* Güneş doğuşu ve batışı eklenmiştir. (<a href="https://github.com/andrewcliffoutlook/marquee-scroller">andrewcliffoutlook</a>'a teşekkürler.)
+* Bulutlanma eklenmiştir. 
+* cleanText'e Türkçe harfler eklenmiştir.
+* Şehir adı, ülke adı, zaman dilimi vb özellikler TimeZoneDB kullanılarak eklenmiştir.
+* Zaman dilimleri arasındaki farkı tespit etme özelliği eklenmiştir.
+* Döviz kurları özelliği eklenmiştir.
+* Haberler özelliği silinmiştir.
+* Hava Durumu için dil seçeneği eklenmiştir.
+* Kayan yazıyı kapatma özelliği eklenmiştir.
+* Web sayfası üzerinden ESP'yi yeniden başlatma özelliği eklenmiştir.
+* Kayan yazıda gösterilecek bilgileri Ekran Ayarları sayfasında taşınmıştır.
+* PlatformIO ile derleme desteği eklenmiştir.
+* SPIFFS yerine LittleFS kullanılmaktadır.
+* Web sayfasındaki Yazılım Güncelleştirme özelliği silinmiştir.
+
+--- In English ---
+* ArduinoJson library updated to version 6.
+* NodeMCU is used instead of Wemos D1 Mini.
+* Web interface and display texts have been translated into Turkish.
+* Local prayers times have been added.
+* World clocks feature (using OpenWeatherMap and TimeZoneDB) has been added.
+* Weather information is obtained with the city name instead of CityID.
+* Air pollution feature has been added.
+* Apparent temperature has been added.
+* Sunrise and sunset have been added. (Thanks to <a href="https://github.com/andrewcliffoutlook/marquee-scroller">andrewcliffoutlook</a>)
+* Cloudiness has been added.
+* Turkish letters have been added to cleanText.
+* City name, country name, time zone etc. features have been added using TimeZoneDB.
+* The ability to detect the difference between time zones has been added.
+* Currency feature has been added.
+* News feature has been deleted.
+* Language option for weather has been added.
+* The feature to turn off the marquee has been added.
+* The ability to restart ESP via the web page has been added.
+* The information to be displayed in the marquee has been moved to the Display Settings page.
+* PlatformIO build feature has been added.
+* LittleFS is used instead of SPIFFS.
+* Firmware Update feature on the web page has been deleted.
 
 ## NOTICE
 The latest version of Marquee Scroller 3.01 works with **ESP8266 Core 3.0.2** -- if you are upgrading from Marquee Scroller 2.X version this may require you to enter in all your API Keys and settings.  Always meake sure you have coppied all your API keys somewhere before updating.  The ESP8266 Core 3.0.2 uses the newer FS (file system) that may require a fresh start on the configuration.
@@ -28,6 +77,13 @@ Make sure you update to the latest version of WifiManager library (link below).
 
 Note: Using the links provided here help to support these types of projects. Thank you for the support.  
 
+## Wiring for the NodeMCU to the Dot Matrix Display
+CLK -> D5 (SCK)  
+CS  -> D8  
+DIN -> D7 (MOSI)  
+VCC -> 5V+  
+GND -> GND- 
+
 ## Wiring for the Wemos D1 Mini to the Dot Matrix Display
 CLK -> D5 (SCK)  
 CS  -> D6  
@@ -40,11 +96,6 @@ GND -> GND-
 ## 3D Printed Case by David Payne:  
 Original Single Panel version: https://www.thingiverse.com/thing:2867294  
 Double Wide LED version: https://www.thingiverse.com/thing:2989552  
-
-## Upgrading from version 2.5 or Higher
-In version 2.6 and higher, the binary files that can be uploaded to your marque scrolling clock via the web interface.  From the main menu in the web interface select "Firmware Update" and follow the prompts.
-* **marquee.ino.d1_mini_3.01.bin** - compiled for Wemos D1 Mini and standard 4x1 LED (default)
-* **marquee.ino.d1_mini_wide_3.01.bin** - compiled for Wemos D1 Mini and double wide 8x1 LED display
 
 ## Compiling and Loading to Wemos D1
 It is recommended to use Arduino IDE.  You will need to configure Arduino IDE to work with the Wemos board and USB port and installed the required USB drivers etc.  
@@ -63,14 +114,14 @@ Use the Arduino guide for details on how to installing and manage libraries http
 <Adafruit_GFX.h> --> https://github.com/adafruit/Adafruit-GFX-Library  
 <Max72xxPanel.h> --> https://github.com/markruys/arduino-Max72xxPanel  
 <JsonStreamingParser.h> --> https://github.com/squix78/json-streaming-parser  
-
-Note ArduinoJson (version 5.13.1) is now included as a library file in version 2.7 and later.
+<ArduinoJson.h> --> https://github.com/bblanchon/ArduinoJson
 
 ## Initial Configuration
 Editing the **Settings.h** file is totally optional and not required.  All API Keys are now managed in the Web Interface. It is not required to edit the Settings.h file before loading and running the code.  
 * Open Weather Map free API key: http://openweathermap.org/  -- this is used to get weather data and the latitude and longitude for the current time zone. Weather API key is required for correct time.
 * TimeZoneDB free registration for API key: https://timezonedb.com/register -- this is used for setting the time and getting the correct time zone as well as managing time changes due to Day Light Savings time by regions.  This key is set and managed only through the web interface and added in version 2.10 of Marquee Scroller. TimeZoneDB key is required for correct time display.
 * News API key (free): https://newsapi.org/ -- Optional if you want to get current news headlines.
+* Free Currency Converter free API key: https://free.currencyconverterapi.com/
 * Your OctoPrint API Key -- optional if you use the OctoPrint status.
 * Version 2.0 supports Chained 4x1 LED displays -- configure up to 16x1 in the Settings.h file.  
 
