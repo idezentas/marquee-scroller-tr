@@ -24,30 +24,32 @@ SOFTWARE.
 #pragma once
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include "libs/ArduinoJson/ArduinoJson.h"
+#include <ArduinoJson.h>
 
-class PiHoleClient {
+class PiHoleClient
+{
 
 private:
-
   WiFiClient getSubmitRequest(String apiGetData, String myServer, int myPort);
   void resetClientsBlocked();
   void resetBlockedGraphData();
-  
+
   String errorMessage = "";
 
-  int blocked[144] = {0};  
+  int blocked[144] = {0};
   int blockedCount = 0;
   int blockedHigh = 0;
 
-  typedef struct {
+  typedef struct
+  {
     String clientAddress;
     int blockedCount;
   } ClientBlocked;
 
   ClientBlocked blockedClients[3];
 
-  typedef struct {
+  typedef struct
+  {
     String domains_being_blocked;
     String dns_queries_today;
     String ads_blocked_today;
@@ -65,10 +67,9 @@ private:
     String privacy_level;
     String piHoleStatus;
   } phd;
-  
+
   phd piHoleData;
-  
-  
+
 public:
   PiHoleClient();
   void getPiHoleData(String server, int port, String apiKey);
@@ -84,19 +85,19 @@ public:
   /*
   String getUniqueDomains();
   String getQueriesForwarded();
-  String getQueriesCached();  
+  String getQueriesCached();
   String getDnsQueriesAllTypes();
   String getReplyNODATA();
   String getReplyNXDOMAIN();
   String getReplyCNAME();
   String getReplyIP();
   String getPrivacyLevel();
-  
+
   */
   String getPiHoleStatus();
   String getError();
 
-  int *getBlockedAds();  
+  int *getBlockedAds();
   int getBlockedCount();
   int getBlockedHigh();
 
