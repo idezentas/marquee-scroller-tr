@@ -37,7 +37,8 @@ private:
   String myLang = "";
   String units = "";
   String myCityName = "";
-  String myWorldCityName = "";
+  String myWorldCityName1 = "";
+  String myWorldCityName2 = "";
 
   const char *servername = "api.openweathermap.org"; // remote server we will connect to
 
@@ -91,7 +92,8 @@ public:
   void updateWeatherApiKey(String ApiKey);
   void setMetric(boolean isMetric);
   void updateCityName(String CityName);
-  void updateWorldCityName(String WorldCityName);
+  void updateWorldCityName1(String WorldCityName1);
+  void updateWorldCityName2(String WorldCityName2);
   void updateLanguage(String language);
 
   String getLat(int index);
@@ -123,7 +125,7 @@ public:
   boolean getCached();
   String getMyCityName();
   String getWeatherIcon(int index);
-  String getError();
+  String getError(int index);
   String getWeekDay(int index, float offset);
   int getTimeZone(int index);
   String getCloudcover(int index);
