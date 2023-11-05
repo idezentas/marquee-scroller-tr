@@ -28,13 +28,13 @@ SOFTWARE.
  * Matrix Display:  https://amzn.to/2HtnQlD
  ******************************************************************************/
 /******************************************************************************
- * NOTE: The settings here are the default settings for the first loading.  
- * After loading you will manage changes to the settings via the Web Interface.  
- * If you want to change settings again in the settings.h, you will need to 
- * erase the file system on the Wemos or use the “Reset Settings” option in 
+ * NOTE: The settings here are the default settings for the first loading.
+ * After loading you will manage changes to the settings via the Web Interface.
+ * If you want to change settings again in the settings.h, you will need to
+ * erase the file system on the Wemos or use the “Reset Settings” option in
  * the Web Interface.
  ******************************************************************************/
- 
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
@@ -42,50 +42,54 @@ SOFTWARE.
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
 #include "FS.h"
+#include "LittleFS.h"
 #include <SPI.h>
 #include <Adafruit_GFX.h> // --> https://github.com/adafruit/Adafruit-GFX-Library
 #include <Max72xxPanel.h> // --> https://github.com/markruys/arduino-Max72xxPanel
 #include <pgmspace.h>
 #include "OpenWeatherMapClient.h"
 #include "TimeDB.h"
-#include "NewsApiClient.h" 
 #include "OctoPrintClient.h"
 #include "PiHoleClient.h"
+#include "AladhanClient.h"
+#include "CurrencyConverterClient.h"
 
 //******************************
 // Start Settings
 //******************************
 
-String TIMEDBKEY = ""; // Your API Key from https://timezonedb.com/register
+String TIMEDBKEY = "";                  // // Your API Key from https://timezonedb.com/register
 String APIKEY = ""; // Your API Key from http://openweathermap.org/
 // Default City Location (use http://openweathermap.org/find to find city ID)
-int CityIDs[] = { 5304391 }; //Only USE ONE for weather marquee
+String CityName = "Mesa,US"; // Default Mesa,US
+// Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
+String WeatherLanguage = "en"; // Default (en) English
 String marqueeMessage = "";
-boolean IS_METRIC = false; // false = Imperial and true = Metric
-boolean IS_24HOUR = false; // 23:00 millitary 24 hour clock
-boolean IS_PM = true; // Show PM indicator on Clock when in AM/PM mode
-const int WEBSERVER_PORT = 80; // The port you can access this device on over HTTP
-const boolean WEBSERVER_ENABLED = true;  // Device will provide a web interface via http://[ip]:[port]/
-boolean IS_BASIC_AUTH = false;  // Use Basic Authorization for Configuration security on Web Interface
-char* www_username = "admin";  // User account for the Web Interface
-char* www_password = "password";  // Password for the Web Interface
-int minutesBetweenDataRefresh = 15;  // Time in minutes between data refresh (default 15 minutes)
-int minutesBetweenScrolling = 1; // Time in minutes between scrolling data (default 1 minutes and max is 10)
-int displayScrollSpeed = 25; // In milliseconds -- Configurable by the web UI (slow = 35, normal = 25, fast = 15, very fast = 5)
-boolean flashOnSeconds = true; // when true the : character in the time will flash on and off as a seconds indicator
+boolean IS_METRIC = true;               // false = Imperial and true = Metric
+boolean IS_24HOUR = true;               // 23:00 millitary 24 hour clock
+boolean IS_PM = false;                  // Show PM indicator on Clock when in AM/PM mode
+const int WEBSERVER_PORT = 80;          // The port you can access this device on over HTTP
+const boolean WEBSERVER_ENABLED = true; // Device will provide a web interface via http://[ip]:[port]/
+boolean IS_BASIC_AUTH = false;          // Use Basic Authorization for Configuration security on Web Interface
+char *www_username = "admin";           // User account for the Web Interface
+char *www_password = "duhan12345";      // Password for the Web Interface
+int minutesBetweenDataRefresh = 60;     // Time in minutes between data refresh (default 15 minutes)
+int minutesBetweenScrolling = 10;       // Time in minutes between scrolling data (default 1 minutes and max is 10)
+int displayScrollSpeed = 25;            // In milliseconds -- Configurable by the web UI (slow = 35, normal = 25, fast = 15, very fast = 5)
+boolean flashOnSeconds = false;         // when true the : character in the time will flash on and off as a seconds indicator
 
-boolean NEWS_ENABLED = true;
-String NEWS_API_KEY = ""; // Get your News API Key from https://newsapi.org
-String NEWS_SOURCE = "reuters";  // https://newsapi.org/sources to get full list of news sources available
+boolean ENABLE_SCROLL = true; // True → Enable Scrolling Message. False → Disable Scrolling Message.
 
 // Display Settings
-// CLK -> D5 (SCK)  
-// CS  -> D6 
+// CLK -> D5 (SCK)
+// CS -> D6 (For Wemos D1 Mini)
+// CS -> D8 (For Nodemcu)
 // DIN -> D7 (MOSI)
-const int pinCS = D6; // Attach CS to this pin, DIN to MOSI and CLK to SCK (cf http://arduino.cc/en/Reference/SPI )
-int displayIntensity = 1;  //(This can be set from 0 - 15)
+// const int pinCS = D6; // Attach CS to this pin, DIN to MOSI and CLK to SCK (cf http://arduino.cc/en/Reference/SPI )
+const int pinCS = D8;                     // Attach CS to this pin, DIN to MOSI and CLK to SCK (cf http://arduino.cc/en/Reference/SPI )
+int displayIntensity = 1;                 //(This can be set from 0 - 15)
 const int numberOfHorizontalDisplays = 4; // default 4 for standard 4 x 1 display Max size of 16
-const int numberOfVerticalDisplays = 1; // default 1 for a single row height
+const int numberOfVerticalDisplays = 1;   // default 1 for a single row height
 /* set ledRotation for LED Display panels (3 is default)
 0: no rotation
 1: 90 degrees clockwise
@@ -94,29 +98,46 @@ const int numberOfVerticalDisplays = 1; // default 1 for a single row height
 */
 int ledRotation = 3;
 
-String timeDisplayTurnsOn = "06:30";  // 24 Hour Format HH:MM -- Leave blank for always on. (ie 05:30)
-String timeDisplayTurnsOff = "23:00"; // 24 Hour Format HH:MM -- Leave blank for always on. Both must be set to work.
+String timeDisplayTurnsOn = "08:00";  // 24 Hour Format HH:MM -- Leave blank for always on. (ie 05:30)
+String timeDisplayTurnsOff = "00:00"; // 24 Hour Format HH:MM -- Leave blank for always on. Both must be set to work.
+
+// Prayers Time Client -- Shows prayer times according to address.
+boolean PRAYERS_ENABLED = true;
+String prayersMethod = "13"; // https://aladhan.com/calculation-methods
+
+// World Time Client -- Shows the current time of the chosen cities.
+boolean WORLD_TIME_ENABLED = true;
+// Please enter city names in ENGLISH.
+String WorldCityName1 = "London,UK"; // Default City: London,UK
+
+// Currency Converter Client
+boolean CURRENCY_ENABLED = false;
+String CURRENCY_API_KEY = ""; // Get your Currency Converter API Key from https://free.currencyconverterapi.com/
+// Currency List →  https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json
+String BaseCurrency1 = "EUR";  // Default Currency: Euro (EUR)
+String BaseCurrency2 = "USD";  // Default Currency: United States Dollar (USD)
+String BaseCurrency3 = "GBP";  // Default Currency: British Pound (GBP)
+String TargetCurrency = "TRY"; // Default Currency: Turkish Lira (TRY)
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
 boolean OCTOPRINT_PROGRESS = true;
-String OctoPrintApiKey = "";  // ApiKey from your User Account on OctoPrint
-String OctoPrintServer = "";  // IP or Address of your OctoPrint Server (DO NOT include http://)
-int OctoPrintPort = 80;       // the port you are running your OctoPrint server on (usually 80);
-String OctoAuthUser = "";     // only used if you have haproxy or basic athentintication turned on (not default)
-String OctoAuthPass = "";     // only used with haproxy or basic auth (only needed if you must authenticate)
+String OctoPrintApiKey = ""; // ApiKey from your User Account on OctoPrint
+String OctoPrintServer = ""; // IP or Address of your OctoPrint Server (DO NOT include http://)
+int OctoPrintPort = 80;      // the port you are running your OctoPrint server on (usually 80);
+String OctoAuthUser = "";    // only used if you have haproxy or basic athentintication turned on (not default)
+String OctoAuthPass = "";    // only used with haproxy or basic auth (only needed if you must authenticate)
 
 // Pi-hole Client -- monitor basic stats from your Pi-hole server (see http://pi-hole.net)
-boolean USE_PIHOLE = false;   // Set true to display your Pi-hole details
-String PiHoleServer = "";     // IP or Address only (DO NOT include http://)
-int PiHolePort = 80;          // Port of your Pi-hole address (default 80)
-String PiHoleApiKey = "";   // Optional -- only needed to see top blocked clients
+boolean USE_PIHOLE = false;                                                               // Set true to display your Pi-hole details
+String PiHoleServer = "";                                                    // IP or Address only (DO NOT include http://)
+int PiHolePort = 80;                                                                      // Port of your Pi-hole address (default 80)
+String PiHoleApiKey = ""; // Optional -- only needed to see top blocked clients
 
-boolean ENABLE_OTA = true;    // this will allow you to load firmware to the device over WiFi (see OTA for ESP8266)
-String OTA_Password = "";     // Set an OTA password here -- leave blank if you don't want to be prompted for password
+boolean ENABLE_OTA = true; // this will allow you to load firmware to the device over WiFi (see OTA for ESP8266)
+String OTA_Password = "";  // Set an OTA password here -- leave blank if you don't want to be prompted for password
 
 //******************************
 // End Settings
 //******************************
-//blue-grey
-String themeColor = "blue-grey"; // this can be changed later in the web interface.
+String themeColor = "light-green"; // https://www.w3schools.com/w3css/w3css_color_themes.asp
