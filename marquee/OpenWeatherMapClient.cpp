@@ -58,12 +58,21 @@ void OpenWeatherMapClient::updateCityName(String CityName)
   }
 }
 
-void OpenWeatherMapClient::updateWorldCityName(String WorldCityName)
+void OpenWeatherMapClient::updateWorldCityName1(String WorldCityName1)
 {
-  myWorldCityName = WorldCityName;
-  if (myWorldCityName == "")
+  myWorldCityName1 = WorldCityName1;
+  if (myWorldCityName1 == "")
   {
-    myWorldCityName = "London,UK";
+    myWorldCityName1 = "London,UK";
+  }
+}
+
+void OpenWeatherMapClient::updateWorldCityName2(String WorldCityName2)
+{
+  myWorldCityName2 = WorldCityName2;
+  if (myWorldCityName2 == "")
+  {
+    myWorldCityName2 = "Los Angeles,US";
   }
 }
 
@@ -515,9 +524,9 @@ String OpenWeatherMapClient::getNH3(int index)
   return weathers[index].nh3;
 }
 
-String OpenWeatherMapClient::getError()
+String OpenWeatherMapClient::getError(int index)
 {
-  return weathers[0].error;
+  return weathers[index].error;
 }
 
 String OpenWeatherMapClient::getWeekDay(int index, float offset)
