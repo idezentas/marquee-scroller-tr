@@ -23,24 +23,80 @@ SOFTWARE.
 
 #pragma once
 #include <ESP8266WiFi.h>
-#include <TimeLib.h> // https://github.com/PaulStoffregen/Time 
-#include "libs/ArduinoJson/ArduinoJson.h"
+#include <TimeLib.h> // https://github.com/PaulStoffregen/Time
+#include <ArduinoJson.h>
 
 class TimeDB
 {
-  public:
-    TimeDB(String apiKey);
-    void updateConfig(String apiKey, String lat, String lon);
-    time_t getTime();
-    String getDayName();
-    String getMonthName();
-    String getAmPm();
-    String zeroPad(int number);
+public:
+  TimeDB(String apiKey);
+  void updateConfig(String apiKey, String lat, String lon);
+  time_t getTime();
+  void getCityTime(String apiKey, String lat, String lon, int index);
+  void convertTimezone(String apiKey, String fromTimezone, String toTimezone, int index);
+  String getDayName();
+  String getMonthName();
+  String getAmPm();
+  String zeroPad(int number);
+  String getError();
+  String cleanText(String text);
+  String getCountryCode(int index);
+  String getCountryName(int index);
+  String getRegionName(int index);
+  String getCityName(int index);
+  String getZoneName(int index);
+  String getAbbreviation(int index);
+  String getFormatted(int index);
+  String useDST(int index);
+  String getNextAbbreviation(int index);
+  String getZoneStart(int index);
+  String getZoneEnd(int index);
+  String getFromZoneName(int index);
+  String getFromAbbreviation(int index);
+  String getFromTimestamp(int index);
+  String getToZoneName(int index);
+  String getToAbbreviation(int index);
+  String getToTimestamp(int index);
+  String getFromTimestamp2Date(int index);
+  String getToTimestamp2Date(int index);
+  String getOffsetDifferenceString(int index);
+  String getGmtOffsetString(int index);
+  int getGmtOffset(int index);
+  int getOffsetDifference(int index);
 
-  private:
-    const char* servername = "api.timezonedb.com";  // remote server we will connect to
-    long localMillisAtUpdate;
-    String myApiKey;
-    String myLat;
-    String myLon;
+private:
+  const char *servername = "api.timezonedb.com"; // remote server we will connect to
+  long localMillisAtUpdate;
+  String myApiKey;
+  String myLat;
+  String myLon;
+  String errorMessage;
+
+  typedef struct
+  {
+    String status;
+    String message;
+    String countryCode;
+    String countryName;
+    String regionName;
+    String cityName;
+    String zoneName;
+    String abbreviation;
+    String timestamp;
+    String formatted;
+    String gmtOffset;
+    String dst;
+    String zoneStart;
+    String zoneEnd;
+    String nextAbbreviation;
+    String fromZoneName;
+    String fromAbbreviation;
+    String fromTimestamp;
+    String toZoneName;
+    String toAbbreviation;
+    String toTimestamp;
+    String offsetDifference;
+  } timeS;
+
+  timeS timeStruct[8];
 };
