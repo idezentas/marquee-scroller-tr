@@ -38,7 +38,7 @@ public:
   String getMonthName();
   String getAmPm();
   String zeroPad(int number);
-  String getError();
+  String getError(int index);
   String cleanText(String text);
   String getCountryCode(int index);
   String getCountryName(int index);
@@ -47,6 +47,7 @@ public:
   String getZoneName(int index);
   String getAbbreviation(int index);
   String getFormatted(int index);
+  String getTimestamp2Date(int index);
   String useDST(int index);
   String getNextAbbreviation(int index);
   String getZoneStart(int index);
@@ -70,10 +71,10 @@ private:
   String myApiKey;
   String myLat;
   String myLon;
-  String errorMessage;
 
   typedef struct
   {
+    String errorMessage;
     String status;
     String message;
     String countryCode;
