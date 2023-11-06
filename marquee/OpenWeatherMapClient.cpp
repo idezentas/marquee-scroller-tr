@@ -76,6 +76,15 @@ void OpenWeatherMapClient::updateWorldCityName2(String WorldCityName2)
   }
 }
 
+void OpenWeatherMapClient::updateWorldCityName3(String WorldCityName3)
+{
+  myWorldCityName3 = WorldCityName3;
+  if (myWorldCityName3 == "")
+  {
+    myWorldCityName3 = "Chicago,US";
+  }
+}
+
 void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
 {
   WiFiClient weatherClient;
