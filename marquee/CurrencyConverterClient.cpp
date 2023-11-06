@@ -148,7 +148,6 @@ void CurrencyConverterClient::updateCurrency(String BaseCurrency, String TargetC
 
   size_t msrLen = bufferSize / 5;
 
-  // V6
   if (measureJson(root) <= msrLen)
   {
     Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
@@ -162,9 +161,9 @@ void CurrencyConverterClient::updateCurrency(String BaseCurrency, String TargetC
   currencies[index].targetCurrencyName = TargetCurrency;
   currencies[index].baseCurrencyName = BaseCurrency;
 
-  Serial.println("target (" + currencyCode + "): " + currencies[index].target);
-  Serial.println("targetCurrencyName: " + currencies[index].targetCurrencyName);
   Serial.println("baseCurrencyName: " + currencies[index].baseCurrencyName);
+  Serial.println("targetCurrencyName: " + currencies[index].targetCurrencyName);
+  Serial.println("target (" + currencyCode + "): " + currencies[index].target);
   Serial.println();
 }
 
