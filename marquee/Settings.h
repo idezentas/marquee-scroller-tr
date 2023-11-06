@@ -70,8 +70,8 @@ boolean IS_PM = false;                  // Show PM indicator on Clock when in AM
 const int WEBSERVER_PORT = 80;          // The port you can access this device on over HTTP
 const boolean WEBSERVER_ENABLED = true; // Device will provide a web interface via http://[ip]:[port]/
 boolean IS_BASIC_AUTH = false;          // Use Basic Authorization for Configuration security on Web Interface
-char *www_username = "admin";           // User account for the Web Interface
-char *www_password = "duhan12345";      // Password for the Web Interface
+char www_username[] = "admin";           // User account for the Web Interface
+char www_password[] = "duhan12345";      // Password for the Web Interface
 int minutesBetweenDataRefresh = 60;     // Time in minutes between data refresh (default 15 minutes)
 int minutesBetweenScrolling = 10;       // Time in minutes between scrolling data (default 1 minutes and max is 10)
 int displayScrollSpeed = 25;            // In milliseconds -- Configurable by the web UI (slow = 35, normal = 25, fast = 15, very fast = 5)
@@ -115,15 +115,12 @@ boolean SHOW_FEEL_TEMP = true;
 // Prayers Time Client -- Shows prayer times according to address.
 boolean PRAYERS_ENABLED = true;
 String prayersMethod = "13"; // https://aladhan.com/calculation-methods
-boolean SHOW_PRAYERS = true;
 
 // World Time Client -- Shows the current time of the chosen cities.
 boolean WORLD_TIME_ENABLED = true;
 // Please enter city names in ENGLISH.
 String WorldCityName1 = "London,UK"; // Default City: London,UK
-boolean SHOW_WORLD_CITY1 = true;
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
-boolean SHOW_WORLD_CITY2 = true;
 
 // Currency Converter Client
 boolean CURRENCY_ENABLED = false;
@@ -133,10 +130,6 @@ String BaseCurrency1 = "EUR";  // Default Currency: Euro (EUR)
 String BaseCurrency2 = "USD";  // Default Currency: United States Dollar (USD)
 String BaseCurrency3 = "GBP";  // Default Currency: British Pound (GBP)
 String TargetCurrency = "TRY"; // Default Currency: Turkish Lira (TRY)
-boolean SHOW_CURRENCY1 = true;
-boolean SHOW_CURRENCY2 = true;
-boolean SHOW_CURRENCY3 = true;
-boolean SHOW_CURRENCY4 = true;
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
