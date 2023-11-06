@@ -121,6 +121,7 @@ boolean WORLD_TIME_ENABLED = true;
 // Please enter city names in ENGLISH.
 String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
+String WorldCityName3 = "Chicago,US";     // Default City: Chicago,US
 
 // Currency Converter Client
 boolean CURRENCY_ENABLED = false;
