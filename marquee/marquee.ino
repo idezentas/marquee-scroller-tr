@@ -37,8 +37,7 @@ int8_t getWifiQuality();
 // Display Strings
 String VERSION = "3.03-TR";
 String HOSTNAME = "SAAT-";
-String message = "Selam";
-String dWifiQuality = "Sinyal Gücü";
+String message = "SELAM";
 
 // LED Settings
 int refresh = 0;
@@ -65,9 +64,6 @@ OpenWeatherMapClient worldWeatherClient(APIKEY, IS_METRIC, CityName, WeatherLang
 // Prayers Time Client
 PrayersClient prayersClient(prayersMethod);
 
-// Currency Converter Client
-CurrencyConverterClient currencyClient(CURRENCY_API_KEY, BaseCurrency1, BaseCurrency2, BaseCurrency3, TargetCurrency);
-
 // OctoPrint Client
 OctoPrintClient printerClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
 int printerCount = 0;
@@ -82,12 +78,11 @@ static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' hre
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclockweather'><i class='fas fa-clock'></i> Dünya Şehirleri Hava Durumu Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayprayerstime'><i class='fas fa-mosque'></i> Namaz Vakitleri Verileri</a>"
-                                           "<a class='w3-bar-item w3-button' href='/displaycurrency'><i class='fas fa-money-bill'></i> Döviz Kurları Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/configure'><i class='fas fa-cog'></i> Ayarlar</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurematrix'><i class='fas fa-cog'></i> Ekran Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configureprayers'><i class='fas fa-mosque'></i> Namaz Vakitleri Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configurecurrency'><i class='fas fa-money-bill'></i> Currency Converter API Ayarları</a>";
+                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>";
+                                           
 
 static const char WEB_ACTIONS2[] PROGMEM = "<a class='w3-bar-item w3-button' href='/configureoctoprint'><i class='fas fa-cube'></i> OctoPrint Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurepihole'><i class='fas fa-network-wired'></i> Pi-hole Ayarları</a>"
@@ -162,17 +157,6 @@ static const char PRAYERS_FORM[] PROGMEM = "<form class='w3-container' action='/
                                            "<label>Hesaplama Methodunu Giriniz (<a href='https://aladhan.com/calculation-methods' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='prayersMethodID' value='%PRAYERSMETHOD%' maxlength='70'>"
                                            "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                            "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
-
-static const char CURRENCY_FORM[] PROGMEM = "<form class='w3-container' action='/savecurrency' method='get'><h2>Döviz Kurları Ayarları:</h2>"
-                                            "<p><input name='displaycurrency' class='w3-check w3-margin-top' type='checkbox' %CURRENCYCHECKED%> Döviz Kurlarını Göster</p>"
-                                            "<label>Currency Converter API Anahtarı (<a href='https://free.currencyconverterapi.com' target='_BLANK'>Buradan</a> alabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='currencyAPIKey' value='%CURRENCYKEY%' maxlength='70'>";
-
-static const char CURRENCY_FORM_2[] PROGMEM = "<label>1.Temel Para Birimini Giriniz (<a href='https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='basecurrency1' value='%BASECURRENCY1%' maxlength='70'>"
-                                              "<label>2.Temel Para Birimini Giriniz (<a href='https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='basecurrency2' value='%BASECURRENCY2%' maxlength='70'>"
-                                              "<label>3.Temel Para Birimini Giriniz (<a href='https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='basecurrency3' value='%BASECURRENCY3%' maxlength='70'>"
-                                              "<label>Dönüştürülecek Para Birimini Giriniz (<a href='https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='targetcurrency' value='%TARGETCURRENCY%' maxlength='70'>"
-                                              "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
-                                              "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
 static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' action='/saveworldclock' method='get'><h2>Dünya Saatleri Ayarları:</h2>"
                                                "<p><input name='displayworldclock' class='w3-check w3-margin-top' type='checkbox' %WORLDCLOCKCHECKED%> Dünya Saatlerini Göster</p>"
@@ -260,7 +244,7 @@ void setup()
 
   Serial.println("matrix created");
   matrix.fillScreen(LOW); // show black
-  message.toUpperCase();
+  message = CleanText(message);
   centerPrint(message);
 
   tone(BUZZER_PIN, 415, 500);
@@ -346,7 +330,6 @@ void setup()
     server.on("/saveworldclock", handleSaveWorldClock);
     server.on("/savematrix", handleSaveMatrix);
     server.on("/saveprayers", handleSavePrayers);
-    server.on("/savecurrency", handleSaveCurrency);
     server.on("/systemreset", handleSystemReset);
     server.on("/forgetwifi", handleForgetWifi);
     server.on("/configure", handleConfigure);
@@ -354,14 +337,12 @@ void setup()
     server.on("/configureoctoprint", handleOctoprintConfigure);
     server.on("/configurepihole", handlePiholeConfigure);
     server.on("/configureprayers", handlePrayersConfigure);
-    server.on("/configurecurrency", handleCurrencyConfigure);
     server.on("/configurematrix", handleMatrixConfigure);
     server.on("/configureworldclock", handleWorldClockConfigure);
     server.on("/display", handleDisplay);
     server.on("/displayworldclock", displayWorldClockData);
     server.on("/displayworldclockweather", displayWorldClockWeatherData);
     server.on("/displayprayerstime", displayPrayersTimeData);
-    server.on("/displaycurrency", displayCurrencyData);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
     // Start the server
@@ -373,9 +354,7 @@ void setup()
     // Print the IP address
     String webAddress = "http://" + WiFi.localIP().toString() + ":" + String(WEBSERVER_PORT) + "/";
     Serial.println("Use this URL : " + webAddress);
-    dWifiQuality = CleanText(dWifiQuality);
-    dWifiQuality.toUpperCase();
-    scrollMessage(" v" + String(VERSION) + "  WIFI: " + WiFi.SSID() + "  IP: " + WiFi.localIP().toString() + "  " + dWifiQuality + ": " + "%" + getWifiQuality() + "  ");
+    scrollMessage(" v" + String(VERSION) + "  WIFI: " + WiFi.SSID() + "  IP: " + WiFi.localIP().toString() + "  SINYAL GUCU: " + "%" + getWifiQuality() + "  ");
   }
   else
   {
@@ -715,30 +694,6 @@ void handleSavePrayers()
   redirectHome();
 }
 
-void handleSaveCurrency()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  CURRENCY_ENABLED = server.hasArg("displaycurrency");
-  CURRENCY_API_KEY = server.arg("currencyAPIKey");
-  BaseCurrency1 = server.arg("basecurrency1");
-  BaseCurrency2 = server.arg("basecurrency2");
-  BaseCurrency3 = server.arg("basecurrency3");
-  TargetCurrency = server.arg("targetcurrency");
-  matrix.fillScreen(LOW); // show black
-  writeCityIds();
-  currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
-  delay(1000);
-  currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
-  delay(1000);
-  currencyClient.updateCurrency(BaseCurrency3, TargetCurrency, 2);
-  delay(1000);
-  currencyClient.updateCurrency(BaseCurrency1, BaseCurrency2, 3);
-  redirectHome();
-}
-
 void handleSaveWorldClock()
 {
   if (!athentication())
@@ -997,46 +952,6 @@ void handlePrayersConfigure()
   }
   form.replace("%PRAYERSCHECKED%", isPrayersDisplayedChecked);
   form.replace("%PRAYERSMETHOD%", prayersMethod);
-  server.sendContent(form);
-
-  sendFooter();
-
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void handleCurrencyConfigure()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  digitalWrite(externalLight, LOW);
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-
-  sendHeader();
-
-  String form = FPSTR(CURRENCY_FORM);
-  form.replace("%CURRENCYKEY%", CURRENCY_API_KEY);
-  String isCurrencyDisplayedChecked = "";
-  if (CURRENCY_ENABLED)
-  {
-    isCurrencyDisplayedChecked = "checked='checked'";
-  }
-  form.replace("%CURRENCYCHECKED%", isCurrencyDisplayedChecked);
-  server.sendContent(form); // Send another chunk of the form
-
-  form = FPSTR(CURRENCY_FORM_2);
-  form.replace("%BASECURRENCY1%", BaseCurrency1);
-  form.replace("%BASECURRENCY2%", BaseCurrency2);
-  form.replace("%BASECURRENCY3%", BaseCurrency3);
-  form.replace("%TARGETCURRENCY%", TargetCurrency);
   server.sendContent(form);
 
   sendFooter();
@@ -1406,23 +1321,6 @@ void getWeatherData() // client function to send/receive GET request data..
     timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
-    delay(1000);
-  }
-
-  if (CURRENCY_ENABLED && displayOn)
-  {
-    matrix.drawPixel(16, 7, HIGH);
-    matrix.drawPixel(17, 7, HIGH);
-    matrix.drawPixel(18, 7, HIGH);
-    matrix.write();
-    Serial.println("Getting Currency Converter API Data...");
-    currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
-    delay(1000);
-    currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
-    delay(1000);
-    currencyClient.updateCurrency(BaseCurrency3, TargetCurrency, 2);
-    delay(1000);
-    currencyClient.updateCurrency(BaseCurrency1, BaseCurrency2, 3);
     delay(1000);
   }
 
@@ -1935,50 +1833,6 @@ void displayPrayersTimeData()
   digitalWrite(externalLight, HIGH);
 }
 
-void displayCurrencyData()
-{
-  digitalWrite(externalLight, LOW);
-  String html = "";
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-  sendHeader();
-
-  if (CURRENCY_ENABLED)
-  {
-    if (currencyClient.getError() == "")
-    {
-      html = "<div class='w3-cell-row' style='width:100%'><h2>Currency Converter API Döviz Kurları</h2></div><div class='w3-cell-row'><p>";
-      html += "1 " + currencyClient.getBaseCurrencyName(0) + " = " + currencyClient.getTargetCurrencyFormatted(0) + " " + currencyClient.getTargetCurrencyName(0) + "<br>";
-      html += "1 " + currencyClient.getBaseCurrencyName(1) + " = " + currencyClient.getTargetCurrencyFormatted(1) + " " + currencyClient.getTargetCurrencyName(1) + "<br>";
-      html += "1 " + currencyClient.getBaseCurrencyName(2) + " = " + currencyClient.getTargetCurrencyFormatted(2) + " " + currencyClient.getTargetCurrencyName(2) + "<br>";
-      html += "1 " + currencyClient.getBaseCurrencyName(3) + " = " + currencyClient.getTargetCurrencyFormatted(3) + " " + currencyClient.getTargetCurrencyName(3) + "<br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>Currency Converter API Hatası";
-      html += "<p>Lütfen <a href='/configurecurrency'>Currency Converter API Ayarlarını</a> Yapınız<p><br>";
-      html += "Sebebi: <strong>" + currencyClient.getError() + "</strong><br></div><br><hr>";
-    }
-    server.sendContent(String(html));
-    html = "";
-  }
-  else
-  {
-    html += "<strong>Currency Converter API Döviz Kurları Özelliği Devre Dışı</strong><br>";
-    server.sendContent(String(html));
-    html = "";
-  }
-  sendFooter();
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
 void configModeCallback(WiFiManager *myWiFiManager)
 {
   Serial.println("Entered config mode");
@@ -2208,12 +2062,6 @@ String writeCityIds()
     f.println("isWorldClock=" + String(WORLD_CLOCK_ENABLED));
     f.println("WorldCityName1=" + WorldCityName1);
     f.println("CityName=" + CityName);
-    f.println("isCurrency=" + String(CURRENCY_ENABLED));
-    f.println("CURRENCY_API_KEY=" + CURRENCY_API_KEY);
-    f.println("BaseCurrency1=" + BaseCurrency1);
-    f.println("BaseCurrency2=" + BaseCurrency2);
-    f.println("BaseCurrency3=" + BaseCurrency3);
-    f.println("TargetCurrency=" + TargetCurrency);
     f.println("ENABLE_SCROLL=" + String(ENABLE_SCROLL));
     f.println("WorldCityName2=" + WorldCityName2);
     f.println("WorldCityName3=" + WorldCityName3);
@@ -2499,41 +2347,6 @@ void readCityIds()
       WorldCityName1.trim();
       Serial.println("WorldCityName1= " + WorldCityName1);
     }
-    if (line.indexOf("isCurrency=") >= 0)
-    {
-      CURRENCY_ENABLED = line.substring(line.lastIndexOf("isCurrency=") + 11).toInt();
-      Serial.println("CURRENCY_ENABLED= " + String(CURRENCY_ENABLED));
-    }
-    if (line.indexOf("CURRENCY_API_KEY=") >= 0)
-    {
-      CURRENCY_API_KEY = line.substring(line.lastIndexOf("CURRENCY_API_KEY=") + 17);
-      CURRENCY_API_KEY.trim();
-      Serial.println("CURRENCY_API_KEY: " + CURRENCY_API_KEY);
-    }
-    if (line.indexOf("BaseCurrency1=") >= 0)
-    {
-      BaseCurrency1 = line.substring(line.lastIndexOf("BaseCurrency1=") + 14);
-      BaseCurrency1.trim();
-      Serial.println("BaseCurrency1= " + BaseCurrency1);
-    }
-    if (line.indexOf("BaseCurrency2=") >= 0)
-    {
-      BaseCurrency2 = line.substring(line.lastIndexOf("BaseCurrency2=") + 14);
-      BaseCurrency2.trim();
-      Serial.println("BaseCurrency2= " + BaseCurrency2);
-    }
-    if (line.indexOf("BaseCurrency3=") >= 0)
-    {
-      BaseCurrency3 = line.substring(line.lastIndexOf("BaseCurrency3=") + 14);
-      BaseCurrency3.trim();
-      Serial.println("BaseCurrency3= " + BaseCurrency3);
-    }
-    if (line.indexOf("TargetCurrency=") >= 0)
-    {
-      TargetCurrency = line.substring(line.lastIndexOf("TargetCurrency=") + 15);
-      TargetCurrency.trim();
-      Serial.println("TargetCurrency= " + TargetCurrency);
-    }
     if (line.indexOf("ENABLE_SCROLL=") >= 0)
     {
       ENABLE_SCROLL = line.substring(line.lastIndexOf("ENABLE_SCROLL=") + 14).toInt();
@@ -2555,10 +2368,6 @@ void readCityIds()
   fr.close();
   matrix.setIntensity(displayIntensity);
   prayersClient.updateMethodID(prayersMethod);
-  currencyClient.updateCurrencyApiKey(CURRENCY_API_KEY);
-  currencyClient.updateBaseCurrency1(BaseCurrency1);
-  currencyClient.updateBaseCurrency2(BaseCurrency2);
-  currencyClient.updateTargetCurrency(TargetCurrency);
   worldWeatherClient.updateWorldCityName1(WorldCityName1);
   worldWeatherClient.updateWorldCityName2(WorldCityName2);
   worldWeatherClient.updateWorldCityName3(WorldCityName3);
