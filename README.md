@@ -15,7 +15,6 @@
 * cleanText'e Türkçe harfler eklenmiştir.
 * Şehir adı, ülke adı, zaman dilimi vb özellikler TimeZoneDB kullanılarak eklenmiştir.
 * Zaman dilimleri arasındaki farkı tespit etme özelliği eklenmiştir.
-* Döviz kurları özelliği eklenmiştir.
 * Haberler özelliği silinmiştir.
 * Hava Durumu için dil seçeneği eklenmiştir.
 * Kayan yazıyı kapatma özelliği eklenmiştir.
@@ -38,7 +37,6 @@
 * Turkish letters have been added to cleanText.
 * City name, country name, time zone etc. features have been added using TimeZoneDB.
 * The ability to detect the difference between time zones has been added.
-* Currency feature has been added.
 * News feature has been deleted.
 * Language option for weather has been added.
 * The feature to turn off the marquee has been added.
@@ -119,7 +117,6 @@ Editing the **Settings.h** file is totally optional and not required.  All API K
 * Open Weather Map free API key: http://openweathermap.org/  -- this is used to get weather data and the latitude and longitude for the current time zone. Weather API key is required for correct time.
 * TimeZoneDB free registration for API key: https://timezonedb.com/register -- this is used for setting the time and getting the correct time zone as well as managing time changes due to Day Light Savings time by regions.  This key is set and managed only through the web interface and added in version 2.10 of Marquee Scroller. TimeZoneDB key is required for correct time display.
 * News API key (free): https://newsapi.org/ -- Optional if you want to get current news headlines.
-* Free Currency Converter free API key: https://free.currencyconverterapi.com/
 * Your OctoPrint API Key -- optional if you use the OctoPrint status.
 * Version 2.0 supports Chained 4x1 LED displays -- configure up to 16x1 in the Settings.h file.  
 
