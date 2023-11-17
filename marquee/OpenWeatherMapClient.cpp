@@ -63,7 +63,7 @@ void OpenWeatherMapClient::updateWorldCityName1(String WorldCityName1)
   myWorldCityName1 = WorldCityName1;
   if (myWorldCityName1 == "")
   {
-    myWorldCityName1 = "London,UK";
+    myWorldCityName1 = "London,GB";
   }
 }
 
@@ -439,7 +439,7 @@ String OpenWeatherMapClient::getDirectionText(int index)
 {
   int num = getDirectionRounded(index).toInt();
   int val = floor((num / 22.5) + 0.5);
-  String arr[] = {"Kuzey", "Kuzey Kuzeydoğu", "Kuzeydoğu", "Doğu Kuzeydoğu", "Doğu", "Doğu Güneydoğu", "Güneydoğu", "Güney Güneydoğu", "Güney", "Güney Güneybatı", "Güneybatı", "Batı Güneybatı", "Batı", "Batı Kuzeybatı", "Kuzeybatı", "Kuzey Kuzeybatı"};
+  String arr[] = {"K", "KKD", "KD", "DKD", "D", "DGD", "GD", "GGD", "G", "GGB", "GB", "BGB", "B", "BKB", "KB", "KKB"};
   return arr[(val % 16)];
 }
 
