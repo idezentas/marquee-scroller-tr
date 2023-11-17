@@ -52,7 +52,6 @@ SOFTWARE.
 #include "OctoPrintClient.h"
 #include "PiHoleClient.h"
 #include "AladhanClient.h"
-#include "CurrencyConverterClient.h"
 
 //******************************
 // Start Settings
@@ -62,7 +61,7 @@ String TIMEDBKEY = "";                  // // Your API Key from https://timezone
 String APIKEY = ""; // Your API Key from http://openweathermap.org/
 String CityName = "Mesa,US"; // Default Mesa,US
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
-String WeatherLanguage = "en"; // Default (en) English
+String WeatherLanguage = "tr"; // Default (en) English
 String marqueeMessage = "";
 boolean IS_METRIC = true;               // false = Imperial and true = Metric
 boolean IS_24HOUR = true;               // 23:00 millitary 24 hour clock
@@ -71,7 +70,7 @@ const int WEBSERVER_PORT = 80;          // The port you can access this device o
 const boolean WEBSERVER_ENABLED = true; // Device will provide a web interface via http://[ip]:[port]/
 boolean IS_BASIC_AUTH = false;          // Use Basic Authorization for Configuration security on Web Interface
 char www_username[] = "admin";           // User account for the Web Interface
-char www_password[] = "duhan12345";      // Password for the Web Interface
+char www_password[] = "password";      // Password for the Web Interface
 int minutesBetweenDataRefresh = 60;     // Time in minutes between data refresh (default 15 minutes)
 int minutesBetweenScrolling = 10;       // Time in minutes between scrolling data (default 1 minutes and max is 10)
 int displayScrollSpeed = 25;            // In milliseconds -- Configurable by the web UI (slow = 35, normal = 25, fast = 15, very fast = 5)
@@ -122,15 +121,6 @@ boolean WORLD_TIME_ENABLED = true;
 String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
 String WorldCityName3 = "Chicago,US";     // Default City: Chicago,US
-
-// Currency Converter Client
-boolean CURRENCY_ENABLED = false;
-String CURRENCY_API_KEY = ""; // Get your Currency Converter API Key from https://free.currencyconverterapi.com/
-// Currency List →  https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json
-String BaseCurrency1 = "EUR";  // Default Currency: Euro (EUR)
-String BaseCurrency2 = "USD";  // Default Currency: United States Dollar (USD)
-String BaseCurrency3 = "GBP";  // Default Currency: British Pound (GBP)
-String TargetCurrency = "TRY"; // Default Currency: Turkish Lira (TRY)
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
