@@ -41,6 +41,7 @@ private:
   String myWorldCityName2 = "";
   String myWorldCityName3 = "";
   String myWorldCityName4 = "";
+  String myWorldCityName5 = "";
 
   const char *servername = "api.openweathermap.org"; // remote server we will connect to
 
@@ -98,6 +99,7 @@ public:
   void updateWorldCityName2(String WorldCityName2);
   void updateWorldCityName3(String WorldCityName3);
   void updateWorldCityName4(String WorldCityName4);
+  void updateWorldCityName5(String WorldCityName5);
   void updateLanguage(String language);
 
   String getLat(int index);
