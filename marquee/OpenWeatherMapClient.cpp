@@ -94,15 +94,6 @@ void OpenWeatherMapClient::updateWorldCityName4(String WorldCityName4)
   }
 }
 
-void OpenWeatherMapClient::updateWorldCityName5(String WorldCityName5)
-{
-  myWorldCityName5 = WorldCityName5;
-  if (myWorldCityName5 == "")
-  {
-    myWorldCityName5 = "Milano,IT";
-  }
-}
-
 void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
 {
   WiFiClient weatherClient;
@@ -237,8 +228,9 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   Serial.println("description: " + weathers[index].description);
   Serial.println("icon: " + weathers[index].icon);
   Serial.println("timezone: " + String(getTimeZone(index)));
-  Serial.println("sunRise: " + getSunrise(index));
-  Serial.println("sunSet: " + getSunset(index));
+  Serial.println("sunRise: " + weathers[index].sunRise + " | " + getSunrise(index));
+  Serial.println("sunSet: " + weathers[index].sunSet + " | " + getSunset(index));
+  Serial.println("sunDifference: " + getSunDifference(index));
   Serial.println();
 }
 
@@ -652,6 +644,20 @@ String OpenWeatherMapClient::getSunset(int index)
     dstValue = dstValue / 3600;
   }
   time_local->tm_hour += dstValue;
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+  return rtnValue;
+}
+
+String OpenWeatherMapClient::getSunDifference(int index)
+{
+  String rtnValue = "";
+  long sunRise = weathers[index].sunRise.toInt();
+  long sunSet = weathers[index].sunSet.toInt();
+  time_t sunRiseTime = sunRise;
+  time_t sunSetTime = sunSet;
+  long epoc = sunSetTime - sunRiseTime;
+  time_t epoch_time_as_time_t = epoc;
+  struct tm *time_local = localtime(&epoch_time_as_time_t);
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
   return rtnValue;
 }
