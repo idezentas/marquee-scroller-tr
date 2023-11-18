@@ -18,7 +18,6 @@
 * Haberler özelliği silinmiştir.
 * Hava Durumu için dil seçeneği eklenmiştir.
 * Kayan yazıyı kapatma özelliği eklenmiştir.
-* Web sayfası üzerinden ESP'yi yeniden başlatma özelliği eklenmiştir.
 * Kayan yazıda gösterilecek bilgileri Ekran Ayarları sayfasında taşınmıştır.
 * PlatformIO ile derleme desteği eklenmiştir.
 * SPIFFS yerine LittleFS kullanılmaktadır.
@@ -40,7 +39,6 @@
 * News feature has been deleted.
 * Language option for weather has been added.
 * The feature to turn off the marquee has been added.
-* The ability to restart ESP via the web page has been added.
 * The information to be displayed in the marquee has been moved to the Display Settings page.
 * PlatformIO build feature has been added.
 * LittleFS is used instead of SPIFFS.
