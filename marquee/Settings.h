@@ -59,7 +59,7 @@ SOFTWARE.
 
 String TIMEDBKEY = "";                  // // Your API Key from https://timezonedb.com/register
 String APIKEY = ""; // Your API Key from http://openweathermap.org/
-String CityName = "Mesa,US"; // Default Mesa,US
+String CityName = "Ankara,TR"; // Default Mesa,US
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
 String WeatherLanguage = "tr"; // Default (en) English
 String marqueeMessage = "";
@@ -122,7 +122,6 @@ String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
 String WorldCityName3 = "Chicago,US";     // Default City: Chicago,US
 String WorldCityName4 = "Miami,US";       // Default City: Miami,US
-String WorldCityName5 = "Milano,IT";      // Default City: Milano,IT
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
