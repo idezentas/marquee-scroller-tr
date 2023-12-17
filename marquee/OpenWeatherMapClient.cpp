@@ -81,8 +81,8 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   WiFiClient weatherClient;
   if (myApiKey == "")
   {
-    weathers[0].error = "Please provide an API key for weather.";
-    Serial.println(weathers[0].error);
+    weathers[index].error = "Please provide an API key for weather.";
+    Serial.println(weathers[index].error);
     return;
   }
   String apiGetData = "GET /data/2.5/weather?q=" + CityName + "&units=" + units + "&cnt=1&appid=" + myApiKey + "&lang=" + myLang + " HTTP/1.1";
@@ -90,7 +90,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   Serial.println("Getting Weather Data");
   Serial.println(apiGetData);
   weathers[0].cached = false;
-  weathers[0].error = "";
+  weathers[index].error = "";
   if (weatherClient.connect(servername, 80))
   { // starts client connection, checks for connection
     weatherClient.println(apiGetData);
@@ -103,7 +103,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   {
     Serial.println("Connection for weather data failed"); // error message if no client connect
     Serial.println();
-    weathers[0].error = "Connection for weather data failed";
+    weathers[index].error = "Connection for weather data failed";
     return;
   }
 
@@ -120,7 +120,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   {
     Serial.print(F("Unexpected response: "));
     Serial.println(status);
-    weathers[0].error = "Weather Data Error: " + String(status);
+    weathers[index].error = "Weather Data Error: " + String(status);
     return;
   }
 
@@ -138,7 +138,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   if (error)
   {
     Serial.println(F("Weather Data Parsing failed!"));
-    weathers[0].error = "Weather Data Parsing failed!";
+    weathers[index].error = "Weather Data Parsing failed!";
     return;
   }
 
@@ -150,8 +150,8 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   {
     Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
     weathers[0].cached = true;
-    weathers[0].error = root["message"].as<String>();
-    Serial.println("Error: " + weathers[0].error);
+    weathers[index].error = root["message"].as<String>();
+    Serial.println("Error: " + weathers[index].error);
     return;
   }
 
@@ -167,7 +167,9 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   weathers[index].low = root["main"]["temp_min"].as<String>();
   weathers[index].humidity = root["main"]["humidity"].as<String>();
   weathers[index].pressure = root["main"]["pressure"].as<String>();
+  weathers[index].visibility = root["visibility"].as<String>();
   weathers[index].wind = root["wind"]["speed"].as<String>();
+  weathers[index].gust = root["wind"]["gust"].as<String>();
   weathers[index].direction = root["wind"]["deg"].as<String>();
   weathers[index].cloudcover = root["clouds"]["all"].as<String>();
   weathers[index].dt = root["dt"].as<String>();
@@ -183,6 +185,9 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
     // convert to km/h from m/s
     float f = (weathers[index].wind.toFloat() * 3.6);
     weathers[index].wind = String(f);
+
+    float f2 = (weathers[index].gust.toFloat() * 3.6);
+    weathers[index].gust = String(f2);
   }
 
   if (units != "metric")
@@ -201,10 +206,12 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   Serial.println("feel: " + weathers[index].feel);
   Serial.println("high: " + weathers[index].high);
   Serial.println("low: " + weathers[index].low);
+  Serial.println("visibility: " + weathers[index].visibility);
   Serial.println("cloudcover: " + weathers[index].cloudcover);
   Serial.println("humidity: " + weathers[index].humidity);
   Serial.println("condition: " + weathers[index].condition);
   Serial.println("wind: " + weathers[index].wind);
+  Serial.println("gust: " + weathers[index].gust);
   Serial.println("direction: " + weathers[index].direction);
   Serial.println("weatherId: " + weathers[index].weatherId);
   Serial.println("description: " + weathers[index].description);
@@ -221,8 +228,8 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   WiFiClient weatherClient;
   if (myApiKey == "")
   {
-    weathers[0].error = "Please provide an API key for weather.";
-    Serial.println(weathers[0].error);
+    weathers[index].error = "Please provide an API key for weather.";
+    Serial.println(weathers[index].error);
     return;
   }
 
@@ -231,7 +238,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   Serial.println("Getting Air Pollution Data for " + latitude + ", " + longitude);
   Serial.println(apiGetData);
   weathers[0].cached = false;
-  weathers[0].error = "";
+  weathers[index].error = "";
   if (weatherClient.connect(servername, 80))
   { // starts client connection, checks for connection
     weatherClient.println(apiGetData);
@@ -244,7 +251,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   {
     Serial.println("Connection for air pollution data failed"); // error message if no client connect
     Serial.println();
-    weathers[0].error = "Connection for air pollution data failed";
+    weathers[index].error = "Connection for air pollution data failed";
     return;
   }
 
@@ -261,7 +268,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   {
     Serial.print(F("Unexpected response: "));
     Serial.println(status);
-    weathers[0].error = "Air Pollution Data Error: " + String(status);
+    weathers[index].error = "Air Pollution Data Error: " + String(status);
     return;
   }
 
@@ -279,7 +286,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   if (error)
   {
     Serial.println(F("Air Pollution Data Parsing failed!"));
-    weathers[0].error = "Air Pollution Data Parsing failed!";
+    weathers[index].error = "Air Pollution Data Parsing failed!";
     return;
   }
 
@@ -291,8 +298,8 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   {
     Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
     weathers[0].cached = true;
-    weathers[0].error = root["message"].as<String>();
-    Serial.println("Error: " + weathers[0].error);
+    weathers[index].error = root["message"].as<String>();
+    Serial.println("Error: " + weathers[index].error);
     return;
   }
 
@@ -316,6 +323,56 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   Serial.println("pm10: " + weathers[index].pm10);
   Serial.println("nh3: " + weathers[index].nh3);
   Serial.println();
+}
+
+void OpenWeatherMapClient::updateSunMoonTime(time_t currentTime, double latitude, double longitude, int index)
+{
+  SunMoonCalc smCalc = SunMoonCalc(currentTime, latitude, longitude);
+  const SunMoonCalc::Result result = smCalc.calculateSunAndMoonData();
+
+  moonStruct[index].sunRise = (String)result.sun.rise;
+  moonStruct[index].sunNoon = (String)result.sun.transit;
+  moonStruct[index].sunSet = (String)result.sun.set;
+  moonStruct[index].sunAzimuth = (String)result.sun.azimuth;
+  moonStruct[index].sunElevation = (String)result.sun.elevation;
+  moonStruct[index].sunDistance = (String)result.sun.distance;
+  moonStruct[index].moonRise = (String)result.moon.rise;
+  moonStruct[index].moonNoon = (String)result.moon.transit;
+  moonStruct[index].moonSet = (String)result.moon.set;
+  moonStruct[index].moonAzimuth = (String)result.moon.azimuth;
+  moonStruct[index].moonElevation = (String)result.moon.elevation;
+  moonStruct[index].moonDistance = (String)result.moon.distance;
+  moonStruct[index].moonAge = (String)result.moon.age;
+  moonStruct[index].moonIllumination = (String)(result.moon.illumination * 100);
+  moonStruct[index].moonPhase = (String)result.moon.phase.name;
+  moonStruct[index].moonBrightLimbAngle = (String)result.moon.brightLimbAngle;
+  moonStruct[index].moonAxisPositionAngle = (String)result.moon.axisPositionAngle;
+  moonStruct[index].moonParallacticAngle = (String)result.moon.parallacticAngle;
+
+  Serial.println("sunRise: " + moonStruct[index].sunRise);
+  Serial.println("sunNoon: " + moonStruct[index].sunNoon);
+  Serial.println("sunSet: " + moonStruct[index].sunSet);
+  Serial.println("sunAzimuth: " + moonStruct[index].sunAzimuth);
+  Serial.println("sunElevation: " + moonStruct[index].sunElevation);
+  Serial.println("sunDistance: " + moonStruct[index].sunDistance);
+  Serial.println("moonRise: " + moonStruct[index].moonRise + " | " + getMoonRise(index));
+  Serial.println("moonNoon: " + moonStruct[index].moonNoon);
+  Serial.println("moonSet: " + moonStruct[index].moonSet + " | " + getMoonSet(index));
+  Serial.println("moonAzimuth: " + moonStruct[index].moonAzimuth);
+  Serial.println("moonElevation: " + moonStruct[index].moonElevation);
+  Serial.println("moonDistance: " + moonStruct[index].moonDistance);
+  Serial.println("moonAge: " + moonStruct[index].moonAge);
+  Serial.println("moonIllumination: " + moonStruct[index].moonIllumination);
+  Serial.println("moonPhase: " + moonStruct[index].moonPhase);
+  Serial.println("moonBrightLimbAngle: " + moonStruct[index].moonBrightLimbAngle);
+  Serial.println("moonAxisPositionAngle: " + moonStruct[index].moonAxisPositionAngle);
+  Serial.println("moonParallacticAngle: " + moonStruct[index].moonParallacticAngle);
+  Serial.println();
+}
+
+time_t OpenWeatherMapClient::getCityTimeStamp(int index)
+{
+  return weathers[index].dt.toInt();
 }
 
 String OpenWeatherMapClient::roundValue(String value)
@@ -372,6 +429,11 @@ String OpenWeatherMapClient::getTemp(int index)
   return weathers[index].temp;
 }
 
+String OpenWeatherMapClient::getVisibility(int index)
+{
+  return weathers[index].visibility;
+}
+
 String OpenWeatherMapClient::getFeel(int index)
 {
   return weathers[index].feel;
@@ -415,6 +477,34 @@ String OpenWeatherMapClient::getWind(int index)
 String OpenWeatherMapClient::getWindRounded(int index)
 {
   return roundValue(getWind(index));
+}
+
+String OpenWeatherMapClient::getGust(int index)
+{
+  String rtnValue = "";
+  String gustStr = weathers[index].gust;
+  if (gustStr != 0)
+  {
+    return gustStr;
+  }
+  else
+  {
+    return rtnValue;
+  }
+}
+
+String OpenWeatherMapClient::getGustRounded(int index)
+{
+  String rtnValue = "";
+  String gustStr = roundValue(getGust(index));
+  if (gustStr != 0)
+  {
+    return gustStr;
+  }
+  else
+  {
+    return rtnValue;
+  }
 }
 
 String OpenWeatherMapClient::getDirection(int index)
@@ -530,6 +620,11 @@ String OpenWeatherMapClient::getError(int index)
   return weathers[index].error;
 }
 
+String OpenWeatherMapClient::getMoonPhase(int index)
+{
+  return moonStruct[index].moonPhase;
+}
+
 String OpenWeatherMapClient::getWeekDay(int index, float offset)
 {
   String rtnValue = "";
@@ -638,6 +733,52 @@ String OpenWeatherMapClient::getSunDifference(int index)
   time_t sunRiseTime = sunRise;
   time_t sunSetTime = sunSet;
   long epoc = sunSetTime - sunRiseTime;
+  time_t epoch_time_as_time_t = epoc;
+  struct tm *time_local = localtime(&epoch_time_as_time_t);
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+  return rtnValue;
+}
+
+String OpenWeatherMapClient::getMoonRise(int index)
+{
+  String rtnValue = "";
+  long epoc = moonStruct[index].moonRise.toInt();
+  time_t epoch_time_as_time_t = epoc;
+  struct tm *time_local = localtime(&epoch_time_as_time_t);
+  int dstValue = weathers[index].timeZone.toInt();
+  if (dstValue != 0)
+  {
+    dstValue = dstValue / 3600;
+  }
+  time_local->tm_hour += dstValue;
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+  return rtnValue;
+}
+
+String OpenWeatherMapClient::getMoonSet(int index)
+{
+  String rtnValue = "";
+  long epoc = moonStruct[index].moonSet.toInt();
+  time_t epoch_time_as_time_t = epoc;
+  struct tm *time_local = localtime(&epoch_time_as_time_t);
+  int dstValue = weathers[index].timeZone.toInt();
+  if (dstValue != 0)
+  {
+    dstValue = dstValue / 3600;
+  }
+  time_local->tm_hour += dstValue;
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+  return rtnValue;
+}
+
+String OpenWeatherMapClient::getMoonDifference(int index)
+{
+  String rtnValue = "";
+  long moonRise = moonStruct[index].moonRise.toInt();
+  long moonSet = moonStruct[index].moonSet.toInt();
+  time_t moonRiseTime = moonRise;
+  time_t moonSetTime = moonSet;
+  long epoc = moonSetTime - moonRiseTime;
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
