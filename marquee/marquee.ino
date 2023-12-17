@@ -717,11 +717,19 @@ void handleSaveWorldClock()
   delay(1000);
   timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
   delay(1000);
+  double myLatD1 = worldWeatherClient.getLat(1).toDouble();
+  double myLonD1 = worldWeatherClient.getLon(1).toDouble();
+  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(1), myLatD1, myLonD1, 1);
+  delay(1000);
   worldWeatherClient.updateWeatherName(WorldCityName2, 2);
   delay(1000);
   timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
   delay(1000);
   timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
+  delay(1000);
+  double myLatD2 = worldWeatherClient.getLat(2).toDouble();
+  double myLonD2 = worldWeatherClient.getLon(2).toDouble();
+  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), myLatD2, myLonD2, 2);
   delay(1000);
   redirectHome();
 }
@@ -1252,6 +1260,11 @@ void getWeatherData() // client function to send/receive GET request data..
     weatherClient.updateWeatherName(CityName, 0);
     delay(1000);
     weatherClient.updateCityAirPollution(weatherClient.getLat(0), weatherClient.getLon(0), 0);
+    delay(1000);
+    double myLatD = weatherClient.getLat(0).toDouble();
+    double myLonD = weatherClient.getLon(0).toDouble();
+    weatherClient.updateSunMoonTime(weatherClient.getCityTimeStamp(0), myLatD, myLonD, 0);
+    delay(1000);
     if ((weatherClient.getError(0) != "") && ENABLE_SCROLL)
     {
       scrollMessage(weatherClient.getError(0));
@@ -1308,11 +1321,23 @@ void getWeatherData() // client function to send/receive GET request data..
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
     delay(1000);
+    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
+    delay(1000);
+    double myLatD1 = worldWeatherClient.getLat(1).toDouble();
+    double myLonD1 = worldWeatherClient.getLon(1).toDouble();
+    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(1), myLatD1, myLonD1, 1);
+    delay(1000);
     worldWeatherClient.updateWeatherName(WorldCityName2, 2);
     delay(1000);
     timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
+    delay(1000);
+    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+    delay(1000);
+    double myLatD2 = worldWeatherClient.getLat(2).toDouble();
+    double myLonD2 = worldWeatherClient.getLon(2).toDouble();
+    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), myLatD2, myLonD2, 2);
     delay(1000);
   }
 
@@ -1476,7 +1501,7 @@ void displayWeatherData()
     html += "Rüzgar: " + weatherClient.getWind(0) + " " + getSpeedSymbol() + "<br>";
     html += "Rüzgar Yönü: " + weatherClient.getDirectionText(0) + "<br>";
     html += "Rüzgar Açısı: " + weatherClient.getDirection(0) + "° <br>";
-    html += weatherClient.getPressure(0) + getPressureSymbol() + " Basınç<br>";
+    html += "Basınç: " + weatherClient.getPressure(0) + getPressureSymbol() + "<br>";
     html += "SO2: " + weatherClient.getSO2(0) + " μg/m3<br>";
     html += "NO2: " + weatherClient.getNO2(0) + " μg/m3<br>";
     html += "PM10: " + weatherClient.getPM10(0) + " μg/m3<br>";
@@ -1493,6 +1518,8 @@ void displayWeatherData()
     html += "Sıcaklık: " + temperature + " " + getTempSymbol(true) + " (Hissedilen: " + weatherClient.getFeel(0) + " " + getTempSymbol(true) + ")" + "<br>";
     html += "En Yüksek/Düşük Sıcaklık: " + weatherClient.getHigh(0) + " " + getTempSymbol(true) + " / " + weatherClient.getLow(0) + " " + getTempSymbol(true) + "<br>";
     html += "Gün Doğumu/Batımı: " + weatherClient.getSunrise(0) + " / " + weatherClient.getSunset(0) + " (Aradaki Fark: " + weatherClient.getSunDifference(0) + ")" + "<br>";
+    html += "Ay Doğumu/Batımı: " + weatherClient.getMoonRise(0) + " / " + weatherClient.getMoonSet(0) + " (Aradaki Fark: " + weatherClient.getMoonDifference(0) + ")" + "<br>";
+    html += "Ayın Görünüşü: " + weatherClient.getMoonPhase(0) + "<br>";
     html += "Zaman Dilimi: " + TimeDBClient.getZoneName(0) + "   " + TimeDBClient.getGmtOffsetString(0) + "   (" + TimeDBClient.getAbbreviation(0) + ")" + "<br>";
     html += "Yaz Saati: " + TimeDBClient.useDST(0) + "<br>";
     html += "Yaz Saati Başlangıcı/Bitişi: " + TimeDBClient.getZoneStart(0) + " / " + TimeDBClient.getZoneEnd(0) + "<br>";
@@ -1655,9 +1682,11 @@ void displayWorldClockWeatherData()
     if (worldWeatherClient.getError(1) == "")
     {
       html += "<div class='w3-cell-row' style='width:100%'><h2>" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + "</h2></div><div class='w3-cell-row'><p>";
-      html += "Hava Durumu: " + worldWeatherClient.getDescription(1) + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(1) + " | " + "Nem: %" + worldWeatherClient.getHumidity(1) + " | " + "Rüzgar: " + worldWeatherClient.getWind(1) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(1) + "<br>";
+      html += "Hava Durumu: " + worldWeatherClient.getDescription(1) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(1) + ".png' alt='" + worldWeatherClient.getDescription(1) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(1) + " | " + "Nem: %" + worldWeatherClient.getHumidity(1) + " | " + "Rüzgar: " + worldWeatherClient.getWind(1) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(1) + " " + worldWeatherClient.getDirection(1) + "°" + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(1) + " | " + "Basınç: " + worldWeatherClient.getPressure(1) + getPressureSymbol() + "<br>";
       html += "Sıcaklık: " + worldWeatherClient.getTemp(1) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(1) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(1) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(1) + " " + getTempSymbol(true) + "<br>";
       html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(1) + " / " + worldWeatherClient.getSunset(1) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(1) + ")" + "<br>";
+      html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(1) + " / " + worldWeatherClient.getMoonSet(1) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(1) + ")" + "<br>";
+      html += "Ayın Görünüşü: " + worldWeatherClient.getMoonPhase(1) + "<br>";
       html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(1) + "," + worldWeatherClient.getLon(1) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> Haritala!</a><br>";
       html += "</p></div><hr>";
     }
@@ -1670,9 +1699,11 @@ void displayWorldClockWeatherData()
     if (worldWeatherClient.getError(2) == "")
     {
       html += "<div class='w3-cell-row' style='width:100%'><h2>" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + "</h2></div><div class='w3-cell-row'><p>";
-      html += "Hava Durumu: " + worldWeatherClient.getDescription(2) + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(2) + " | " + "Nem: %" + worldWeatherClient.getHumidity(2) + " | " + "Rüzgar: " + worldWeatherClient.getWind(2) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(2) + "<br>";
+      html += "Hava Durumu: " + worldWeatherClient.getDescription(2) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(2) + ".png' alt='" + worldWeatherClient.getDescription(2) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(2) + " | " + "Nem: %" + worldWeatherClient.getHumidity(2) + " | " + "Rüzgar: " + worldWeatherClient.getWind(2) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(2) + " " + worldWeatherClient.getDirection(2) + "°" + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(2) + " | " + "Basınç: " + worldWeatherClient.getPressure(2) + getPressureSymbol() + "<br>";
       html += "Sıcaklık: " + worldWeatherClient.getTemp(2) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(2) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(2) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(2) + " " + getTempSymbol(true) + "<br>";
       html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(2) + " / " + worldWeatherClient.getSunset(2) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(2) + ")" + "<br>";
+      html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(2) + " / " + worldWeatherClient.getMoonSet(2) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(2) + ")" + "<br>";
+      html += "Ayın Görünüşü: " + worldWeatherClient.getMoonPhase(2) + "<br>";
       html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(2) + "," + worldWeatherClient.getLon(2) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> Haritala!</a><br>";
       html += "</p></div><hr>";
     }
