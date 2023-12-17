@@ -99,5 +99,5 @@ private:
     String offsetDifference;
   } timeS;
 
-  timeS timeStruct[8];
+  timeS timeStruct[5];
 };
