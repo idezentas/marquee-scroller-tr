@@ -21,6 +21,7 @@
 * Kayan yazıda gösterilecek bilgileri Ekran Ayarları sayfasında taşınmıştır.
 * PlatformIO ile derleme desteği eklenmiştir.
 * SPIFFS yerine LittleFS kullanılmaktadır.
+* Ayın doğuşu ve batışı eklenmiştir. (<a href="https://github.com/ThingPulse/esp8266-weather-station">ThingPulse</a>'a teşekkürler.)
 
 --- In English ---
 * ArduinoJson library updated to version 6.
@@ -42,6 +43,7 @@
 * The information to be displayed in the marquee has been moved to the Display Settings page.
 * PlatformIO build feature has been added.
 * LittleFS is used instead of SPIFFS.
+* Moonrise and moonset have been added. (Thanks to <a href="https://github.com/ThingPulse/esp8266-weather-station">ThingPulse</a>)
 
 ## NOTICE
 The latest version of Marquee Scroller 3.01 works with **ESP8266 Core 3.0.2** -- if you are upgrading from Marquee Scroller 2.X version this may require you to enter in all your API Keys and settings.  Always meake sure you have coppied all your API keys somewhere before updating.  The ESP8266 Core 3.0.2 uses the newer FS (file system) that may require a fresh start on the configuration.
