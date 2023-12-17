@@ -28,6 +28,7 @@ SOFTWARE.
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 #include <TimeLib.h>
+#include "SunMoonCalc.h"
 
 class OpenWeatherMapClient
 {
@@ -55,6 +56,7 @@ private:
     String condition;
     String wind;
     String gust;
+    String visibility;
     String weatherId;
     String description;
     String icon;
@@ -80,7 +82,31 @@ private:
     String nh3;
   } weather;
 
-  weather weathers[10];
+  weather weathers[5];
+
+  typedef struct
+  {
+    String sunRise;
+    String sunNoon;
+    String sunSet;
+    String sunAzimuth;
+    String sunElevation;
+    String sunDistance;
+    String moonRise;
+    String moonNoon;
+    String moonSet;
+    String moonAzimuth;
+    String moonElevation;
+    String moonDistance;
+    String moonAge;
+    String moonIllumination;
+    String moonPhase;
+    String moonBrightLimbAngle;
+    String moonAxisPositionAngle;
+    String moonParallacticAngle;
+  } moonS;
+
+  moonS moonStruct[5];
 
   String roundValue(String value);
   String zeroPad(int number);
@@ -89,6 +115,7 @@ public:
   OpenWeatherMapClient(String ApiKey, boolean isMetric, String CityName, String language);
   void updateWeatherName(String CityName, int index);
   void updateCityAirPollution(String latitude, String longitude, int index);
+  void updateSunMoonTime(time_t currentTime, double latitude, double longitude, int index);
   void updateWeatherApiKey(String ApiKey);
   void setMetric(boolean isMetric);
   void updateCityName(String CityName);
@@ -111,6 +138,8 @@ public:
   String getCondition(int index);
   String getWind(int index);
   String getWindRounded(int index);
+  String getGust(int index);
+  String getGustRounded(int index);
   String getDirection(int index);
   String getDirectionRounded(int index);
   String getDirectionText(int index);
@@ -119,6 +148,7 @@ public:
   String getHighRounded(int index);
   String getLow(int index);
   String getLowRounded(int index);
+  String getVisibility(int index);
   String getWeatherId(int index);
   String getDescription(int index);
   String getIcon(int index);
@@ -144,4 +174,9 @@ public:
   String getPM10(int index);
   String getPM2_5(int index);
   String getNH3(int index);
+  time_t getCityTimeStamp(int index);
+  String getMoonRise(int index);
+  String getMoonSet(int index);
+  String getMoonDifference(int index);
+  String getMoonPhase(int index);
 };
