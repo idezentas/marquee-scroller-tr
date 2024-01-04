@@ -89,7 +89,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
 
   Serial.println("Getting Weather Data");
   Serial.println(apiGetData);
-  weathers[0].cached = false;
+  weathers[index].cached = false;
   weathers[index].error = "";
   if (weatherClient.connect(servername, 80))
   { // starts client connection, checks for connection
@@ -149,7 +149,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   if (measureJson(root) <= msrLen)
   {
     Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    weathers[0].cached = true;
+    weathers[index].cached = true;
     weathers[index].error = root["message"].as<String>();
     Serial.println("Error: " + weathers[index].error);
     return;
@@ -167,11 +167,14 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   weathers[index].low = root["main"]["temp_min"].as<String>();
   weathers[index].humidity = root["main"]["humidity"].as<String>();
   weathers[index].pressure = root["main"]["pressure"].as<String>();
+  weathers[index].seaLevel = root["main"]["sea_level"].as<String>();
+  weathers[index].grndLevel = root["main"]["grnd_level"].as<String>();
   weathers[index].visibility = root["visibility"].as<String>();
   weathers[index].wind = root["wind"]["speed"].as<String>();
   weathers[index].gust = root["wind"]["gust"].as<String>();
   weathers[index].direction = root["wind"]["deg"].as<String>();
   weathers[index].cloudcover = root["clouds"]["all"].as<String>();
+  weathers[index].rain = root["rain"]["1h"].as<String>();
   weathers[index].dt = root["dt"].as<String>();
   weathers[index].country = root["sys"]["country"].as<String>();
   weathers[index].sunRise = root["sys"]["sunrise"].as<String>();
@@ -198,28 +201,32 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
 
   Serial.println("lat: " + weathers[index].lat);
   Serial.println("lon: " + weathers[index].lon);
-  Serial.println("dt: " + weathers[index].dt);
-  Serial.println("id: " + weathers[index].id);
-  Serial.println("city: " + weathers[index].city);
-  Serial.println("country: " + weathers[index].country);
+  Serial.println("weatherId: " + weathers[index].weatherId);
+  Serial.println("condition: " + weathers[index].condition);
+  Serial.println("description: " + weathers[index].description);
+  Serial.println("icon: " + weathers[index].icon);
   Serial.println("temp: " + weathers[index].temp);
   Serial.println("feel: " + weathers[index].feel);
   Serial.println("high: " + weathers[index].high);
   Serial.println("low: " + weathers[index].low);
-  Serial.println("visibility: " + weathers[index].visibility);
-  Serial.println("cloudcover: " + weathers[index].cloudcover);
   Serial.println("humidity: " + weathers[index].humidity);
-  Serial.println("condition: " + weathers[index].condition);
+  Serial.println("pressure: " + weathers[index].pressure);
+  Serial.println("seaLevel: " + weathers[index].seaLevel);
+  Serial.println("grndLevel: " + weathers[index].grndLevel);
+  Serial.println("visibility: " + weathers[index].visibility);
   Serial.println("wind: " + weathers[index].wind);
   Serial.println("gust: " + weathers[index].gust);
   Serial.println("direction: " + weathers[index].direction);
-  Serial.println("weatherId: " + weathers[index].weatherId);
-  Serial.println("description: " + weathers[index].description);
-  Serial.println("icon: " + weathers[index].icon);
-  Serial.println("timezone: " + String(getTimeZone(index)));
+  Serial.println("rain: " + weathers[index].rain);
+  Serial.println("cloudcover: " + weathers[index].cloudcover);
+  Serial.println("dt: " + weathers[index].dt);
+  Serial.println("country: " + weathers[index].country);
   Serial.println("sunRise: " + weathers[index].sunRise + " | " + getSunrise(index));
   Serial.println("sunSet: " + weathers[index].sunSet + " | " + getSunset(index));
   Serial.println("sunDifference: " + getSunDifference(index));
+  Serial.println("id: " + weathers[index].id);
+  Serial.println("city: " + weathers[index].city);
+  Serial.println("timezone: " + String(getTimeZone(index)));
   Serial.println();
 }
 
@@ -237,7 +244,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
 
   Serial.println("Getting Air Pollution Data for " + latitude + ", " + longitude);
   Serial.println(apiGetData);
-  weathers[0].cached = false;
+  weathers[index].cached = false;
   weathers[index].error = "";
   if (weatherClient.connect(servername, 80))
   { // starts client connection, checks for connection
@@ -297,7 +304,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   if (measureJson(root) <= msrLen)
   {
     Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    weathers[0].cached = true;
+    weathers[index].cached = true;
     weathers[index].error = root["message"].as<String>();
     Serial.println("Error: " + weathers[index].error);
     return;
@@ -325,9 +332,15 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   Serial.println();
 }
 
-void OpenWeatherMapClient::updateSunMoonTime(time_t currentTime, double latitude, double longitude, int index)
+void OpenWeatherMapClient::updateSunMoonTime(time_t currentTime, String latitude, String longitude, int index)
 {
-  SunMoonCalc smCalc = SunMoonCalc(currentTime, latitude, longitude);
+  Serial.print("Getting Sun and Moon Data for ");
+  Serial.print(latitude);
+  Serial.print(", ");
+  Serial.println(longitude);
+  double myLatM = latitude.toDouble();
+  double myLonM = longitude.toDouble();
+  SunMoonCalc smCalc = SunMoonCalc(currentTime, myLatM, myLonM);
   const SunMoonCalc::Result result = smCalc.calculateSunAndMoonData();
 
   moonStruct[index].sunRise = (String)result.sun.rise;
@@ -429,9 +442,34 @@ String OpenWeatherMapClient::getTemp(int index)
   return weathers[index].temp;
 }
 
+String OpenWeatherMapClient::getRain(int index)
+{
+  String rtnValue = "";
+  int rainInt = weathers[index].rain.toInt();
+  if (rainInt != 0)
+  {
+    rtnValue = String(rainInt);
+    return rtnValue;
+  }
+  else
+  {
+    rtnValue = "0";
+    return rtnValue;
+  }
+}
+
 String OpenWeatherMapClient::getVisibility(int index)
 {
   return weathers[index].visibility;
+}
+
+String OpenWeatherMapClient::getVisibilityKm(int index)
+{
+  String rtnValue = "";
+  int visiInt = weathers[index].visibility.toInt();
+  int visiIntKm = visiInt / 1000;
+  rtnValue = String(visiIntKm);
+  return rtnValue;
 }
 
 String OpenWeatherMapClient::getFeel(int index)
@@ -482,13 +520,15 @@ String OpenWeatherMapClient::getWindRounded(int index)
 String OpenWeatherMapClient::getGust(int index)
 {
   String rtnValue = "";
-  String gustStr = weathers[index].gust;
-  if (gustStr != 0)
+  int gustInt = weathers[index].gust.toInt();
+  if (gustInt != 0)
   {
-    return gustStr;
+    rtnValue = String(gustInt);
+    return rtnValue;
   }
   else
   {
+    rtnValue = "0";
     return rtnValue;
   }
 }
@@ -497,12 +537,15 @@ String OpenWeatherMapClient::getGustRounded(int index)
 {
   String rtnValue = "";
   String gustStr = roundValue(getGust(index));
-  if (gustStr != 0)
+  int gustInt = gustStr.toInt();
+  if (gustInt != 0)
   {
-    return gustStr;
+    rtnValue = String(gustInt);
+    return rtnValue;
   }
   else
   {
+    rtnValue = "0";
     return rtnValue;
   }
 }
@@ -565,14 +608,46 @@ String OpenWeatherMapClient::getIcon(int index)
   return weathers[index].icon;
 }
 
-boolean OpenWeatherMapClient::getCached()
+boolean OpenWeatherMapClient::getCached(int index)
 {
-  return weathers[0].cached;
+  return weathers[index].cached;
 }
 
 String OpenWeatherMapClient::getMyCityName()
 {
   return myCityName;
+}
+
+String OpenWeatherMapClient::getSeaLevel(int index)
+{
+  String rtnValue = "";
+  int seaInt = weathers[index].seaLevel.toInt();
+  if (seaInt != 0)
+  {
+    rtnValue = String(seaInt);
+    return rtnValue;
+  }
+  else
+  {
+    rtnValue = "0";
+    return rtnValue;
+  }
+}
+
+String OpenWeatherMapClient::getGrndLevel(int index)
+{
+  String rtnValue = "";
+  int grndInt = weathers[index].grndLevel.toInt();
+  if (grndInt != 0)
+  {
+    rtnValue = String(grndInt);
+    return rtnValue;
+  }
+  else
+  {
+    rtnValue = "0";
+    return rtnValue;
+  }
 }
 
 String OpenWeatherMapClient::getCO(int index)
@@ -623,6 +698,11 @@ String OpenWeatherMapClient::getError(int index)
 String OpenWeatherMapClient::getMoonPhase(int index)
 {
   return moonStruct[index].moonPhase;
+}
+
+String OpenWeatherMapClient::getMoonIllumination(int index)
+{
+  return moonStruct[index].moonIllumination;
 }
 
 String OpenWeatherMapClient::getWeekDay(int index, float offset)
