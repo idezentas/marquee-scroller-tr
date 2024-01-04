@@ -15,6 +15,7 @@
 * cleanText'e Türkçe harfler eklenmiştir.
 * Şehir adı, ülke adı, zaman dilimi vb özellikler TimeZoneDB kullanılarak eklenmiştir.
 * Zaman dilimleri arasındaki farkı tespit etme özelliği eklenmiştir.
+* Döviz kurları özelliği eklenmiştir.
 * Haberler özelliği silinmiştir.
 * Hava Durumu için dil seçeneği eklenmiştir.
 * Kayan yazıyı kapatma özelliği eklenmiştir.
@@ -22,6 +23,7 @@
 * PlatformIO ile derleme desteği eklenmiştir.
 * SPIFFS yerine LittleFS kullanılmaktadır.
 * Ayın doğuşu ve batışı eklenmiştir. (<a href="https://github.com/ThingPulse/esp8266-weather-station">ThingPulse</a>'a teşekkürler.)
+* BMP180 sensörü ile oda sıcaklığı ölçme özelliği eklenmiştir.
 
 --- In English ---
 * ArduinoJson library updated to version 6.
@@ -37,6 +39,7 @@
 * Turkish letters have been added to cleanText.
 * City name, country name, time zone etc. features have been added using TimeZoneDB.
 * The ability to detect the difference between time zones has been added.
+* Currency feature has been added.
 * News feature has been deleted.
 * Language option for weather has been added.
 * The feature to turn off the marquee has been added.
@@ -44,6 +47,7 @@
 * PlatformIO build feature has been added.
 * LittleFS is used instead of SPIFFS.
 * Moonrise and moonset have been added. (Thanks to <a href="https://github.com/ThingPulse/esp8266-weather-station">ThingPulse</a>)
+* Room temperature measurement feature has been added with BMP180 sensor.
 
 ## NOTICE
 The latest version of Marquee Scroller 3.01 works with **ESP8266 Core 3.0.2** -- if you are upgrading from Marquee Scroller 2.X version this may require you to enter in all your API Keys and settings.  Always meake sure you have coppied all your API keys somewhere before updating.  The ESP8266 Core 3.0.2 uses the newer FS (file system) that may require a fresh start on the configuration.
@@ -110,13 +114,15 @@ Use the Arduino guide for details on how to installing and manage libraries http
 <Adafruit_GFX.h> --> https://github.com/adafruit/Adafruit-GFX-Library  
 <Max72xxPanel.h> --> https://github.com/markruys/arduino-Max72xxPanel  
 <JsonStreamingParser.h> --> https://github.com/squix78/json-streaming-parser  
-<ArduinoJson.h> --> https://github.com/bblanchon/ArduinoJson
+<ArduinoJson.h> --> https://github.com/bblanchon/ArduinoJson (v6.21.4)
+<Adafruit_BMP085.h> --> https://github.com/adafruit/Adafruit-BMP085-Library
 
 ## Initial Configuration
 Editing the **Settings.h** file is totally optional and not required.  All API Keys are now managed in the Web Interface. It is not required to edit the Settings.h file before loading and running the code.  
 * Open Weather Map free API key: http://openweathermap.org/  -- this is used to get weather data and the latitude and longitude for the current time zone. Weather API key is required for correct time.
 * TimeZoneDB free registration for API key: https://timezonedb.com/register -- this is used for setting the time and getting the correct time zone as well as managing time changes due to Day Light Savings time by regions.  This key is set and managed only through the web interface and added in version 2.10 of Marquee Scroller. TimeZoneDB key is required for correct time display.
 * News API key (free): https://newsapi.org/ -- Optional if you want to get current news headlines.
+* Dev.me free API key: https://dev.me/products/currency -- Optional if you want currency rates
 * Your OctoPrint API Key -- optional if you use the OctoPrint status.
 * Version 2.0 supports Chained 4x1 LED displays -- configure up to 16x1 in the Settings.h file.  
 
