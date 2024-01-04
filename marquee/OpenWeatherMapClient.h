@@ -71,6 +71,9 @@ private:
     String sunRise;
     String sunSet;
     String cloudcover;
+    String seaLevel;
+    String grndLevel;
+    String rain;
     String aqi;
     String co;
     String no;
@@ -115,7 +118,7 @@ public:
   OpenWeatherMapClient(String ApiKey, boolean isMetric, String CityName, String language);
   void updateWeatherName(String CityName, int index);
   void updateCityAirPollution(String latitude, String longitude, int index);
-  void updateSunMoonTime(time_t currentTime, double latitude, double longitude, int index);
+  void updateSunMoonTime(time_t currentTime, String latitude, String longitude, int index);
   void updateWeatherApiKey(String ApiKey);
   void setMetric(boolean isMetric);
   void updateCityName(String CityName);
@@ -149,10 +152,11 @@ public:
   String getLow(int index);
   String getLowRounded(int index);
   String getVisibility(int index);
+  String getVisibilityKm(int index);
   String getWeatherId(int index);
   String getDescription(int index);
   String getIcon(int index);
-  boolean getCached();
+  boolean getCached(int index);
   String getMyCityName();
   String getWeatherIcon(int index);
   String getError(int index);
@@ -161,6 +165,7 @@ public:
   String getCloudcover(int index);
   String getSeaLevel(int index);
   String getGrndLevel(int index);
+  String getRain(int index);
   String getSunrise(int index);
   String getSunset(int index);
   String getSunDifference(int index);
@@ -179,4 +184,5 @@ public:
   String getMoonSet(int index);
   String getMoonDifference(int index);
   String getMoonPhase(int index);
+  String getMoonIllumination(int index);
 };
