@@ -776,6 +776,8 @@ String OpenWeatherMapClient::getAqi(int index)
 String OpenWeatherMapClient::getSunrise(int index)
 {
   String rtnValue = "";
+  String monthValue = "";
+  String weekdayValue = "";
   long epoc = weathers[index].sunRise.toInt();
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
@@ -785,13 +787,85 @@ String OpenWeatherMapClient::getSunrise(int index)
     dstValue = dstValue / 3600;
   }
   time_local->tm_hour += dstValue;
-  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = "Ocak";
+    break;
+  case 2:
+    monthValue = "Şubat";
+    break;
+  case 3:
+    monthValue = "Mart";
+    break;
+  case 4:
+    monthValue = "Nisan";
+    break;
+  case 5:
+    monthValue = "Mayıs";
+    break;
+  case 6:
+    monthValue = "Haziran";
+    break;
+  case 7:
+    monthValue = "Temmuz";
+    break;
+  case 8:
+    monthValue = "Ağustos";
+    break;
+  case 9:
+    monthValue = "Eylül";
+    break;
+  case 10:
+    monthValue = "Ekim";
+    break;
+  case 11:
+    monthValue = "Kasım";
+    break;
+  case 12:
+    monthValue = "Aralık";
+    break;
+  default:
+    rtnValue = "";
+  }
+
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = "Pazar";
+    break;
+  case 2:
+    weekdayValue = "Pazartesi";
+    break;
+  case 3:
+    weekdayValue = "Salı";
+    break;
+  case 4:
+    weekdayValue = "Çarşamba";
+    break;
+  case 5:
+    weekdayValue = "Perşembe";
+    break;
+  case 6:
+    weekdayValue = "Cuma";
+    break;
+  case 7:
+    weekdayValue = "Cumartesi";
+    break;
+  default:
+    weekdayValue = "";
+  }
+  
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
 }
 
 String OpenWeatherMapClient::getSunset(int index)
 {
   String rtnValue = "";
+  String monthValue = "";
+  String weekdayValue = "";
   long epoc = weathers[index].sunSet.toInt();
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
@@ -801,7 +875,77 @@ String OpenWeatherMapClient::getSunset(int index)
     dstValue = dstValue / 3600;
   }
   time_local->tm_hour += dstValue;
-  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = "Ocak";
+    break;
+  case 2:
+    monthValue = "Şubat";
+    break;
+  case 3:
+    monthValue = "Mart";
+    break;
+  case 4:
+    monthValue = "Nisan";
+    break;
+  case 5:
+    monthValue = "Mayıs";
+    break;
+  case 6:
+    monthValue = "Haziran";
+    break;
+  case 7:
+    monthValue = "Temmuz";
+    break;
+  case 8:
+    monthValue = "Ağustos";
+    break;
+  case 9:
+    monthValue = "Eylül";
+    break;
+  case 10:
+    monthValue = "Ekim";
+    break;
+  case 11:
+    monthValue = "Kasım";
+    break;
+  case 12:
+    monthValue = "Aralık";
+    break;
+  default:
+    rtnValue = "";
+  }
+
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = "Pazar";
+    break;
+  case 2:
+    weekdayValue = "Pazartesi";
+    break;
+  case 3:
+    weekdayValue = "Salı";
+    break;
+  case 4:
+    weekdayValue = "Çarşamba";
+    break;
+  case 5:
+    weekdayValue = "Perşembe";
+    break;
+  case 6:
+    weekdayValue = "Cuma";
+    break;
+  case 7:
+    weekdayValue = "Cumartesi";
+    break;
+  default:
+    weekdayValue = "";
+  }
+
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
 }
 
@@ -822,6 +966,8 @@ String OpenWeatherMapClient::getSunDifference(int index)
 String OpenWeatherMapClient::getMoonRise(int index)
 {
   String rtnValue = "";
+  String monthValue = "";
+  String weekdayValue = "";
   long epoc = moonStruct[index].moonRise.toInt();
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
@@ -831,13 +977,85 @@ String OpenWeatherMapClient::getMoonRise(int index)
     dstValue = dstValue / 3600;
   }
   time_local->tm_hour += dstValue;
-  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = "Ocak";
+    break;
+  case 2:
+    monthValue = "Şubat";
+    break;
+  case 3:
+    monthValue = "Mart";
+    break;
+  case 4:
+    monthValue = "Nisan";
+    break;
+  case 5:
+    monthValue = "Mayıs";
+    break;
+  case 6:
+    monthValue = "Haziran";
+    break;
+  case 7:
+    monthValue = "Temmuz";
+    break;
+  case 8:
+    monthValue = "Ağustos";
+    break;
+  case 9:
+    monthValue = "Eylül";
+    break;
+  case 10:
+    monthValue = "Ekim";
+    break;
+  case 11:
+    monthValue = "Kasım";
+    break;
+  case 12:
+    monthValue = "Aralık";
+    break;
+  default:
+    rtnValue = "";
+  }
+
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = "Pazar";
+    break;
+  case 2:
+    weekdayValue = "Pazartesi";
+    break;
+  case 3:
+    weekdayValue = "Salı";
+    break;
+  case 4:
+    weekdayValue = "Çarşamba";
+    break;
+  case 5:
+    weekdayValue = "Perşembe";
+    break;
+  case 6:
+    weekdayValue = "Cuma";
+    break;
+  case 7:
+    weekdayValue = "Cumartesi";
+    break;
+  default:
+    weekdayValue = "";
+  }
+
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
 }
 
 String OpenWeatherMapClient::getMoonSet(int index)
 {
   String rtnValue = "";
+  String monthValue = "";
+  String weekdayValue = "";
   long epoc = moonStruct[index].moonSet.toInt();
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
@@ -847,7 +1065,77 @@ String OpenWeatherMapClient::getMoonSet(int index)
     dstValue = dstValue / 3600;
   }
   time_local->tm_hour += dstValue;
-  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local)));
+
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = "Ocak";
+    break;
+  case 2:
+    monthValue = "Şubat";
+    break;
+  case 3:
+    monthValue = "Mart";
+    break;
+  case 4:
+    monthValue = "Nisan";
+    break;
+  case 5:
+    monthValue = "Mayıs";
+    break;
+  case 6:
+    monthValue = "Haziran";
+    break;
+  case 7:
+    monthValue = "Temmuz";
+    break;
+  case 8:
+    monthValue = "Ağustos";
+    break;
+  case 9:
+    monthValue = "Eylül";
+    break;
+  case 10:
+    monthValue = "Ekim";
+    break;
+  case 11:
+    monthValue = "Kasım";
+    break;
+  case 12:
+    monthValue = "Aralık";
+    break;
+  default:
+    rtnValue = "";
+  }
+
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = "Pazar";
+    break;
+  case 2:
+    weekdayValue = "Pazartesi";
+    break;
+  case 3:
+    weekdayValue = "Salı";
+    break;
+  case 4:
+    weekdayValue = "Çarşamba";
+    break;
+  case 5:
+    weekdayValue = "Perşembe";
+    break;
+  case 6:
+    weekdayValue = "Cuma";
+    break;
+  case 7:
+    weekdayValue = "Cumartesi";
+    break;
+  default:
+    weekdayValue = "";
+  }
+
+  rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
 }
 
