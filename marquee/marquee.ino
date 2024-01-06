@@ -65,7 +65,7 @@ PrayersClient prayersClient(prayersMethod);
 
 // Currency Client
 CurrencyConverterClient currencyClient(CurrencyApiKey, BaseCurrency1, BaseCurrency2, BaseCurrency3, TargetCurrency);
-int currencyCounyter = 3;
+int currencyCounter = 3;
 
 // OctoPrint Client
 OctoPrintClient printerClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
@@ -1407,7 +1407,7 @@ void getWeatherData() // client function to send/receive GET request data..
 
   if (CURRENCY_ENABLED && displayOn)
   {
-    if (currencyCounyter == 3)
+    if (currencyCounter == 3)
     {
       matrix.drawPixel(16, 7, HIGH);
       matrix.drawPixel(17, 7, HIGH);
@@ -1421,12 +1421,12 @@ void getWeatherData() // client function to send/receive GET request data..
       currencyClient.updateCurrency(BaseCurrency3, TargetCurrency, 2);
       delay(1000);
     }
-    currencyCounyter--;
-    Serial.print("currencyCounyter: ");
-    Serial.println(currencyCounyter);
-    if (currencyCounyter <= 0)
+    currencyCounter--;
+    Serial.print("currencyCounter: ");
+    Serial.println(currencyCounter);
+    if (currencyCounter <= 0)
     {
-      currencyCounyter = 3;
+      currencyCounter = 3;
     }
   }
 
@@ -2838,29 +2838,4 @@ String getTimestamp2Date(time_t timeStamp)
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
   return rtnValue;
-}
-
-int getCurrencyUpdateCounter(int minutesBetweenDataRefresh)
-{
-  int counter = 0;
-  switch (minutesBetweenDataRefresh)
-  {
-  case 60:
-    counter = 60;
-    break;
-  case 30:
-    counter = 30;
-    break;
-  case 20:
-    counter = 20;
-    break;
-  case 15:
-    counter = 15;
-    break;
-  default:
-    counter = 0;
-    break;
-  }
-
-  return counter;
 }
