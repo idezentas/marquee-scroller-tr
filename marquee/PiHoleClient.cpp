@@ -69,8 +69,7 @@ void PiHoleClient::getPiHoleData(String server, int port, String apiKey)
     return;
   }
 
-  const size_t bufferSize = 2048;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, response);
   if (error)
   {
@@ -143,8 +142,7 @@ void PiHoleClient::getTopClientsBlocked(String server, int port, String apiKey)
     return;
   }
 
-  const size_t bufferSize = 100;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, response);
   if (error)
   {
