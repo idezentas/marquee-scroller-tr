@@ -128,7 +128,6 @@ boolean CURRENCY_ENABLED = false;
 String CurrencyApiKey = ""; // https://dev.me/products/currency
 String BaseCurrency1 = "EUR";                                    // Default Currency: EUR
 String BaseCurrency2 = "USD";                                    // Default Currency: USD
-String BaseCurrency3 = "USD";                                    // Default Currency: GBP
 String TargetCurrency = "TRY";                                   // Default Currency: TRY
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
