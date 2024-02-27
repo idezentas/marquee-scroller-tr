@@ -115,8 +115,7 @@ time_t TimeDB::getTime()
   result.toCharArray(jsonArray, sizeof(jsonArray));
   jsonArray[result.length() + 1] = '\0';
 
-  const size_t bufferSize = 512;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   deserializeJson(root, jsonArray);
 
   for (int inx = 0; inx < 1; inx++)
@@ -247,12 +246,10 @@ void TimeDB::getCityTime(String apiKey, String lat, String lon, int index)
   result.toCharArray(jsonArray, sizeof(jsonArray));
   jsonArray[result.length() + 1] = '\0';
 
-  const size_t bufferSize = 512;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   deserializeJson(root, jsonArray);
 
   timeStruct[index].errorMessage = root["message"].as<String>();
-
   timeStruct[index].status = root["status"].as<String>();
   timeStruct[index].message = root["message"].as<String>();
   timeStruct[index].countryCode = root["countryCode"].as<String>();
@@ -367,8 +364,7 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
   result.toCharArray(jsonArray, sizeof(jsonArray));
   jsonArray[result.length() + 1] = '\0';
 
-  const size_t bufferSize = 384;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   deserializeJson(root, jsonArray);
 
   timeStruct[index].errorMessage = root["message"].as<String>();
