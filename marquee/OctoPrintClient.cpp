@@ -125,9 +125,7 @@ void OctoPrintClient::getPrinterJobResults()
     return;
   }
 
-  // V6
-  const size_t bufferSize = 2048;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, printClient);
   if (error)
   {
