@@ -132,8 +132,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
     return;
   }
 
-  const size_t bufferSize = 1024;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, weatherClient);
   if (error)
   {
@@ -143,17 +142,6 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   }
 
   weatherClient.stop(); // stop client
-
-  size_t msrLen = bufferSize / 5;
-
-  if (measureJson(root) <= msrLen)
-  {
-    Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    weathers[index].cached = true;
-    weathers[index].error = root["message"].as<String>();
-    Serial.println("Error: " + weathers[index].error);
-    return;
-  }
 
   weathers[index].lat = root["coord"]["lat"].as<String>();
   weathers[index].lon = root["coord"]["lon"].as<String>();
@@ -287,8 +275,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
     return;
   }
 
-  const size_t bufferSize = 384;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, weatherClient);
   if (error)
   {
@@ -298,17 +285,6 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   }
 
   weatherClient.stop(); // stop client
-
-  size_t msrLen = bufferSize / 5;
-
-  if (measureJson(root) <= msrLen)
-  {
-    Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    weathers[index].cached = true;
-    weathers[index].error = root["message"].as<String>();
-    Serial.println("Error: " + weathers[index].error);
-    return;
-  }
 
   int list_0 = 0;
   weathers[index].aqi = root["list"][list_0]["main"]["aqi"].as<String>();
@@ -856,7 +832,7 @@ String OpenWeatherMapClient::getSunrise(int index)
   default:
     weekdayValue = "";
   }
-  
+
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
 }
