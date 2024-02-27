@@ -2,7 +2,7 @@
 
 ## Changes Betwwen the Original Project
 --- In Turkish ---
-* ArduinoJson kütüphanesi versiyon 6'ya güncellendi.
+* ArduinoJson kütüphanesi versiyon 7'ya güncellendi.
 * Wemos D1 Mini yerine NodeMCU kullanılmaktadır. 
 * Web sayfası ve dot matrix yazıları Türkçeleştirilmiştir.
 * Yerel namaz vakitleri eklenmiştir.
@@ -26,7 +26,7 @@
 * BMP180 sensörü ile oda sıcaklığı ölçme özelliği eklenmiştir.
 
 --- In English ---
-* ArduinoJson library updated to version 6.
+* ArduinoJson library updated to version 7.
 * NodeMCU is used instead of Wemos D1 Mini.
 * Web interface and display texts have been translated into Turkish.
 * Local prayers times have been added.
