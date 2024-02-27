@@ -34,7 +34,6 @@ private:
   String myApiKey = "";
   String myBaseCurrency1 = "";
   String myBaseCurrency2 = "";
-  String myBaseCurrency3 = "";
   String myTargetCurrency = "";
 
   const char *servername = "api.dev.me"; // remote server we will connect to
@@ -55,12 +54,11 @@ private:
   String roundValue(String value);
 
 public:
-  CurrencyConverterClient(String ApiKey, String BaseCurrency1, String BaseCurrency2, String BaseCurrency3, String TargetCurrency);
+  CurrencyConverterClient(String ApiKey, String BaseCurrency1, String BaseCurrency2, String TargetCurrency);
   void updateCurrency(String BaseCurrency, String TargetCurrency, int index);
   void updateCurrencyApiKey(String ApiKey);
   void updateBaseCurrency1(String BaseCurrency1);
   void updateBaseCurrency2(String BaseCurrency2);
-  void updateBaseCurrency3(String BaseCurrency3);
   void updateTargetCurrency(String TargetCurrency);
 
   String getTargetCurrency(int index);
