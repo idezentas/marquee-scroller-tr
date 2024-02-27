@@ -25,11 +25,10 @@ SOFTWARE.
 #include "CurrencyConverterClient.h"
 #include "math.h"
 
-CurrencyConverterClient::CurrencyConverterClient(String ApiKey, String BaseCurrency1, String BaseCurrency2, String BaseCurrency3, String TargetCurrency)
+CurrencyConverterClient::CurrencyConverterClient(String ApiKey, String BaseCurrency1, String BaseCurrency2, String TargetCurrency)
 {
   updateBaseCurrency1(BaseCurrency1);
   updateBaseCurrency2(BaseCurrency2);
-  updateBaseCurrency3(BaseCurrency3);
   updateTargetCurrency(TargetCurrency);
   myApiKey = ApiKey;
 }
@@ -54,15 +53,6 @@ void CurrencyConverterClient::updateBaseCurrency2(String BaseCurrency2)
   if (myBaseCurrency2 == "")
   {
     myBaseCurrency2 = "USD";
-  }
-}
-
-void CurrencyConverterClient::updateBaseCurrency3(String BaseCurrency3)
-{
-  myBaseCurrency3 = BaseCurrency3;
-  if (myBaseCurrency3 == "")
-  {
-    myBaseCurrency3 = "GBP";
   }
 }
 
@@ -133,9 +123,7 @@ void CurrencyConverterClient::updateCurrency(String BaseCurrency, String TargetC
     return;
   }
 
-  // V6
-  const size_t bufferSize = 384;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, currencyClient);
   if (error)
   {
@@ -144,17 +132,6 @@ void CurrencyConverterClient::updateCurrency(String BaseCurrency, String TargetC
     return;
   }
   currencyClient.stop(); // stop client
-
-  size_t msrLen = bufferSize / 5;
-
-  if (measureJson(root) <= msrLen)
-  {
-    Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    currencies[index].cached = true;
-    currencies[index].error = root["message"].as<String>();
-    Serial.println("Error: " + currencies[index].error);
-    return;
-  }
 
   currencies[index].target = root["exchangeRate"].as<String>();
   currencies[index].targetCurrencyName = root["to"].as<String>();
