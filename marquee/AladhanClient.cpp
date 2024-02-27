@@ -93,8 +93,7 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
     return;
   }
 
-  const size_t bufferSize = 4096;
-  DynamicJsonDocument root(bufferSize);
+  JsonDocument root;
   DeserializationError error = deserializeJson(root, prayersClient);
   if (error)
   {
@@ -104,18 +103,6 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
   }
 
   prayersClient.stop(); // stop client
-
-  size_t msrLen = bufferSize / 5;
-
-  // V6
-  if (measureJson(root) <= msrLen)
-  {
-    Serial.println("Error Does not look like we got the data.  Size: " + String(measureJson(root)));
-    prayers[0].cached = true;
-    prayers[0].error = root["message"].as<String>();
-    Serial.println("Error: " + prayers[0].error);
-    return;
-  }
 
   prayers[index].Fajr = root["data"]["timings"]["Fajr"].as<String>();
   prayers[index].Sunrise = root["data"]["timings"]["Sunrise"].as<String>();
