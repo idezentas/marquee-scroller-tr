@@ -43,10 +43,6 @@ void OpenWeatherMapClient::updateWeatherApiKey(String ApiKey)
 void OpenWeatherMapClient::updateLanguage(String language)
 {
   myLang = language;
-  if (myLang == "")
-  {
-    myLang = "en";
-  }
 }
 
 void OpenWeatherMapClient::updateCityName(String CityName)
@@ -118,7 +114,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   Serial.println("Response Header: " + String(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0)
   {
-    Serial.print(F("Unexpected response: "));
+    Serial.print("Unexpected response: ");
     Serial.println(status);
     weathers[index].error = "Weather Data Error: " + String(status);
     return;
@@ -128,7 +124,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   char endOfHeaders[] = "\r\n\r\n";
   if (!weatherClient.find(endOfHeaders))
   {
-    Serial.println(F("Invalid response"));
+    Serial.println("Invalid response");
     return;
   }
 
@@ -136,37 +132,48 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   DeserializationError error = deserializeJson(root, weatherClient);
   if (error)
   {
-    Serial.println(F("Weather Data Parsing failed!"));
-    weathers[index].error = "Weather Data Parsing failed!";
+    Serial.println("Weather Data Parsing failed!");
+    Serial.println(error.c_str());
+    weathers[index].error = "Weather Data Parsing failed!" + String(error.c_str());
     return;
   }
 
   weatherClient.stop(); // stop client
 
-  weathers[index].lat = root["coord"]["lat"].as<String>();
-  weathers[index].lon = root["coord"]["lon"].as<String>();
-  weathers[index].weatherId = root["weather"][0]["id"].as<String>();
-  weathers[index].condition = root["weather"][0]["main"].as<String>();
-  weathers[index].description = root["weather"][0]["description"].as<String>();
-  weathers[index].icon = root["weather"][0]["icon"].as<String>();
-  weathers[index].temp = root["main"]["temp"].as<String>();
-  weathers[index].feel = root["main"]["feels_like"].as<String>();
-  weathers[index].high = root["main"]["temp_max"].as<String>();
-  weathers[index].low = root["main"]["temp_min"].as<String>();
-  weathers[index].humidity = root["main"]["humidity"].as<String>();
-  weathers[index].pressure = root["main"]["pressure"].as<String>();
-  weathers[index].seaLevel = root["main"]["sea_level"].as<String>();
-  weathers[index].grndLevel = root["main"]["grnd_level"].as<String>();
-  weathers[index].visibility = root["visibility"].as<String>();
-  weathers[index].wind = root["wind"]["speed"].as<String>();
-  weathers[index].gust = root["wind"]["gust"].as<String>();
-  weathers[index].direction = root["wind"]["deg"].as<String>();
+  JsonObject coord_ = root["coord"];
+  weathers[index].lat = coord_["lat"].as<String>();
+  weathers[index].lon = coord_["lon"].as<String>();
+
+  JsonObject weather_ = root["weather"][0];
+  weathers[index].weatherId = weather_["id"].as<String>();
+  weathers[index].condition = weather_["main"].as<String>();
+  weathers[index].description = weather_["description"].as<String>();
+  weathers[index].icon = weather_["icon"].as<String>();
+
+  JsonObject main_ = root["main"];
+  weathers[index].temp = main_["temp"].as<String>();
+  weathers[index].feel = main_["feels_like"].as<String>();
+  weathers[index].high = main_["temp_max"].as<String>();
+  weathers[index].low = main_["temp_min"].as<String>();
+  weathers[index].humidity = main_["humidity"].as<String>();
+  weathers[index].pressure = main_["pressure"].as<String>();
+  weathers[index].seaLevel = main_["sea_level"].as<String>();
+  weathers[index].grndLevel = main_["grnd_level"].as<String>();
+
+  JsonObject wind_ = root["wind"];
+  weathers[index].wind = wind_["speed"].as<String>();
+  weathers[index].gust = wind_["gust"].as<String>();
+  weathers[index].direction = wind_["deg"].as<String>();
+
+  JsonObject sys_ = root["sys"];
+  weathers[index].country = sys_["country"].as<String>();
+  weathers[index].sunRise = sys_["sunrise"].as<String>();
+  weathers[index].sunSet = sys_["sunset"].as<String>();
+
   weathers[index].cloudcover = root["clouds"]["all"].as<String>();
   weathers[index].rain = root["rain"]["1h"].as<String>();
+  weathers[index].visibility = root["visibility"].as<String>();
   weathers[index].dt = root["dt"].as<String>();
-  weathers[index].country = root["sys"]["country"].as<String>();
-  weathers[index].sunRise = root["sys"]["sunrise"].as<String>();
-  weathers[index].sunSet = root["sys"]["sunset"].as<String>();
   weathers[index].id = root["id"].as<String>();
   weathers[index].city = root["name"].as<String>();
   weathers[index].timeZone = root["timezone"].as<String>();
@@ -261,7 +268,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   Serial.println("Response Header: " + String(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0)
   {
-    Serial.print(F("Unexpected response: "));
+    Serial.print("Unexpected response: ");
     Serial.println(status);
     weathers[index].error = "Air Pollution Data Error: " + String(status);
     return;
@@ -271,7 +278,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   char endOfHeaders[] = "\r\n\r\n";
   if (!weatherClient.find(endOfHeaders))
   {
-    Serial.println(F("Invalid response"));
+    Serial.println("Invalid response");
     return;
   }
 
@@ -279,8 +286,9 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   DeserializationError error = deserializeJson(root, weatherClient);
   if (error)
   {
-    Serial.println(F("Air Pollution Data Parsing failed!"));
-    weathers[index].error = "Air Pollution Data Parsing failed!";
+    Serial.println("Air Pollution Data Parsing failed!");
+    Serial.println(error.c_str());
+    weathers[index].error = "Air Pollution Data Parsing failed!" + String(error.c_str());
     return;
   }
 
@@ -288,14 +296,16 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
 
   int list_0 = 0;
   weathers[index].aqi = root["list"][list_0]["main"]["aqi"].as<String>();
-  weathers[index].co = root["list"][list_0]["components"]["co"].as<String>();
-  weathers[index].no = root["list"][list_0]["components"]["no"].as<String>();
-  weathers[index].no2 = root["list"][list_0]["components"]["no2"].as<String>();
-  weathers[index].o3 = root["list"][list_0]["components"]["o3"].as<String>();
-  weathers[index].so2 = root["list"][list_0]["components"]["so2"].as<String>();
-  weathers[index].pm2_5 = root["list"][list_0]["components"]["pm2_5"].as<String>();
-  weathers[index].pm10 = root["list"][list_0]["components"]["pm10"].as<String>();
-  weathers[index].nh3 = root["list"][list_0]["components"]["nh3"].as<String>();
+
+  JsonObject components_ = root["list"][list_0]["components"];
+  weathers[index].co = components_["co"].as<String>();
+  weathers[index].no = components_["no"].as<String>();
+  weathers[index].no2 = components_["no2"].as<String>();
+  weathers[index].o3 = components_["o3"].as<String>();
+  weathers[index].so2 = components_["so2"].as<String>();
+  weathers[index].pm2_5 = components_["pm2_5"].as<String>();
+  weathers[index].pm10 = components_["pm10"].as<String>();
+  weathers[index].nh3 = components_["nh3"].as<String>();
 
   Serial.println("aqi: " + weathers[index].aqi);
   Serial.println("co: " + weathers[index].co);
