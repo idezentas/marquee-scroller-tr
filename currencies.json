@@ -1,6 +1,6 @@
 {
 	"status": "ok",
-    "currencies": [
+    "sources": [
         {
             "id": "AUD",
             "name": "Australian Dollar"
