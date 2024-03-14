@@ -63,9 +63,6 @@ OpenWeatherMapClient worldWeatherClient(APIKEY, IS_METRIC, CityName, WeatherLang
 // Prayers Time Client
 PrayersClient prayersClient(prayersMethod);
 
-// Currency Client
-CurrencyConverterClient currencyClient(CurrencyApiKey, BaseCurrency1, BaseCurrency2, TargetCurrency);
-
 // OctoPrint Client
 OctoPrintClient printerClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
 int printerCount = 0;
@@ -82,12 +79,10 @@ static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' hre
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclockweather'><i class='fas fa-clock'></i> Dünya Şehirleri Hava Durumu Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayprayerstime'><i class='fas fa-mosque'></i> Namaz Vakitleri Verileri</a>"
-                                           "<a class='w3-bar-item w3-button' href='/displaycurrency'><i class='fas fa-money-bill'></i> Döviz Kurları Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/configure'><i class='fas fa-cog'></i> Ayarlar</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurematrix'><i class='fas fa-cog'></i> Ekran Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configureprayers'><i class='fas fa-mosque'></i> Namaz Vakitleri Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configurecurrency'><i class='fas fa-money-bill'></i> Döviz Kurları Ayarları</a>";
+                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>";
 
 static const char WEB_ACTIONS2[] PROGMEM = "<a class='w3-bar-item w3-button' href='/configureoctoprint'><i class='fas fa-cube'></i> OctoPrint Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurepihole'><i class='fas fa-network-wired'></i> Pi-hole Ayarları</a>"
@@ -104,13 +99,9 @@ static const char CHANGE_FORM1[] PROGMEM = "<form class='w3-container' action='/
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='TimeZoneDB' value='%TIMEDBKEY%' maxlength='60'>"
                                            "<label>OpenWeatherMap API Anahtarı (<a href='https://openweathermap.org/' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='openWeatherMapApiKey' value='%WEATHERKEY%' maxlength='70'>"
-                                           "<p><label>Şehir Adı Giriniz</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='namecity' value='%NAMECITY%' maxlength='60'></p>"
-                                           "<label>Hava Durumu için Dil Giriniz (<a href='https://openweathermap.org/current#multi' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='openWeatherMapLanguage' value='%WEATHERLANG%' maxlength='70'>"
-                                           "<p><input name='metric' class='w3-check w3-margin-top' type='checkbox' %CHECKED%> Metrik (Santigrat) Kullan</p>";
+                                           "<p><label>Şehir Adı Giriniz</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='namecity' value='%NAMECITY%' maxlength='60'></p>";
 
-static const char CHANGE_FORM2[] PROGMEM = "<p><input name='is24hour' class='w3-check w3-margin-top' type='checkbox' %IS_24HOUR_CHECKED%> 24 Saatlik Formatta Göster</p>"
-                                           "<p><input name='isPM' class='w3-check w3-margin-top' type='checkbox' %IS_PM_CHECKED%> PM göstergesini göster (sadece 12 saat formatında)</p>"
-                                           "<p><input name='flashseconds' class='w3-check w3-margin-top' type='checkbox' %FLASHSECONDS%> Saati gösterirken : işaretini yanıp söndür</p>"
+static const char CHANGE_FORM2[] PROGMEM = "<p><input name='flashseconds' class='w3-check w3-margin-top' type='checkbox' %FLASHSECONDS%> Saati gösterirken : işaretini yanıp söndür</p>"
                                            "<p><label>Mesaj (60 karaktere kadar)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='marqueeMsg' value='%MSG%' maxlength='60'></p>"
                                            "<p><label>Başlangıç Zamanı </label><input name='startTime' type='time' value='%STARTTIME%'></p>"
                                            "<p><label>Bitiş Zamanı </label><input name='endTime' type='time' value='%ENDTIME%'></p>";
@@ -119,8 +110,7 @@ static const char CHANGE_FORM3[] PROGMEM = "<p>Ekran Parlaklığı <input class=
                                            "<p>Ekran Kaydırma Hızı <select class='w3-option w3-padding' name='scrollspeed'>%SCROLLOPTIONS%</select></p>"
                                            "<p>Veri Yenileme (Dakika Cinsinden) <select class='w3-option w3-padding' name='refresh'>%OPTIONS%</select></p>"
                                            "<p>Kayan Yazı Süresi (Dakika Cinsinden) <input class='w3-border w3-margin-bottom' name='refreshDisplay' type='number' min='1' max='10' value='%REFRESH_DISPLAY%'></p>"
-                                           "<label>Tema Rengi Giriniz (<a href='https://www.w3schools.com/w3css/w3css_color_themes.asp' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label>"
-                                           "<input class='w3-input w3-border w3-margin-bottom' type='text' name='theme' value='%THEME_OPTIONS%' maxlength='70'>"
+                                           "<p>Tema Rengini Seçiniz <select class='w3-option w3-padding' name='theme'>%THEME_OPTIONS%</select></p>"
                                            "<hr><p><input name='isBasicAuth' class='w3-check w3-margin-top' type='checkbox' %IS_BASICAUTH_CHECKED%> Ayarlar Değişiklikleri için Kullanıcı Adı ve Şifre Kullan</p>"
                                            "<p><label>Kullanıcı Adı (Web Sunucu İçin)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='userid' value='%USERID%' maxlength='20'></p>"
                                            "<p><label>Şifre (Web Sunucu İçin)</label><input class='w3-input w3-border w3-margin-bottom' type='password' name='stationpassword' value='%STATIONPASSWORD%'></p>"
@@ -157,12 +147,6 @@ static const char OCTO_FORM[] PROGMEM = "<form class='w3-container' action='/sav
                                         "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                         "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
-static const char PRAYERS_FORM[] PROGMEM = "<form class='w3-container' action='/saveprayers' method='get'><h2>Namaz Vakitleri Ayarları:</h2>"
-                                           "<p><input name='displayprayers' class='w3-check w3-margin-top' type='checkbox' %PRAYERSCHECKED%> Namaz Vakitlerini Göster</p>"
-                                           "<label>Hesaplama Methodunu Giriniz (<a href='https://aladhan.com/calculation-methods' target='_BLANK'><i class='fas fa-search'></i>Buradan</a> bakabilirsiniz)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='prayersMethodID' value='%PRAYERSMETHOD%' maxlength='70'>"
-                                           "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
-                                           "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
-
 static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' action='/saveworldclock' method='get'><h2>Dünya Saatleri Ayarları:</h2>"
                                                "<p><input name='displayworldclock' class='w3-check w3-margin-top' type='checkbox' %WORLDCLOCKCHECKED%> Dünya Saatlerini Göster</p>"
                                                "<p><label>1.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname1' value='%WORLDCITYNAME1%' maxlength='60'></p>"
@@ -170,15 +154,10 @@ static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' actio
                                                "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                                "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
-static const char CURRENCY_FORM[] PROGMEM = "<form class='w3-container' action='/savecurrency' method='get'><h2>Döviz Kurları Ayarları:</h2>"
-                                            "<p><input name='displaycurrencies' class='w3-check w3-margin-top' type='checkbox' %CURRENCYCHECKED%> Döviz Kurlarını Göster</p>"
-                                            "<label>Dev.me API Anahtarı (<a href='https://dev.me/products/currency' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
-                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='currenyapikey' value='%CURRENCYKEY%' maxlength='70'>"
-                                            "<p><label>1.Temel Para Birimi</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='basecurrency1' value='%BASECURRENCY1%' maxlength='60'></p>"
-                                            "<p><label>2.Temel Para Birimi</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='basecurrency2' value='%BASECURRENCY2%' maxlength='60'></p>"
-                                            "<p><label>Karşıt Para Birimi</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='targetcurrency' value='%TARGETCURRENCY%' maxlength='60'></p>"
-                                            "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
-                                            "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
+static const char PRAYERS_FORM[] PROGMEM = "<form class='w3-container' action='/saveprayers' method='get'><h2>Namaz Vakitleri Ayarları:</h2>"
+                                           "<p><input name='displayprayers' class='w3-check w3-margin-top' type='checkbox' %PRAYERSCHECKED%> Namaz Vakitlerini Göster</p>"
+                                           "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
+                                           "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
 static const char MATRIX_FORM[] PROGMEM = "<form class='w3-container' action='/savematrix' method='get'><h2>Ekran Ayarları:</h2>"
                                           "<p><input name='enablescrolling' class='w3-check w3-margin-top' type='checkbox' %SCROLL_CHECKED%> Kayan Yazıyı Göster</p>"
@@ -196,6 +175,30 @@ static const char MATRIX_FORM_2[] PROGMEM = "<p><input name='showwind' class='w3
                                             "<p><input name='showairpollution' class='w3-check w3-margin-top' type='checkbox' %AIR_POLLUTION_CHECKED%> Hava Kirliğini Göster</p>"
                                             "<p><input name='showpressure' class='w3-check w3-margin-top' type='checkbox' %PRESSURE_CHECKED%> Barometrik Basıncı Göster</p>"
                                             "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>";
+
+static const char COLOR_THEMES[] PROGMEM = "<option>red</option>"
+                                           "<option>pink</option>"
+                                           "<option>purple</option>"
+                                           "<option>deep-purple</option>"
+                                           "<option>indigo</option>"
+                                           "<option>blue</option>"
+                                           "<option>light-blue</option>"
+                                           "<option>cyan</option>"
+                                           "<option>teal</option>"
+                                           "<option>green</option>"
+                                           "<option>light-green</option>"
+                                           "<option>lime</option>"
+                                           "<option>khaki</option>"
+                                           "<option>yellow</option>"
+                                           "<option>amber</option>"
+                                           "<option>orange</option>"
+                                           "<option>deep-orange</option>"
+                                           "<option>blue-grey</option>"
+                                           "<option>brown</option>"
+                                           "<option>grey</option>"
+                                           "<option>dark-grey</option>"
+                                           "<option>black</option>"
+                                           "<option>w3schools</option>";
 
 const int TIMEOUT = 500; // 500 = 1/2 second
 int timeoutCount = 0;
@@ -338,24 +341,21 @@ void setup()
     server.on("/saveoctoprint", handleSaveOctoprint);
     server.on("/savepihole", handleSavePihole);
     server.on("/saveworldclock", handleSaveWorldClock);
-    server.on("/savematrix", handleSaveMatrix);
     server.on("/saveprayers", handleSavePrayers);
-    server.on("/savecurrency", handleSaveCurrency);
+    server.on("/savematrix", handleSaveMatrix);
     server.on("/systemreset", handleSystemReset);
     server.on("/forgetwifi", handleForgetWifi);
     server.on("/configure", handleConfigure);
     server.on("/configurewideclock", handleWideClockConfigure);
     server.on("/configureoctoprint", handleOctoprintConfigure);
     server.on("/configurepihole", handlePiholeConfigure);
-    server.on("/configureprayers", handlePrayersConfigure);
     server.on("/configurematrix", handleMatrixConfigure);
     server.on("/configureworldclock", handleWorldClockConfigure);
-    server.on("/configurecurrency", handleCurrencyConfigure);
+    server.on("/configureprayers", handlePrayersConfigure);
     server.on("/display", handleDisplay);
     server.on("/displayworldclock", displayWorldClockData);
     server.on("/displayworldclockweather", displayWorldClockWeatherData);
     server.on("/displayprayerstime", displayPrayersTimeData);
-    server.on("/displaycurrency", displayCurrencyData);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
     // Start the server
@@ -697,21 +697,6 @@ void handleSavePihole()
   redirectHome();
 }
 
-void handleSavePrayers()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  PRAYERS_ENABLED = server.hasArg("displayprayers");
-  prayersMethod = server.arg("prayersMethodID");
-  matrix.fillScreen(LOW); // show black
-  writeCityIds();
-  String cityEncoded = encodeHtmlString(CityName);
-  prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
-  redirectHome();
-}
-
 void handleSaveWorldClock()
 {
   if (!athentication())
@@ -742,23 +727,23 @@ void handleSaveWorldClock()
   redirectHome();
 }
 
-void handleSaveCurrency()
+void handleSavePrayers()
 {
   if (!athentication())
   {
     return server.requestAuthentication();
   }
-  CURRENCY_ENABLED = server.hasArg("displaycurrencies");
-  BaseCurrency1 = server.arg("basecurrency1");
-  BaseCurrency2 = server.arg("basecurrency2");
-  TargetCurrency = server.arg("targetcurrency");
-  CurrencyApiKey = server.arg("currenyapikey");
+  PRAYERS_ENABLED = server.hasArg("displayprayers");
   matrix.fillScreen(LOW); // show black
   writeCityIds();
-  currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
+  String cityEncoded = encodeHtmlString(CityName);
+  prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
   delay(1000);
-  currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
+  String cityEncoded1 = encodeHtmlString(WorldCityName1);
+  prayersClient.updatePrayerTimesAddress(cityEncoded1, 1);
   delay(1000);
+  String cityEncoded2 = encodeHtmlString(WorldCityName2);
+  prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
   redirectHome();
 }
 
@@ -794,11 +779,7 @@ void handleLocations()
   }
   TIMEDBKEY = server.arg("TimeZoneDB");
   APIKEY = server.arg("openWeatherMapApiKey");
-  WeatherLanguage = server.arg("openWeatherMapLanguage");
   flashOnSeconds = server.hasArg("flashseconds");
-  IS_24HOUR = server.hasArg("is24hour");
-  IS_PM = server.hasArg("isPM");
-  IS_METRIC = server.hasArg("metric");
   CityName = server.arg("namecity");
   marqueeMessage = decodeHtmlString(server.arg("marqueeMsg"));
   timeDisplayTurnsOn = decodeHtmlString(server.arg("startTime"));
@@ -963,39 +944,6 @@ void handlePiholeConfigure()
   digitalWrite(externalLight, HIGH);
 }
 
-void handlePrayersConfigure()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  digitalWrite(externalLight, LOW);
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-
-  sendHeader();
-
-  String form = FPSTR(PRAYERS_FORM);
-  String isPrayersDisplayedChecked = "";
-  if (PRAYERS_ENABLED)
-  {
-    isPrayersDisplayedChecked = "checked='checked'";
-  }
-  form.replace("%PRAYERSCHECKED%", isPrayersDisplayedChecked);
-  form.replace("%PRAYERSMETHOD%", prayersMethod);
-  server.sendContent(form);
-
-  sendFooter();
-
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
 void handleWorldClockConfigure()
 {
   if (!athentication())
@@ -1030,7 +978,7 @@ void handleWorldClockConfigure()
   digitalWrite(externalLight, HIGH);
 }
 
-void handleCurrencyConfigure()
+void handlePrayersConfigure()
 {
   if (!athentication())
   {
@@ -1046,17 +994,13 @@ void handleCurrencyConfigure()
 
   sendHeader();
 
-  String form = FPSTR(CURRENCY_FORM);
-  String isCurrencyDisplayedChecked = "";
-  if (CURRENCY_ENABLED)
+  String form = FPSTR(PRAYERS_FORM);
+  String isPrayersDisplayedChecked = "";
+  if (PRAYERS_ENABLED)
   {
-    isCurrencyDisplayedChecked = "checked='checked'";
+    isPrayersDisplayedChecked = "checked='checked'";
   }
-  form.replace("%CURRENCYCHECKED%", isCurrencyDisplayedChecked);
-  form.replace("%CURRENCYKEY%", CurrencyApiKey);
-  form.replace("%BASECURRENCY1%", BaseCurrency1);
-  form.replace("%BASECURRENCY2%", BaseCurrency2);
-  form.replace("%TARGETCURRENCY%", TargetCurrency);
+  form.replace("%PRAYERSCHECKED%", isPrayersDisplayedChecked);
   server.sendContent(form);
 
   sendFooter();
@@ -1212,30 +1156,10 @@ void handleConfigure()
   }
   form.replace("%CITYNAME1%", cityName);
   form.replace("%NAMECITY%", CityName);
-  form.replace("%WEATHERLANG%", WeatherLanguage);
 
-  String checked = "";
-  if (IS_METRIC)
-  {
-    checked = "checked='checked'";
-  }
-  form.replace("%CHECKED%", checked);
   server.sendContent(form);
 
   form = FPSTR(CHANGE_FORM2);
-  String is24hourChecked = "";
-  if (IS_24HOUR)
-  {
-    is24hourChecked = "checked='checked'";
-  }
-  form.replace("%IS_24HOUR_CHECKED%", is24hourChecked);
-
-  String isPmChecked = "";
-  if (IS_PM)
-  {
-    isPmChecked = "checked='checked'";
-  }
-  form.replace("%IS_PM_CHECKED%", isPmChecked);
 
   String isFlashSecondsChecked = "";
   if (flashOnSeconds)
@@ -1263,7 +1187,9 @@ void handleConfigure()
   form.replace("%OPTIONS%", options);
 
   form.replace("%REFRESH_DISPLAY%", String(minutesBetweenScrolling));
-  form.replace("%THEME_OPTIONS%", themeColor);
+  String themeOptions = FPSTR(COLOR_THEMES);
+  themeOptions.replace(">" + String(themeColor) + "<", " selected>" + String(themeColor) + "<");
+  form.replace("%THEME_OPTIONS%", themeOptions);
 
   String isUseSecurityChecked = "";
   if (IS_BASIC_AUTH)
@@ -1368,6 +1294,12 @@ void getWeatherData() // client function to send/receive GET request data..
     String cityEncoded = encodeHtmlString(CityName);
     prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
     delay(1000);
+    String cityEncoded1 = encodeHtmlString(WorldCityName1);
+    prayersClient.updatePrayerTimesAddress(cityEncoded1, 1);
+    delay(1000);
+    String cityEncoded2 = encodeHtmlString(WorldCityName2);
+    prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
+    delay(1000);
   }
 
   if (WORLD_CLOCK_ENABLED && displayOn)
@@ -1396,19 +1328,6 @@ void getWeatherData() // client function to send/receive GET request data..
     worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
     delay(1000);
     worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
-    delay(1000);
-  }
-
-  if (CURRENCY_ENABLED && displayOn)
-  {
-    matrix.drawPixel(16, 7, HIGH);
-    matrix.drawPixel(17, 7, HIGH);
-    matrix.drawPixel(18, 7, HIGH);
-    matrix.write();
-    Serial.println("Getting Currency Data...");
-    currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
-    delay(1000);
-    currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
     delay(1000);
   }
 
@@ -1822,15 +1741,14 @@ void displayPrayersTimeData()
 
   if (PRAYERS_ENABLED)
   {
-    if (prayersClient.getError() == "")
+    if (prayersClient.getError(0) == "")
     {
       String praySource = prayersClient.getMethodName(0);
       String praySourceClear = prayersClient.cleanText(praySource);
 
-      html = "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(0) + "/flat/48.png' alt='" + weatherClient.getCountry(0) + "'>" + "&ensp;" + "Namaz Vakitleri (" + TimeDBClient.getCityName(0) + ", " + TimeDBClient.getRegionName(0) + ", " + TimeDBClient.getCountryCode(0) + ")</h2></div><div class='w3-cell-row'><p>";
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(0) + "/flat/48.png' alt='" + weatherClient.getCountry(0) + "'>" + "&ensp;" + "Namaz Vakitleri (" + TimeDBClient.getCityName(0) + ", " + TimeDBClient.getRegionName(0) + ", " + TimeDBClient.getCountryCode(0) + ")</h2></div><div class='w3-cell-row'><p>";
       html += "Kaynak: " + praySourceClear + " / ID: " + prayersMethod + "<br>";
       html += "Hicri/Miladi Takvime Göre Tarih: " + prayersClient.getHijriDate(0) + " / " + prayersClient.getGregorianDate(0) + "<br>";
-      // html += "Miladi Takvime Göre Tarih: " + prayersClient.getGregorianDate(0) + "<br>";
       html += "İmsak: " + prayersClient.getFajr(0) + "<br>";
       html += "Güneş: " + prayersClient.getSunrise(0) + "<br>";
       html += "Öğle Namazı: " + prayersClient.getDhuhr(0) + "<br>";
@@ -1843,7 +1761,51 @@ void displayPrayersTimeData()
     {
       html = "<div class='w3-cell-row'>Namaz Vakitleri Hatası";
       html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
-      html += "Sebebi: <strong>" + prayersClient.getError() + "</strong><br></div><br><hr>";
+      html += "Sebebi: <strong>" + prayersClient.getError(0) + "</strong><br></div><br><hr>";
+    }
+    if (prayersClient.getError(1) == "")
+    {
+      String praySource = prayersClient.getMethodName(1);
+      String praySourceClear = prayersClient.cleanText(praySource);
+
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(1) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(1) + "'>" + "&ensp;" + "Namaz Vakitleri (" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'><p>";
+      html += "Kaynak: " + praySourceClear + " / ID: " + prayersMethod + "<br>";
+      html += "Hicri/Miladi Takvime Göre Tarih: " + prayersClient.getHijriDate(1) + " / " + prayersClient.getGregorianDate(1) + "<br>";
+      html += "İmsak: " + prayersClient.getFajr(1) + "<br>";
+      html += "Güneş: " + prayersClient.getSunrise(1) + "<br>";
+      html += "Öğle Namazı: " + prayersClient.getDhuhr(1) + "<br>";
+      html += "İkindi Namazı: " + prayersClient.getAsr(1) + "<br>";
+      html += "Akşam Namazı: " + prayersClient.getMaghrib(1) + "<br>";
+      html += "Yatsı Namazı: " + prayersClient.getIsha(1) + "<br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Namaz Vakitleri Hatası";
+      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
+      html += "Sebebi: <strong>" + prayersClient.getError(1) + "</strong><br></div><br><hr>";
+    }
+    if (prayersClient.getError(2) == "")
+    {
+      String praySource = prayersClient.getMethodName(2);
+      String praySourceClear = prayersClient.cleanText(praySource);
+
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(2) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(2) + "'>" + "&ensp;" + "Namaz Vakitleri (" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'><p>";
+      html += "Kaynak: " + praySourceClear + " / ID: " + prayersMethod + "<br>";
+      html += "Hicri/Miladi Takvime Göre Tarih: " + prayersClient.getHijriDate(2) + " / " + prayersClient.getGregorianDate(2) + "<br>";
+      html += "İmsak: " + prayersClient.getFajr(2) + "<br>";
+      html += "Güneş: " + prayersClient.getSunrise(2) + "<br>";
+      html += "Öğle Namazı: " + prayersClient.getDhuhr(2) + "<br>";
+      html += "İkindi Namazı: " + prayersClient.getAsr(2) + "<br>";
+      html += "Akşam Namazı: " + prayersClient.getMaghrib(2) + "<br>";
+      html += "Yatsı Namazı: " + prayersClient.getIsha(2) + "<br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Namaz Vakitleri Hatası";
+      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
+      html += "Sebebi: <strong>" + prayersClient.getError(2) + "</strong><br></div><br><hr>";
     }
     server.sendContent(String(html));
     html = "";
@@ -1854,58 +1816,6 @@ void displayPrayersTimeData()
     server.sendContent(String(html));
     html = "";
   }
-  sendFooter();
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void displayCurrencyData()
-{
-  digitalWrite(externalLight, LOW);
-  String html = "";
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-  sendHeader();
-
-  if (CURRENCY_ENABLED)
-  {
-    if (currencyClient.getError(0) == "")
-    {
-      html += "1 " + currencyClient.getBaseCurrencyName(0) + " = " + currencyClient.getTargetCurrencyFormatted(0) + " " + currencyClient.getTargetCurrencyName(0) + " (Son Güncelleme: " + currencyClient.getRequestTime(0) + " GMT)" + "<br>";
-      html += "<hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>Döviz Kurları Hatası";
-      html += "<p>Lütfen <a href='/configurecurrency' Döviz Kurları Ayarlarını</a> Yapınız</p><br>";
-      html += "Sebebi: <strong>" + currencyClient.getError(0) + "</strong><br></div><br>";
-    }
-    if (currencyClient.getError(1) == "")
-    {
-      html += "1 " + currencyClient.getBaseCurrencyName(1) + " = " + currencyClient.getTargetCurrencyFormatted(1) + " " + currencyClient.getTargetCurrencyName(1) + " (Son Güncelleme: " + currencyClient.getRequestTime(1) + " GMT)" + "<br>";
-      html += "<hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>Döviz Kurları Hatası";
-      html += "<p>Lütfen <a href='/configurecurrency' Döviz Kurları Ayarlarını</a> Yapınız</p><br>";
-      html += "Sebebi: <strong>" + currencyClient.getError(1) + "</strong><br></div><br>";
-    }
-    server.sendContent(String(html));
-    html = "";
-  }
-  else
-  {
-    html += "Döviz Kurları Özelliği Devre Dışı";
-    server.sendContent(String(html));
-    html = "";
-  }
-
   sendFooter();
   server.sendContent("");
   server.client().stop();
@@ -2133,19 +2043,14 @@ String writeCityIds()
     f.println("PiHolePort=" + String(PiHolePort));
     f.println("PiHoleApiKey=" + String(PiHoleApiKey));
     f.println("themeColor=" + themeColor);
-    f.println("isPrayer=" + String(PRAYERS_ENABLED));
-    f.println("prayersMethod=" + prayersMethod);
     f.println("SHOW_AIR_POLLUTION=" + String(SHOW_AIR_POLLUTION));
     f.println("isWorldClock=" + String(WORLD_CLOCK_ENABLED));
     f.println("WorldCityName1=" + WorldCityName1);
     f.println("CityName=" + CityName);
     f.println("ENABLE_SCROLL=" + String(ENABLE_SCROLL));
     f.println("WorldCityName2=" + WorldCityName2);
-    f.println("isCurrency=" + String(CURRENCY_ENABLED));
-    f.println("CurrencyApiKey=" + CurrencyApiKey);
-    f.println("BaseCurrency1=" + BaseCurrency1);
-    f.println("BaseCurrency2=" + BaseCurrency2);
-    f.println("TargetCurrency=" + TargetCurrency);
+    f.println("isPrayer=" + String(PRAYERS_ENABLED));
+    f.println("prayersMethod=" + prayersMethod);
   }
   f.close();
   readCityIds();
@@ -2401,17 +2306,6 @@ void readCityIds()
       themeColor.trim();
       Serial.println("themeColor= " + themeColor);
     }
-    if (line.indexOf("isPrayer=") >= 0)
-    {
-      PRAYERS_ENABLED = line.substring(line.lastIndexOf("isPrayer=") + 9).toInt();
-      Serial.println("PRAYERS_ENABLED= " + String(PRAYERS_ENABLED));
-    }
-    if (line.indexOf("prayersMethod=") >= 0)
-    {
-      prayersMethod = line.substring(line.lastIndexOf("prayersMethod=") + 14);
-      prayersMethod.trim();
-      Serial.println("prayersMethod= " + prayersMethod);
-    }
     if (line.indexOf("SHOW_AIR_POLLUTION=") >= 0)
     {
       SHOW_AIR_POLLUTION = line.substring(line.lastIndexOf("SHOW_AIR_POLLUTION=") + 19).toInt();
@@ -2439,43 +2333,21 @@ void readCityIds()
       WorldCityName2.trim();
       Serial.println("WorldCityName2= " + WorldCityName2);
     }
-    if (line.indexOf("CurrencyApiKey=") >= 0)
+    if (line.indexOf("isPrayer=") >= 0)
     {
-      CurrencyApiKey = line.substring(line.lastIndexOf("CurrencyApiKey=") + 15);
-      CurrencyApiKey.trim();
-      Serial.println("CurrencyApiKey: " + CurrencyApiKey);
+      PRAYERS_ENABLED = line.substring(line.lastIndexOf("isPrayer=") + 9).toInt();
+      Serial.println("PRAYERS_ENABLED= " + String(PRAYERS_ENABLED));
     }
-    if (line.indexOf("isCurrency=") >= 0)
+    if (line.indexOf("prayersMethod=") >= 0)
     {
-      CURRENCY_ENABLED = line.substring(line.lastIndexOf("isCurrency=") + 11).toInt();
-      Serial.println("CURRENCY_ENABLED= " + String(CURRENCY_ENABLED));
-    }
-    if (line.indexOf("BaseCurrency1=") >= 0)
-    {
-      BaseCurrency1 = line.substring(line.lastIndexOf("BaseCurrency1=") + 14);
-      BaseCurrency1.trim();
-      Serial.println("BaseCurrency1= " + BaseCurrency1);
-    }
-    if (line.indexOf("BaseCurrency2=") >= 0)
-    {
-      BaseCurrency2 = line.substring(line.lastIndexOf("BaseCurrency2=") + 14);
-      BaseCurrency2.trim();
-      Serial.println("BaseCurrency2= " + BaseCurrency2);
-    }
-    if (line.indexOf("TargetCurrency=") >= 0)
-    {
-      TargetCurrency = line.substring(line.lastIndexOf("TargetCurrency=") + 15);
-      TargetCurrency.trim();
-      Serial.println("TargetCurrency= " + TargetCurrency);
+      prayersMethod = line.substring(line.lastIndexOf("prayersMethod=") + 14);
+      prayersMethod.trim();
+      Serial.println("prayersMethod= " + prayersMethod);
     }
   }
   fr.close();
   matrix.setIntensity(displayIntensity);
   prayersClient.updateMethodID(prayersMethod);
-  currencyClient.updateBaseCurrency1(BaseCurrency1);
-  currencyClient.updateBaseCurrency2(BaseCurrency2);
-  currencyClient.updateTargetCurrency(TargetCurrency);
-  currencyClient.updateCurrencyApiKey(CurrencyApiKey);
   worldWeatherClient.updateWorldCityName1(WorldCityName1);
   worldWeatherClient.updateWorldCityName2(WorldCityName2);
   weatherClient.updateWeatherApiKey(APIKEY);
