@@ -78,7 +78,7 @@ public:
   String getGregorianDate(int index);
   String getGregorianCalender(int index);
   String getMethodName(int index);
-  boolean getCached();
-  String getError();
+  boolean getCached(int index);
+  String getError(int index);
   String cleanText(String text);
 };
