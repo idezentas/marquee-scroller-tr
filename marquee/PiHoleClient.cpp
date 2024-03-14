@@ -215,7 +215,7 @@ void PiHoleClient::getGraphData(String server, int port, String apiKey)
           {
             if (track && countBracket >= 3)
             {
-              if (buff[i] == ',' || buff[i] == '}' && blockedCount < 144)
+              if ((buff[i] == ',' || buff[i] == '}') && (blockedCount < 144))
               {
                 blocked[blockedCount] = result.toInt();
                 if (blocked[blockedCount] > blockedHigh)
