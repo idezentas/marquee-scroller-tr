@@ -85,8 +85,8 @@ private:
     String nh3;
   } weather;
 
-  weather weathers[5];
-
+  weather weathers[3];
+  
   typedef struct
   {
     String sunRise;
