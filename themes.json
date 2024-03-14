@@ -1,0 +1,71 @@
+{
+    "status": "ok",
+    "sources": [
+        {
+            "id": "red"
+        },
+        {
+            "id": "pink"
+        },
+        {
+            "id": "purple"
+        },
+        {
+            "id": "deep-purple"
+        },
+        {
+            "id": "indigo"
+        },
+        {
+            "id": "blue"
+        },
+        {
+            "id": "light-blue"
+        },
+        {
+            "id": "cyan"
+        },
+        {
+            "id": "teal"
+        },
+        {
+            "id": "green"
+        },
+        {
+            "id": "light-green"
+        },
+        {
+            "id": "lime"
+        },
+        {
+            "id": "khaki"
+        },
+        {
+            "id": "yellow"
+        },
+        {
+            "id": "orange"
+        },
+        {
+            "id": "deep-orange"
+        },
+        {
+            "id": "blue-grey"
+        },
+        {
+            "id": "brown"
+        },
+        {
+            "id": "grey"
+        },
+        {
+            "id": "dark-grey"
+        },
+        {
+            "id": "black"
+        },
+        {
+            "id": "w3schools"
+        }
+    ]
+}
