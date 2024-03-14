@@ -41,17 +41,17 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
 
   if (address == "")
   {
-    prayers[0].error = "Please enter address for prayes time.";
-    Serial.println(prayers[0].error);
+    prayers[index].error = "Please enter address for prayes time.";
+    Serial.println(prayers[index].error);
     return;
   }
 
-  String apiGetData = "GET /v1/timingsByAddress/now?address=" + address + "&method=" + myMethodID + " HTTP/1.1";
+  String apiGetData = "GET /v1/timingsByAddress/now?address=" + address + "&method=" + myMethodID + " HTTP/1.0";
 
-  // Serial.println("Getting Prayers Time Data");
+  Serial.println("Getting Prayers Time Data");
   Serial.println(apiGetData);
-  prayers[0].cached = false;
-  prayers[0].error = "";
+  prayers[index].cached = false;
+  prayers[index].error = "";
   if (prayersClient.connect(servername, 80))
   { // starts client connection, checks for connection
     prayersClient.println(apiGetData);
@@ -64,7 +64,7 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
   {
     Serial.println("Connection for prayers time data failed"); // error message if no client connect
     Serial.println();
-    prayers[0].error = "Connection for prayers time data failed";
+    prayers[index].error = "Connection for prayers time data failed";
     return;
   }
 
@@ -79,9 +79,9 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
   Serial.println("Response Header: " + String(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0)
   {
-    Serial.print(F("Unexpected response: "));
+    Serial.print("Unexpected response: ");
     Serial.println(status);
-    prayers[0].error = "Prayers Time Data Error: " + String(status);
+    prayers[index].error = "Prayers Time Data Error: " + String(status);
     return;
   }
 
@@ -89,7 +89,7 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
   char endOfHeaders[] = "\r\n\r\n";
   if (!prayersClient.find(endOfHeaders))
   {
-    Serial.println(F("Invalid response"));
+    Serial.println("Invalid response");
     return;
   }
 
@@ -97,34 +97,42 @@ void PrayersClient::updatePrayerTimesAddress(String address, int index)
   DeserializationError error = deserializeJson(root, prayersClient);
   if (error)
   {
-    Serial.println(F("Prayers Time Data Parsing failed!"));
-    prayers[0].error = "Prayers Time Data Parsing failed!";
+    Serial.println("Prayers Time Data Parsing failed!");
+    Serial.println(error.c_str());
+    prayers[index].error = "Prayers Time Data Parsing failed!" + String(error.c_str());
     return;
   }
 
   prayersClient.stop(); // stop client
 
-  prayers[index].Fajr = root["data"]["timings"]["Fajr"].as<String>();
-  prayers[index].Sunrise = root["data"]["timings"]["Sunrise"].as<String>();
-  prayers[index].Dhuhr = root["data"]["timings"]["Dhuhr"].as<String>();
-  prayers[index].Asr = root["data"]["timings"]["Asr"].as<String>();
-  prayers[index].Sunset = root["data"]["timings"]["Sunset"].as<String>();
-  prayers[index].Maghrib = root["data"]["timings"]["Maghrib"].as<String>();
-  prayers[index].Isha = root["data"]["timings"]["Isha"].as<String>();
-  prayers[index].Imsak = root["data"]["timings"]["Imsak"].as<String>();
-  prayers[index].Midnight = root["data"]["timings"]["Midnight"].as<String>();
-  prayers[index].hijriDate = root["data"]["date"]["hijri"]["date"].as<String>();
-  prayers[index].hijriCalender = root["data"]["date"]["hijri"]["designation"]["expanded"].as<String>();
-  prayers[index].gregorianDate = root["data"]["date"]["gregorian"]["date"].as<String>();
-  prayers[index].gregorianCalender = root["data"]["date"]["gregorian"]["designation"]["expanded"].as<String>();
+  JsonObject timings_ = root["data"]["timings"];
+  prayers[index].Fajr = timings_["Fajr"].as<String>();
+  prayers[index].Sunrise = timings_["Sunrise"].as<String>();
+  prayers[index].Dhuhr = timings_["Dhuhr"].as<String>();
+  prayers[index].Asr = timings_["Asr"].as<String>();
+  prayers[index].Sunset = timings_["Sunset"].as<String>();
+  prayers[index].Maghrib = timings_["Maghrib"].as<String>();
+  prayers[index].Isha = timings_["Isha"].as<String>();
+  prayers[index].Imsak = timings_["Imsak"].as<String>();
+  prayers[index].Midnight = timings_["Midnight"].as<String>();
+
+  JsonObject hijri_ = root["data"]["date"]["hijri"];
+  prayers[index].hijriDate = hijri_["date"].as<String>();
+  prayers[index].hijriCalender = hijri_["designation"]["expanded"].as<String>();
+
+  JsonObject gregorian_ = root["data"]["date"]["gregorian"];
+  prayers[index].gregorianDate = gregorian_["date"].as<String>();
+  prayers[index].gregorianCalender = gregorian_["designation"]["expanded"].as<String>();
+
   prayers[index].methodName = root["data"]["meta"]["method"]["name"].as<String>();
 
   Serial.println("Fajr: " + prayers[index].Fajr);
   Serial.println("Sunrise: " + prayers[index].Sunrise);
   Serial.println("Dhuhr: " + prayers[index].Dhuhr);
   Serial.println("Asr: " + prayers[index].Asr);
-  Serial.println("Sunset: " + prayers[index].Sunset);
   Serial.println("Maghrib: " + prayers[index].Maghrib);
+  Serial.println("Isha: " + prayers[index].Isha);
+  Serial.println("Sunset: " + prayers[index].Sunset);
   Serial.println("Imsak: " + prayers[index].Imsak);
   Serial.println("Midnight: " + prayers[index].Midnight);
   Serial.println("hijriDate: " + prayers[index].hijriDate);
@@ -205,14 +213,14 @@ String PrayersClient::getMethodName(int index)
   return prayers[index].methodName;
 }
 
-boolean PrayersClient::getCached()
+boolean PrayersClient::getCached(int index)
 {
-  return prayers[0].cached;
+  return prayers[index].cached;
 }
 
-String PrayersClient::getError()
+String PrayersClient::getError(int index)
 {
-  return prayers[0].error;
+  return prayers[index].error;
 }
 
 String PrayersClient::roundValue(String value)
