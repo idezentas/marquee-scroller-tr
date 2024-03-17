@@ -50,7 +50,7 @@ void OpenWeatherMapClient::updateCityName(String CityName)
   myCityName = CityName;
   if (myCityName == "")
   {
-    myCityName = "Mesa,US";
+    myCityName = "Ankara,TR";
   }
 }
 
@@ -69,6 +69,15 @@ void OpenWeatherMapClient::updateWorldCityName2(String WorldCityName2)
   if (myWorldCityName2 == "")
   {
     myWorldCityName2 = "Los Angeles,US";
+  }
+}
+
+void OpenWeatherMapClient::updateWorldCityName3(String WorldCityName3)
+{
+  myWorldCityName3 = WorldCityName3;
+  if (myWorldCityName3 == "")
+  {
+    myWorldCityName3 = "Milano,IT";
   }
 }
 
