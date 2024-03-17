@@ -63,6 +63,9 @@ OpenWeatherMapClient worldWeatherClient(APIKEY, IS_METRIC, CityName, WeatherLang
 // Prayers Time Client
 PrayersClient prayersClient(prayersMethod);
 
+// Currency Client
+CurrencyConverterClient currencyClient(BaseCurrency1, BaseCurrency2, TargetCurrency);
+
 // OctoPrint Client
 OctoPrintClient printerClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
 int printerCount = 0;
@@ -79,10 +82,12 @@ static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' hre
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclockweather'><i class='fas fa-clock'></i> Dünya Şehirleri Hava Durumu Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayprayerstime'><i class='fas fa-mosque'></i> Namaz Vakitleri Verileri</a>"
+                                           "<a class='w3-bar-item w3-button' href='/displaycurrency'><i class='fas fa-money-bill'></i> Döviz Kurları Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/configure'><i class='fas fa-cog'></i> Ayarlar</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurematrix'><i class='fas fa-cog'></i> Ekran Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configureprayers'><i class='fas fa-mosque'></i> Namaz Vakitleri Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>";
+                                           "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>"
+                                           "<a class='w3-bar-item w3-button' href='/configurecurrency'><i class='fas fa-money-bill'></i> Döviz Kurları Ayarları</a>";
 
 static const char WEB_ACTIONS2[] PROGMEM = "<a class='w3-bar-item w3-button' href='/configureoctoprint'><i class='fas fa-cube'></i> OctoPrint Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurepihole'><i class='fas fa-network-wired'></i> Pi-hole Ayarları</a>"
@@ -151,6 +156,7 @@ static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' actio
                                                "<p><input name='displayworldclock' class='w3-check w3-margin-top' type='checkbox' %WORLDCLOCKCHECKED%> Dünya Saatlerini Göster</p>"
                                                "<p><label>1.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname1' value='%WORLDCITYNAME1%' maxlength='60'></p>"
                                                "<p><label>2.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname2' value='%WORLDCITYNAME2%' maxlength='60'></p>"
+                                               "<p><label>3.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname3' value='%WORLDCITYNAME3%' maxlength='60'></p>"
                                                "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                                "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
@@ -158,6 +164,17 @@ static const char PRAYERS_FORM[] PROGMEM = "<form class='w3-container' action='/
                                            "<p><input name='displayprayers' class='w3-check w3-margin-top' type='checkbox' %PRAYERSCHECKED%> Namaz Vakitlerini Göster</p>"
                                            "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                            "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
+
+static const char CURRENCY_FORM[] PROGMEM = "<form class='w3-container' action='/savecurrency' method='get'><h2>Döviz Kurları Ayarları:</h2>"
+                                            "<p><input name='displaycurrencies' class='w3-check w3-margin-top' type='checkbox' %CURRENCYCHECKED%> Döviz Kurlarını Göster</p>"
+                                            "<p>1.Temel Para Birimini Seçiniz <select class='w3-option w3-padding' name='basecurrency1' id='basecurrency1'></select></p>"
+                                            "<script>var s1='%BASECURRENCY1%';var tt1;var xmlhttp=new XMLHttpRequest();xmlhttp.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp.onreadystatechange=function(){    if(xmlhttp.readyState==4){if(xmlhttp.status==200){var obj=JSON.parse(xmlhttp.responseText);obj.sources.forEach(updateOptions);}}};xmlhttp.send();function updateOptions(it){if(it!=null){var se = (s1 == it.id) ? ' selected' : '';tt1 += '<option'+se+'>'+it.id+'</option>';document.getElementById('basecurrency1').innerHTML = tt1;}}</script>"
+                                            "<p>2.Temel Para Birimini Seçiniz <select class='w3-option w3-padding' name='basecurrency2' id='basecurrency2'></select></p>"
+                                            "<script>var s2='%BASECURRENCY2%';var tt2;var xmlhttp1=new XMLHttpRequest();xmlhttp1.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp1.onreadystatechange=function(){if(xmlhttp1.readyState==4){if(xmlhttp1.status==200){var obj=JSON.parse(xmlhttp1.responseText);obj.sources.forEach(updateOptions1);}}};xmlhttp1.send();function updateOptions1(it){if(it!=null){var se = (s2 == it.id) ? ' selected' : '';tt2 += '<option'+se+'>'+it.id+'</option>';document.getElementById('basecurrency2').innerHTML = tt2;}}</script>"
+                                            "<p>Dönüştürülecek Para Birimini Seçiniz <select class='w3-option w3-padding' name='targetcurrency' id='targetcurrency'></select></p>"
+                                            "<script>var s='%TARGETCURRENCY%';var tt;var xmlhttp2=new XMLHttpRequest();xmlhttp2.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp2.onreadystatechange=function(){if(xmlhttp2.readyState==4){if(xmlhttp2.status==200){var obj=JSON.parse(xmlhttp2.responseText);obj.sources.forEach(updateOptions2);}}};xmlhttp2.send();function updateOptions2(it){if(it!=null){var se = (s == it.id) ? ' selected' : '';tt += '<option'+se+'>'+it.id+'</option>';document.getElementById('targetcurrency').innerHTML = tt;}}</script>"
+                                            "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
+                                            "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
 static const char MATRIX_FORM[] PROGMEM = "<form class='w3-container' action='/savematrix' method='get'><h2>Ekran Ayarları:</h2>"
                                           "<p><input name='enablescrolling' class='w3-check w3-margin-top' type='checkbox' %SCROLL_CHECKED%> Kayan Yazıyı Göster</p>"
@@ -342,6 +359,7 @@ void setup()
     server.on("/savepihole", handleSavePihole);
     server.on("/saveworldclock", handleSaveWorldClock);
     server.on("/saveprayers", handleSavePrayers);
+    server.on("/savecurrency", handleSaveCurrency);
     server.on("/savematrix", handleSaveMatrix);
     server.on("/systemreset", handleSystemReset);
     server.on("/forgetwifi", handleForgetWifi);
@@ -352,10 +370,12 @@ void setup()
     server.on("/configurematrix", handleMatrixConfigure);
     server.on("/configureworldclock", handleWorldClockConfigure);
     server.on("/configureprayers", handlePrayersConfigure);
+    server.on("/configurecurrency", handleCurrencyConfigure);
     server.on("/display", handleDisplay);
     server.on("/displayworldclock", displayWorldClockData);
     server.on("/displayworldclockweather", displayWorldClockWeatherData);
     server.on("/displayprayerstime", displayPrayersTimeData);
+    server.on("/displaycurrency", displayCurrencyData);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
     // Start the server
@@ -706,6 +726,7 @@ void handleSaveWorldClock()
   WORLD_CLOCK_ENABLED = server.hasArg("displayworldclock");
   WorldCityName1 = server.arg("worldcityname1");
   WorldCityName2 = server.arg("worldcityname2");
+  WorldCityName3 = server.arg("worldcityname3");
   matrix.fillScreen(LOW); // show black
   writeCityIds();
   worldWeatherClient.updateWeatherName(WorldCityName1, 1);
@@ -713,6 +734,8 @@ void handleSaveWorldClock()
   timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
   delay(1000);
   timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
+  delay(1000);
+  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
   delay(1000);
   worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(1), worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
   delay(1000);
@@ -722,7 +745,19 @@ void handleSaveWorldClock()
   delay(1000);
   timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
   delay(1000);
+  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+  delay(1000);
   worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+  delay(1000);
+  worldWeatherClient.updateWeatherName(WorldCityName3, 3);
+  delay(1000);
+  timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+  delay(1000);
+  timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
+  delay(1000);
+  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+  delay(1000);
+  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(3), worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
   delay(1000);
   redirectHome();
 }
@@ -744,6 +779,29 @@ void handleSavePrayers()
   delay(1000);
   String cityEncoded2 = encodeHtmlString(WorldCityName2);
   prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
+  delay(1000);
+  String cityEncoded3 = encodeHtmlString(WorldCityName3);
+  prayersClient.updatePrayerTimesAddress(cityEncoded3, 3);
+  delay(1000);
+  redirectHome();
+}
+
+void handleSaveCurrency()
+{
+  if (!athentication())
+  {
+    return server.requestAuthentication();
+  }
+  CURRENCY_ENABLED = server.hasArg("displaycurrencies");
+  BaseCurrency1 = server.arg("basecurrency1");
+  BaseCurrency2 = server.arg("basecurrency2");
+  TargetCurrency = server.arg("targetcurrency");
+  matrix.fillScreen(LOW); // show black
+  writeCityIds();
+  currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
+  delay(1000);
+  currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
+  delay(1000);
   redirectHome();
 }
 
@@ -969,6 +1027,7 @@ void handleWorldClockConfigure()
   form.replace("%WORLDCLOCKCHECKED%", isWorldClockDisplayedChecked);
   form.replace("%WORLDCITYNAME1%", WorldCityName1);
   form.replace("%WORLDCITYNAME2%", WorldCityName2);
+  form.replace("%WORLDCITYNAME3%", WorldCityName3);
   server.sendContent(form);
 
   sendFooter();
@@ -1001,6 +1060,41 @@ void handlePrayersConfigure()
     isPrayersDisplayedChecked = "checked='checked'";
   }
   form.replace("%PRAYERSCHECKED%", isPrayersDisplayedChecked);
+  server.sendContent(form);
+
+  sendFooter();
+
+  server.sendContent("");
+  server.client().stop();
+  digitalWrite(externalLight, HIGH);
+}
+
+void handleCurrencyConfigure()
+{
+  if (!athentication())
+  {
+    return server.requestAuthentication();
+  }
+  digitalWrite(externalLight, LOW);
+
+  server.sendHeader("Cache-Control", "no-cache, no-store");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.send(200, "text/html", "");
+
+  sendHeader();
+
+  String form = FPSTR(CURRENCY_FORM);
+  String isCurrencyDisplayedChecked = "";
+  if (CURRENCY_ENABLED)
+  {
+    isCurrencyDisplayedChecked = "checked='checked'";
+  }
+  form.replace("%CURRENCYCHECKED%", isCurrencyDisplayedChecked);
+  form.replace("%BASECURRENCY1%", BaseCurrency1);
+  form.replace("%BASECURRENCY2%", BaseCurrency2);
+  form.replace("%TARGETCURRENCY%", TargetCurrency);
   server.sendContent(form);
 
   sendFooter();
@@ -1300,6 +1394,9 @@ void getWeatherData() // client function to send/receive GET request data..
     String cityEncoded2 = encodeHtmlString(WorldCityName2);
     prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
     delay(1000);
+    String cityEncoded3 = encodeHtmlString(WorldCityName3);
+    prayersClient.updatePrayerTimesAddress(cityEncoded3, 3);
+    delay(1000);
   }
 
   if (WORLD_CLOCK_ENABLED && displayOn)
@@ -1328,6 +1425,29 @@ void getWeatherData() // client function to send/receive GET request data..
     worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
     delay(1000);
     worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+    delay(1000);
+    worldWeatherClient.updateWeatherName(WorldCityName3, 3);
+    delay(1000);
+    timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+    delay(1000);
+    timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
+    delay(1000);
+    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+    delay(1000);
+    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(3), worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+    delay(1000);
+  }
+
+  if (CURRENCY_ENABLED && displayOn)
+  {
+    matrix.drawPixel(16, 7, HIGH);
+    matrix.drawPixel(17, 7, HIGH);
+    matrix.drawPixel(18, 7, HIGH);
+    matrix.write();
+    Serial.println("Getting Currency Data...");
+    currencyClient.updateCurrency(BaseCurrency1, TargetCurrency, 0);
+    delay(1000);
+    currencyClient.updateCurrency(BaseCurrency2, TargetCurrency, 1);
     delay(1000);
   }
 
@@ -1645,6 +1765,24 @@ void displayWorldClockData()
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
       html += "Sebebi: <strong>" + worldWeatherClient.getError(2) + "</strong><br></div><br>";
     }
+    if (worldWeatherClient.getError(3) == "")
+    {
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + worldWeatherClient.getCity(3) + ", " + worldWeatherClient.getCountry(3) + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
+      html += "Tarih ve Saat: " + timezoneClient.getTimestamp2Date(3) + "<br>";
+      html += "Zaman Dilimi: " + timezoneClient.getZoneName(3) + "   " + timezoneClient.getGmtOffsetString(3) + "   (" + timezoneClient.getToAbbreviation(3) + ")" + "<br>";
+      html += TimeDBClient.getZoneName(0) + " İle Arasındaki Zaman Farkı: " + timezoneClient.getOffsetDifferenceString(3) + "<br>";
+      html += "Yaz Saati: " + timezoneClient.useDST(3) + "<br>";
+      html += "Yaz Saati Başlangıcı/Bitişi: " + timezoneClient.getZoneStart(3) + " / " + timezoneClient.getZoneEnd(3) + "<br>";
+      html += "Bir Sonraki Zaman Dilimi Kısaltması: " + timezoneClient.getNextAbbreviation(3) + "<br>";
+      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(3) + "," + worldWeatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> Haritala!</a><br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Dünya Saatleri Hatası";
+      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
+      html += "Sebebi: <strong>" + worldWeatherClient.getError(3) + "</strong><br></div><br>";
+    }
     server.sendContent(String(html));
     html = "";
   }
@@ -1710,6 +1848,24 @@ void displayWorldClockWeatherData()
       html = "<div class='w3-cell-row'>Dünya Saatleri Hatası";
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
       html += "Sebebi: <strong>" + worldWeatherClient.getError(2) + "</strong><br></div><br>";
+    }
+    if (worldWeatherClient.getError(3) == "")
+    {
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + worldWeatherClient.getCity(3) + ", " + worldWeatherClient.getCountry(3) + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
+      html += "Hava Durumu: " + worldWeatherClient.getDescription(3) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(3) + ".png' alt='" + worldWeatherClient.getDescription(3) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(3) + " | " + "Nem: %" + worldWeatherClient.getHumidity(3) + " | " + "Rüzgar: " + worldWeatherClient.getWind(3) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(3) + " " + worldWeatherClient.getDirection(3) + "°" + " | " + "Kuvvetli Rüzgar: " + worldWeatherClient.getGust(3) + " " + getSpeedSymbol() + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(3) + " | " + "Basınç: " + worldWeatherClient.getPressure(3) + getPressureSymbol() + "<br>";
+      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(3) + " m (" + worldWeatherClient.getVisibilityKm(3) + " km)<br>";
+      html += "Sıcaklık: " + worldWeatherClient.getTemp(3) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(3) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(3) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(3) + " " + getTempSymbol(true) + "<br>";
+      html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(3) + " / " + worldWeatherClient.getSunset(3) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(3) + ")" + "<br>";
+      html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(3) + " / " + worldWeatherClient.getMoonSet(3) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(3) + ")" + "<br>";
+      html += "Ayın Görünüşü: " + worldWeatherClient.getMoonPhase(3) + " (Aydınlığı: %" + worldWeatherClient.getMoonIllumination(3) + ")<br>";
+      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(3) + "," + worldWeatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> Haritala!</a><br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Dünya Saatleri Hatası";
+      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
+      html += "Sebebi: <strong>" + worldWeatherClient.getError(3) + "</strong><br></div><br>";
     }
     server.sendContent(String(html));
     html = "";
@@ -1807,6 +1963,28 @@ void displayPrayersTimeData()
       html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
       html += "Sebebi: <strong>" + prayersClient.getError(2) + "</strong><br></div><br><hr>";
     }
+    if (prayersClient.getError(3) == "")
+    {
+      String praySource = prayersClient.getMethodName(3);
+      String praySourceClear = prayersClient.cleanText(praySource);
+
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + "Namaz Vakitleri (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'><p>";
+      html += "Kaynak: " + praySourceClear + " / ID: " + prayersMethod + "<br>";
+      html += "Hicri/Miladi Takvime Göre Tarih: " + prayersClient.getHijriDate(3) + " / " + prayersClient.getGregorianDate(3) + "<br>";
+      html += "İmsak: " + prayersClient.getFajr(3) + "<br>";
+      html += "Güneş: " + prayersClient.getSunrise(3) + "<br>";
+      html += "Öğle Namazı: " + prayersClient.getDhuhr(3) + "<br>";
+      html += "İkindi Namazı: " + prayersClient.getAsr(3) + "<br>";
+      html += "Akşam Namazı: " + prayersClient.getMaghrib(3) + "<br>";
+      html += "Yatsı Namazı: " + prayersClient.getIsha(3) + "<br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Namaz Vakitleri Hatası";
+      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
+      html += "Sebebi: <strong>" + prayersClient.getError(3) + "</strong><br></div><br><hr>";
+    }
     server.sendContent(String(html));
     html = "";
   }
@@ -1816,6 +1994,60 @@ void displayPrayersTimeData()
     server.sendContent(String(html));
     html = "";
   }
+  sendFooter();
+  server.sendContent("");
+  server.client().stop();
+  digitalWrite(externalLight, HIGH);
+}
+
+void displayCurrencyData()
+{
+  digitalWrite(externalLight, LOW);
+  String html = "";
+
+  server.sendHeader("Cache-Control", "no-cache, no-store");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.send(200, "text/html", "");
+  sendHeader();
+
+  if (CURRENCY_ENABLED)
+  {
+    if (currencyClient.getError(0) == "")
+    {
+      html += "1 " + currencyClient.getBaseCurrencyName(0) + " = " + currencyClient.getTargetCurrencyFormatted(0) + " " + currencyClient.getTargetCurrencyName(0) + " (Son Güncelleme: " + currencyClient.getRequestTime(0) + ")" + "<br>";
+      html += "1 " + currencyClient.getTargetCurrencyName(0) + " = " + currencyClient.getInverseCurrencyFormatted(0) + " " + currencyClient.getBaseCurrencyName(0) + " (Son Güncelleme: " + currencyClient.getRequestTime(0) + ")" + "<br>";
+      html += "<hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Döviz Kurları Hatası";
+      html += "<p>Lütfen <a href='/configurecurrency' Döviz Kurları Ayarlarını</a> Yapınız</p><br>";
+      html += "Sebebi: <strong>" + currencyClient.getError(0) + "</strong><br></div><br>";
+    }
+    if (currencyClient.getError(1) == "")
+    {
+      html += "1 " + currencyClient.getBaseCurrencyName(1) + " = " + currencyClient.getTargetCurrencyFormatted(1) + " " + currencyClient.getTargetCurrencyName(1) + " (Son Güncelleme: " + currencyClient.getRequestTime(1) + ")" + "<br>";
+      html += "1 " + currencyClient.getTargetCurrencyName(1) + " = " + currencyClient.getInverseCurrencyFormatted(1) + " " + currencyClient.getBaseCurrencyName(1) + " (Son Güncelleme: " + currencyClient.getRequestTime(1) + ")" + "<br>";
+      html += "<hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>Döviz Kurları Hatası";
+      html += "<p>Lütfen <a href='/configurecurrency' Döviz Kurları Ayarlarını</a> Yapınız</p><br>";
+      html += "Sebebi: <strong>" + currencyClient.getError(1) + "</strong><br></div><br>";
+    }
+    server.sendContent(String(html));
+    html = "";
+  }
+  else
+  {
+    html += "Döviz Kurları Özelliği Devre Dışı";
+    server.sendContent(String(html));
+    html = "";
+  }
+
   sendFooter();
   server.sendContent("");
   server.client().stop();
@@ -2051,6 +2283,11 @@ String writeCityIds()
     f.println("WorldCityName2=" + WorldCityName2);
     f.println("isPrayer=" + String(PRAYERS_ENABLED));
     f.println("prayersMethod=" + prayersMethod);
+    f.println("isCurrency=" + String(CURRENCY_ENABLED));
+    f.println("BaseCurrency1=" + BaseCurrency1);
+    f.println("BaseCurrency2=" + BaseCurrency2);
+    f.println("TargetCurrency=" + TargetCurrency);
+    f.println("WorldCityName3=" + WorldCityName3);
   }
   f.close();
   readCityIds();
@@ -2344,12 +2581,45 @@ void readCityIds()
       prayersMethod.trim();
       Serial.println("prayersMethod= " + prayersMethod);
     }
+    if (line.indexOf("isCurrency=") >= 0)
+    {
+      CURRENCY_ENABLED = line.substring(line.lastIndexOf("isCurrency=") + 11).toInt();
+      Serial.println("CURRENCY_ENABLED= " + String(CURRENCY_ENABLED));
+    }
+    if (line.indexOf("BaseCurrency1=") >= 0)
+    {
+      BaseCurrency1 = line.substring(line.lastIndexOf("BaseCurrency1=") + 14);
+      BaseCurrency1.trim();
+      Serial.println("BaseCurrency1= " + BaseCurrency1);
+    }
+    if (line.indexOf("BaseCurrency2=") >= 0)
+    {
+      BaseCurrency2 = line.substring(line.lastIndexOf("BaseCurrency2=") + 14);
+      BaseCurrency2.trim();
+      Serial.println("BaseCurrency2= " + BaseCurrency2);
+    }
+    if (line.indexOf("TargetCurrency=") >= 0)
+    {
+      TargetCurrency = line.substring(line.lastIndexOf("TargetCurrency=") + 15);
+      TargetCurrency.trim();
+      Serial.println("TargetCurrency= " + TargetCurrency);
+    }
+    if (line.indexOf("WorldCityName3=") >= 0)
+    {
+      WorldCityName3 = line.substring(line.lastIndexOf("WorldCityName3=") + 15);
+      WorldCityName3.trim();
+      Serial.println("WorldCityName3= " + WorldCityName3);
+    }
   }
   fr.close();
   matrix.setIntensity(displayIntensity);
   prayersClient.updateMethodID(prayersMethod);
+  currencyClient.updateBaseCurrency1(BaseCurrency1);
+  currencyClient.updateBaseCurrency2(BaseCurrency2);
+  currencyClient.updateTargetCurrency(TargetCurrency);
   worldWeatherClient.updateWorldCityName1(WorldCityName1);
   worldWeatherClient.updateWorldCityName2(WorldCityName2);
+  worldWeatherClient.updateWorldCityName3(WorldCityName3);
   weatherClient.updateWeatherApiKey(APIKEY);
   weatherClient.updateLanguage(WeatherLanguage);
   weatherClient.setMetric(IS_METRIC);
