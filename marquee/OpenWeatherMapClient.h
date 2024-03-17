@@ -40,6 +40,7 @@ private:
   String myCityName = "";
   String myWorldCityName1 = "";
   String myWorldCityName2 = "";
+  String myWorldCityName3 = "";
 
   const char *servername = "api.openweathermap.org"; // remote server we will connect to
 
@@ -85,7 +86,7 @@ private:
     String nh3;
   } weather;
 
-  weather weathers[3];
+  weather weathers[5];
   
   typedef struct
   {
@@ -124,6 +125,7 @@ public:
   void updateCityName(String CityName);
   void updateWorldCityName1(String WorldCityName1);
   void updateWorldCityName2(String WorldCityName2);
+  void updateWorldCityName3(String WorldCityName3);
   void updateLanguage(String language);
 
   String getLat(int index);
