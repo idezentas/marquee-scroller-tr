@@ -52,6 +52,7 @@ SOFTWARE.
 #include "OctoPrintClient.h"
 #include "PiHoleClient.h"
 #include "AladhanClient.h"
+#include "CurrencyConverterClient.h"
 #include <Adafruit_BMP085.h>
 
 //******************************
@@ -60,7 +61,7 @@ SOFTWARE.
 
 String TIMEDBKEY = "";                  // // Your API Key from https://timezonedb.com/register
 String APIKEY = ""; // Your API Key from http://openweathermap.org/
-String CityName = "Ankara,TR"; // Default Mesa,US
+String CityName = "Ankara,TR"; // Default Ankara,TR
 String WeatherLanguage = "tr";
 String marqueeMessage = "";
 boolean IS_METRIC = true;               // false = Imperial and true = Metric
@@ -120,6 +121,13 @@ boolean WORLD_TIME_ENABLED = true;
 // Please enter city names in ENGLISH.
 String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
+String WorldCityName3 = "Milano,IT";   // Default City: Milano,IT
+
+// Currency Client -- Show curreny rates for the choosen currencies
+boolean CURRENCY_ENABLED = true;
+String BaseCurrency1 = "EUR";  // Default Currency: EUR
+String BaseCurrency2 = "USD";  // Default Currency: USD
+String TargetCurrency = "TRY"; // Default Currency: TRY
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
@@ -142,4 +150,4 @@ String OTA_Password = "";  // Set an OTA password here -- leave blank if you don
 //******************************
 // End Settings
 //******************************
-String themeColor = "light-green"; // https://www.w3schools.com/w3css/w3css_color_themes.asp
+String themeColor = "light-green";
