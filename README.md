@@ -16,7 +16,6 @@
 * Şehir adı, ülke adı, zaman dilimi vb özellikler TimeZoneDB kullanılarak eklenmiştir.
 * Zaman dilimleri arasındaki farkı tespit etme özelliği eklenmiştir.
 * Haberler özelliği silinmiştir.
-* Hava Durumu için dil seçeneği eklenmiştir.
 * Kayan yazıyı kapatma özelliği eklenmiştir.
 * Kayan yazıda gösterilecek bilgileri Ekran Ayarları sayfasında taşınmıştır.
 * PlatformIO ile derleme desteği eklenmiştir.
@@ -39,7 +38,6 @@
 * City name, country name, time zone etc. features have been added using TimeZoneDB.
 * The ability to detect the difference between time zones has been added.
 * News feature has been deleted.
-* Language option for weather has been added.
 * The feature to turn off the marquee has been added.
 * The information to be displayed in the marquee has been moved to the Display Settings page.
 * PlatformIO build feature has been added.
