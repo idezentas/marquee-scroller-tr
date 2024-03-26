@@ -25,9 +25,11 @@ SOFTWARE.
 #include <Arduino.h>
 #include <time.h>
 
-class SunMoonCalc {
+class SunMoonCalc
+{
 public:
-    typedef struct Sun {
+    typedef struct Sun
+    {
         double azimuth;
         double elevation;
         double riseJd; // jd = Julian Day
@@ -40,12 +42,14 @@ public:
         double distance;
     } Sun;
 
-    typedef struct MoonPhase {
+    typedef struct MoonPhase
+    {
         uint8_t index;
         String name;
     } MoonPhase;
 
-    typedef struct Moon {
+    typedef struct Moon
+    {
         double azimuth;
         double elevation;
         double riseJd; // jd = Julian Day
@@ -64,7 +68,8 @@ public:
         MoonPhase phase;
     } Moon;
 
-    typedef struct Result {
+    typedef struct Result
+    {
         Sun sun;
         Moon moon;
     } Result;
@@ -76,7 +81,8 @@ public:
     Result calculateSunAndMoonData();
 
 private:
-    enum TWILIGHT {
+    enum TWILIGHT
+    {
         /**
          * Event ID for calculation of rising and setting times for astronomical
          * twilight. In this case, the calculated time will be the time when the
@@ -84,28 +90,29 @@ private:
          * astronomical horizon. At this time astronomical observations are possible
          * because the sky is dark enough.
          */
-         TWILIGHT_ASTRONOMICAL,
+        TWILIGHT_ASTRONOMICAL,
         /**
          * Event ID for calculation of rising and setting times for nautical
          * twilight. In this case, the calculated time will be the time when the
          * center of the object is at -12 degrees of geometric elevation below the
          * astronomical horizon.
          */
-         TWILIGHT_NAUTICAL,
+        TWILIGHT_NAUTICAL,
         /**
          * Event ID for calculation of rising and setting times for civil twilight.
          * In this case, the calculated time will be the time when the center of the
          * object is at -6 degrees of geometric elevation below the astronomical
          * horizon.
          */
-         TWILIGHT_CIVIL,
+        TWILIGHT_CIVIL,
         /**
          * The standard value of 34' for the refraction at the local horizon.
          */
-         HORIZON_34arcmin
+        HORIZON_34arcmin
     };
 
-    typedef struct PositionalData {
+    typedef struct PositionalData
+    {
         double longitude;
         double latitude;
         double distance;
@@ -115,11 +122,11 @@ private:
     double t;
     double jd_UT;
     double TTminusUT;
-    double lat; // internal value is in radians!
-    double lon; // internal value is in radians!
+    double lat;        // internal value is in radians!
+    double lon;        // internal value is in radians!
     double slongitude; // sun longitude
-    double sanomaly; // sun anomaly
-    double moonAge; // this is calculated as a by-product in getMoonPosition()
+    double sanomaly;   // sun anomaly
+    double moonAge;    // this is calculated as a by-product in getMoonPosition()
     TWILIGHT twilight = HORIZON_34arcmin;
 
     void setInternalTime(int16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
