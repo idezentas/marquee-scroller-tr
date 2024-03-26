@@ -3,199 +3,199 @@
     "sources": [
         {
             "id": "af",
-            "name": "Afrikaans"
+            "name": "Afrikaanca"
         },
         {
             "id": "al",
-            "name": "Albanian"
+            "name": "Arnavutça"
         },
         {
             "id": "ar",
-            "name": "Arabic"
+            "name": "Arapça"
         },
         {
             "id": "az",
-            "name": "Azerbaijani"
+            "name": "Azerice"
         },
         {
             "id": "bg",
-            "name": "Bulgarian"
+            "name": "Bulgarca"
         },
         {
             "id": "ca",
-            "name": "Catalan"
+            "name": "Katalanca"
         },
         {
             "id": "cz",
-            "name": "Czech"
+            "name": "Çekçe"
         },
         {
             "id": "da",
-            "name": "Danish"
+            "name": "Danca"
         },
         {
             "id": "de",
-            "name": "German"
+            "name": "Almanca"
         },
         {
             "id": "el",
-            "name": "Greek"
+            "name": "Yunanca"
         },
         {
             "id": "en",
-            "name": "English"
+            "name": "İngilizce"
         },
         {
             "id": "eu",
-            "name": "Basque"
+            "name": "Baskça"
         },
         {
             "id": "fa",
-            "name": "Persian (Farsi)"
+            "name": "Farsça (Farsça)"
         },
         {
             "id": "fi",
-            "name": "Finnish"
+            "name": "Fince"
         },
         {
             "id": "fr",
-            "name": "French"
+            "name": "Fransızca"
         },
         {
             "id": "gl",
-            "name": "Galician"
+            "name": "Galiçyaca"
         },
         {
             "id": "he",
-            "name": "Hebrew"
+            "name": "İbranice"
         },
         {
             "id": "hi",
-            "name": "Hindi"
+            "name": "Hintçe"
         },
         {
             "id": "hr",
-            "name": "Croatian"
+            "name": "Hırvatça"
         },
         {
             "id": "hu",
-            "name": "Hungarian"
+            "name": "Macarca"
         },
         {
             "id": "id",
-            "name": "Indonesian"
+            "name": "Endonezce"
         },
         {
             "id": "it",
-            "name": "Italian"
+            "name": "İtalyanca"
         },
         {
             "id": "ja",
-            "name": "Japanese"
+            "name": "Japonca"
         },
         {
             "id": "kr",
-            "name": "Korean"
+            "name": "Korece"
         },
         {
             "id": "la",
-            "name": "Latvian"
+            "name": "Letonca"
         },
         {
             "id": "lt",
-            "name": "Lithuanian"
+            "name": "Litvanca"
         },
         {
             "id": "mk",
-            "name": "Macedonian"
+            "name": "Makedonca"
         },
         {
             "id": "no",
-            "name": "Norwegian"
+            "name": "Norveççe"
         },
         {
             "id": "nl",
-            "name": "Dutch"
+            "name": "Hollandaca"
         },
         {
             "id": "pl",
-            "name": "Polish"
+            "name": "Lehçe"
         },
         {
             "id": "pt",
-            "name": "Portuguese"
+            "name": "Portekizce"
         },
         {
             "id": "pt_br",
-            "name": "Português Brasil"
+            "name": "Portekizce (Brezilya)"
         },
         {
             "id": "ro",
-            "name": "Romanian"
+            "name": "Romence"
         },
         {
             "id": "ru",
-            "name": "Russian"
+            "name": "Rusça"
         },
         {
             "id": "sv",
-            "name": "Swedish"
+            "name": "İsveççe"
         },
         {
             "id": "se",
-            "name": "Swedish"
+            "name": "İsveççe"
         },
         {
             "id": "sk",
-            "name": "Slovak"
+            "name": "Slovakça"
         },
         {
             "id": "sl",
-            "name": "Slovenian"
+            "name": "Slovence"
         },
         {
             "id": "sp",
-            "name": "Spanish"
+            "name": "İspanyolca"
         },
         {
             "id": "es",
-            "name": "Spanish"
+            "name": "İspanyolca"
         },
         {
             "id": "sr",
-            "name": "Serbian"
+            "name": "Sırpça"
         },
         {
             "id": "th",
-            "name": "Thai"
+            "name": "Tayca"
         },
         {
             "id": "tr",
-            "name": "Turkish"
+            "name": "Türkçe"
         },
         {
             "id": "ua",
-            "name": "Ukrainian"
+            "name": "Ukraynaca"
         },
         {
             "id": "uk",
-            "name": "Ukrainian"
+            "name": "Ukraynaca"
         },
         {
             "id": "vi",
-            "name": "Vietnamese"
+            "name": "Vietnamca"
         },
         {
             "id": "zh_cn",
-            "name": "Chinese Simplified"
+            "name": "Çince Basitleştirilmiş"
         },
         {
             "id": "zh_tw",
-            "name": "Chinese Traditional"
+            "name": "Çince Geleneksel"
         },
         {
             "id": "zu",
-            "name": "Zulu"
+            "name": "Zuluca"
         }
     ]
 }
