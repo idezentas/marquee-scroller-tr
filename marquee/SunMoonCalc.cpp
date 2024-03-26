@@ -63,7 +63,6 @@ const double J2000 = 2451545.0;
 /** Lunar cycle length in days*/
 const double LUNAR_CYCLE_DAYS = 29.530588853;
 
-
 /*****************************************************************************
  *
  * Function timegm is like mktime but for UTC rather than local time.  As such
@@ -75,27 +74,29 @@ const double LUNAR_CYCLE_DAYS = 29.530588853;
  * Source: http://www.thebackshed.com/forum/forum_posts.asp?TID=10023&PN=12
  *
  */
-#define EPOCH_YR 1970            /* EPOCH = Jan 1 1970 00:00:00 */
+#define EPOCH_YR 1970 /* EPOCH = Jan 1 1970 00:00:00 */
 
 const int _ytab[2][12] = {
-        {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-        {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-};
+    {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+    {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};
 
 /* Number of days per month (except for February in leap years). */
 static const int monoff[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
-static int is_leap_year(int year) {
+static int is_leap_year(int year)
+{
   return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
 }
 
-static int leap_days(int y1, int y2) {
+static int leap_days(int y1, int y2)
+{
   --y1;
   --y2;
   return (y2 / 4 - y1 / 4) - (y2 / 100 - y1 / 100) + (y2 / 400 - y1 / 400);
 }
 
-time_t timegm(const struct tm *tm) {
+time_t timegm(const struct tm *tm)
+{
   int year;
   time_t days;
   time_t hours;
@@ -118,7 +119,6 @@ time_t timegm(const struct tm *tm) {
 }
 /** END timegm ***************************************************************/
 
-
 /**
  * Convenience constructor that accepts an epoch instant rather than individual calendar fields.
  *
@@ -126,13 +126,14 @@ time_t timegm(const struct tm *tm) {
  * @param lat latitude for the observer in degrees
  * @param lon longitude for the observer in degrees
  */
-SunMoonCalc::SunMoonCalc(const time_t timestamp, const double lat, const double lon) {
-  struct tm* tm = localtime(&timestamp);
+SunMoonCalc::SunMoonCalc(const time_t timestamp, const double lat, const double lon)
+{
+  struct tm *tm = localtime(&timestamp);
   *this = SunMoonCalc(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, lat, lon);
 }
 
 /**
- * Main constructor for Sun/Moon calculations. Time should be given in Universal Time (UTC), observer angles in degrees. 
+ * Main constructor for Sun/Moon calculations. Time should be given in Universal Time (UTC), observer angles in degrees.
  *
  * @param year supports negative values
  * @param month the month in the 1-12 range
@@ -144,14 +145,16 @@ SunMoonCalc::SunMoonCalc(const time_t timestamp, const double lat, const double 
  * @param lon longitude for the observer in degrees
  */
 SunMoonCalc::SunMoonCalc(const int16_t year, const uint8_t month, const uint8_t day, const uint8_t hour,
-                         const uint8_t minute, const uint8_t second, const double lat, const double lon) {
+                         const uint8_t minute, const uint8_t second, const double lat, const double lon)
+{
 
   setInternalTime(year, month, day, hour, minute, second);
   this->lat = radians(lat);
   this->lon = radians(lon);
 }
 
-SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
+SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData()
+{
   double jd = this->jd_UT;
 
   Result result;
@@ -175,9 +178,12 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   sun.riseJd = obtainAccurateRiseSetTransit(sun.riseJd, 2, iterations, true);
   sun.setJd = obtainAccurateRiseSetTransit(sun.setJd, 3, iterations, true);
   sun.transitJd = obtainAccurateRiseSetTransit(sun.transitJd, 4, iterations, true);
-  if (sun.transitJd == -1) {
+  if (sun.transitJd == -1)
+  {
     sun.transitElevation = 0;
-  } else {
+  }
+  else
+  {
     // Update Sun's maximum elevation
     setUTDate(sun.transitJd);
     delete[] out;
@@ -212,9 +218,12 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   moon.riseJd = obtainAccurateRiseSetTransit(moon.riseJd, 2, iterations, false);
   moon.setJd = obtainAccurateRiseSetTransit(moon.setJd, 3, iterations, false);
   moon.transitJd = obtainAccurateRiseSetTransit(moon.transitJd, 4, iterations, false);
-  if (moon.transitJd == -1) {
+  if (moon.transitJd == -1)
+  {
     moon.transitElevation = 0;
-  } else {
+  }
+  else
+  {
     // Update Moon's maximum elevation
     setUTDate(moon.transitJd);
     getSunPosition();
@@ -226,9 +235,9 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   this->sanomaly = sa;
   this->slongitude = sl;
   this->moonAge = ma;
-  
+
   delete[] out;
-  out = getMoonDiskOrientationAngles(lst, sunRA, sunDec, radians(moonLon),radians(moonLat), moonRA, moonDec);
+  out = getMoonDiskOrientationAngles(lst, sunRA, sunDec, radians(moonLon), radians(moonLat), moonRA, moonDec);
   moon.axisPositionAngle = out[2];
   moon.brightLimbAngle = out[3];
   moon.parallacticAngle = out[4];
@@ -242,7 +251,8 @@ SunMoonCalc::Result SunMoonCalc::calculateSunAndMoonData(){
   return translateToHumanReadable(result);
 }
 
-SunMoonCalc::PositionalData SunMoonCalc::getSunPosition() {
+SunMoonCalc::PositionalData SunMoonCalc::getSunPosition()
+{
   PositionalData position;
 
   // SUN PARAMETERS (Formulae from "Calendrical Calculations")
@@ -259,11 +269,11 @@ SunMoonCalc::PositionalData SunMoonCalc::getSunPosition() {
   double M2 = (201.11 + 72001.5377 * this->t + 0.00057 * this->t * this->t) * DEG_TO_RAD;
   double d = -.00569 - .0047785 * sin(M1) - .0003667 * sin(M2);
 
-  this->slongitude = lon + c + d; // apparent longitude (error<0.003 deg)
-  double slatitude = 0; // Sun's ecliptic latitude is always negligible
+  this->slongitude = lon + c + d;                                                 // apparent longitude (error<0.003 deg)
+  double slatitude = 0;                                                           // Sun's ecliptic latitude is always negligible
   double ecc = .016708617 - 4.2037E-05 * this->t - 1.236E-07 * this->t * this->t; // Eccentricity
-  double v = this->sanomaly + c * DEG_TO_RAD; // true anomaly
-  double sdistance = 1.000001018 * (1.0 - ecc * ecc) / (1.0 + ecc * cos(v)); // In UA
+  double v = this->sanomaly + c * DEG_TO_RAD;                                     // true anomaly
+  double sdistance = 1.000001018 * (1.0 - ecc * ecc) / (1.0 + ecc * cos(v));      // In UA
 
   position.longitude = this->slongitude;
   position.latitude = slatitude;
@@ -273,13 +283,15 @@ SunMoonCalc::PositionalData SunMoonCalc::getSunPosition() {
   return position;
 }
 
-SunMoonCalc::PositionalData SunMoonCalc::getMoonPosition() {
+SunMoonCalc::PositionalData SunMoonCalc::getMoonPosition()
+{
   PositionalData position;
 
   // MOON PARAMETERS (Formulae from "Calendrical Calculations")
   double phase = normalizeRadians(
-          (297.8502042 + 445267.1115168 * this->t - 0.00163 * this->t * this->t + this->t * this->t * this->t / 538841 -
-           this->t * this->t * this->t * this->t / 65194000) * DEG_TO_RAD);
+      (297.8502042 + 445267.1115168 * this->t - 0.00163 * this->t * this->t + this->t * this->t * this->t / 538841 -
+       this->t * this->t * this->t * this->t / 65194000) *
+      DEG_TO_RAD);
 
   // Anomalistic phase
   double anomaly = (134.9634114 + 477198.8676313 * this->t + .008997 * this->t * this->t +
@@ -376,8 +388,9 @@ SunMoonCalc::PositionalData SunMoonCalc::getMoonPosition() {
  * - distance
  * - lst
  */
-double *SunMoonCalc::doCalc(PositionalData position) {
-  double* arr = new double[10];
+double *SunMoonCalc::doCalc(PositionalData position)
+{
+  double *arr = new double[10];
 
   // Ecliptic to equatorial coordinates
   double t2 = this->t / 100.0;
@@ -409,7 +422,7 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   double secs = (this->jd_UT - jd0) * SECONDS_PER_DAY;
   double gmst = (((((-6.2e-6 * T0) + 9.3104e-2) * T0) + 8640184.812866) * T0) + 24110.54841;
   double msday =
-          1.0 + (((((-1.86e-5 * T0) + 0.186208) * T0) + 8640184.812866) / (SECONDS_PER_DAY * JULIAN_DAYS_PER_CENTURY));
+      1.0 + (((((-1.86e-5 * T0) + 0.186208) * T0) + 8640184.812866) / (SECONDS_PER_DAY * JULIAN_DAYS_PER_CENTURY));
   gmst = (gmst + msday * secs) * (15.0 / 3600.0) * DEG_TO_RAD;
   double lst = gmst + this->lon;
 
@@ -418,9 +431,9 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   // (rise/set/transit will have no sense in this case)
   double radiusAU = EARTH_RADIUS / AU;
   double correction[3] = {
-          radiusAU * cos(this->lat) * cos(lst),
-          radiusAU * cos(this->lat) * sin(lst),
-          radiusAU * sin(this->lat)};
+      radiusAU * cos(this->lat) * cos(lst),
+      radiusAU * cos(this->lat) * sin(lst),
+      radiusAU * sin(this->lat)};
   double xtopo = x - correction[0];
   double ytopo = y - correction[1];
   double ztopo = z - correction[2];
@@ -428,10 +441,12 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   // Obtain topocentric equatorial coordinates
   double ra = 0.0;
   double dec = PI_OVER_TWO;
-  if (ztopo < 0.0) {
+  if (ztopo < 0.0)
+  {
     dec = -dec;
   }
-  if (ytopo != 0.0 || xtopo != 0.0) {
+  if (ytopo != 0.0 || xtopo != 0.0)
+  {
     ra = atan2(ytopo, xtopo);
     dec = atan2(ztopo / sqrt(xtopo * xtopo + ytopo * ytopo), 1.0);
   }
@@ -451,10 +466,11 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   double azi = PI + atan2(azy, azx); // 0 = north
 
   // Get apparent elevation
-  if (alt > -3 * DEG_TO_RAD) {
-    double r = 0.016667 * DEG_TO_RAD * fabs(tan(PI_OVER_TWO - (alt * RAD_TO_DEG +  7.31 / (alt * RAD_TO_DEG + 4.4)) * DEG_TO_RAD));
-    double refr = r * ( 0.28 * 1010 / (10 + 273.0)); // Assuming pressure of 1010 mb and T = 10 C
-    alt = fmin(alt + refr, PI_OVER_TWO); // This is not accurate, but acceptable
+  if (alt > -3 * DEG_TO_RAD)
+  {
+    double r = 0.016667 * DEG_TO_RAD * fabs(tan(PI_OVER_TWO - (alt * RAD_TO_DEG + 7.31 / (alt * RAD_TO_DEG + 4.4)) * DEG_TO_RAD));
+    double refr = r * (0.28 * 1010 / (10 + 273.0)); // Assuming pressure of 1010 mb and T = 10 C
+    alt = fmin(alt + refr, PI_OVER_TWO);            // This is not accurate, but acceptable
   }
 
   tmp = calculateTwilightAdjustment(position);
@@ -467,9 +483,10 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   double transit_time1 = celestialHoursToEarthTime * normalizeRadians(ra - lst);
   double transit_time2 = celestialHoursToEarthTime * (normalizeRadians(ra - lst) - TWO_PI);
   double transit_alt = asin(sin(dec) * sin(this->lat) + cos(dec) * cos(this->lat));
-  if (transit_alt > -3 * DEG_TO_RAD) {
-    double r = 0.016667 * DEG_TO_RAD * fabs(tan(PI_OVER_TWO - (transit_alt * RAD_TO_DEG +  7.31 / (transit_alt * RAD_TO_DEG + 4.4)) * DEG_TO_RAD));
-    double refr = r * ( 0.28 * 1010 / (10 + 273.0)); // Assuming pressure of 1010 mb and T = 10 C
+  if (transit_alt > -3 * DEG_TO_RAD)
+  {
+    double r = 0.016667 * DEG_TO_RAD * fabs(tan(PI_OVER_TWO - (transit_alt * RAD_TO_DEG + 7.31 / (transit_alt * RAD_TO_DEG + 4.4)) * DEG_TO_RAD));
+    double refr = r * (0.28 * 1010 / (10 + 273.0));      // Assuming pressure of 1010 mb and T = 10 C
     transit_alt = fmin(transit_alt + refr, PI_OVER_TWO); // This is not accurate, but acceptable
   }
 
@@ -479,12 +496,14 @@ double *SunMoonCalc::doCalc(PositionalData position) {
   double transitToday2 = floor(this->jd_UT + transit_time2 - 0.5) + 0.5;
   // Obtain the transit time. Preference should be given to the closest event
   // in time to the current calculation time
-  if (jdToday == transitToday2 && fabs(transit_time2) < fabs(transit_time1)) transit_time = transit_time2;
+  if (jdToday == transitToday2 && fabs(transit_time2) < fabs(transit_time1))
+    transit_time = transit_time2;
   double transit = this->jd_UT + transit_time;
 
   // Make calculations for rise and set
   double rise = -1, set = -1;
-  if (fabs(tmp) <= 1.0) {
+  if (fabs(tmp) <= 1.0)
+  {
     double ang_hor = fabs(acos(tmp));
     double rise_time1 = celestialHoursToEarthTime * normalizeRadians(ra - ang_hor - lst);
     double set_time1 = celestialHoursToEarthTime * normalizeRadians(ra + ang_hor - lst);
@@ -495,11 +514,13 @@ double *SunMoonCalc::doCalc(PositionalData position) {
     // in time to the current calculation time (so that iteration in other method will converge)
     double rise_time = rise_time1;
     double riseToday2 = floor(this->jd_UT + rise_time2 - 0.5) + 0.5;
-    if (jdToday == riseToday2 && fabs(rise_time2) < fabs(rise_time1)) rise_time = rise_time2;
+    if (jdToday == riseToday2 && fabs(rise_time2) < fabs(rise_time1))
+      rise_time = rise_time2;
 
     double set_time = set_time1;
     double setToday2 = floor(this->jd_UT + set_time2 - 0.5) + 0.5;
-    if (jdToday == setToday2 && fabs(set_time2) < fabs(set_time1)) set_time = set_time2;
+    if (jdToday == setToday2 && fabs(set_time2) < fabs(set_time1))
+      set_time = set_time2;
     rise = this->jd_UT + rise_time;
     set = this->jd_UT + set_time;
   }
@@ -522,68 +543,82 @@ double *SunMoonCalc::doCalc(PositionalData position) {
  * Initializes the internal time variables t and jd_UT from the UTC timestamp given.
  */
 void SunMoonCalc::setInternalTime(const int16_t year, const uint8_t month, const uint8_t day, const uint8_t hour,
-                                  const uint8_t minute, const uint8_t second) {
-    
+                                  const uint8_t minute, const uint8_t second)
+{
+
   double jd = toJulian(year, month, day, hour, minute, second);
 
   this->TTminusUT = 0;
-  if (year > -600 && year < 2200) {
+  if (year > -600 && year < 2200)
+  {
     double x = year + (month - 1 + day / 30.0) / 12.0;
     double x2 = x * x, x3 = x2 * x, x4 = x3 * x;
-    if (year < 1600) {
+    if (year < 1600)
+    {
       this->TTminusUT =
-              10535.328003326353 - 9.995238627481024 * x + 0.003067307630020489 * x2 - 7.76340698361363E-6 * x3 +
-              3.1331045394223196E-9 * x4 +
-              8.225530854405553E-12 * x2 * x3 - 7.486164715632051E-15 * x4 * x2 + 1.9362461549678834E-18 * x4 * x3 -
-              8.489224937827653E-23 * x4 * x4;
-    } else {
+          10535.328003326353 - 9.995238627481024 * x + 0.003067307630020489 * x2 - 7.76340698361363E-6 * x3 +
+          3.1331045394223196E-9 * x4 +
+          8.225530854405553E-12 * x2 * x3 - 7.486164715632051E-15 * x4 * x2 + 1.9362461549678834E-18 * x4 * x3 -
+          8.489224937827653E-23 * x4 * x4;
+    }
+    else
+    {
       this->TTminusUT =
-              -1027175.3477559977 + 2523.256625418965 * x - 1.885686849058459 * x2 + 5.869246227888417E-5 * x3 +
-              3.3379295816475025E-7 * x4 +
-              1.7758961671447929E-10 * x2 * x3 - 2.7889902806153024E-13 * x2 * x4 +
-              1.0224295822336825E-16 * x3 * x4 - 1.2528102370680435E-20 * x4 * x4;
+          -1027175.3477559977 + 2523.256625418965 * x - 1.885686849058459 * x2 + 5.869246227888417E-5 * x3 +
+          3.3379295816475025E-7 * x4 +
+          1.7758961671447929E-10 * x2 * x3 - 2.7889902806153024E-13 * x2 * x4 +
+          1.0224295822336825E-16 * x3 * x4 - 1.2528102370680435E-20 * x4 * x4;
     }
   }
   setUTDate(jd);
 }
 
-void SunMoonCalc::setUTDate(const double jd) {
+void SunMoonCalc::setUTDate(const double jd)
+{
   this->jd_UT = jd;
   this->t = (jd + this->TTminusUT / SECONDS_PER_DAY - J2000) / JULIAN_DAYS_PER_CENTURY;
 }
 
-double SunMoonCalc::calculateTwilightAdjustment(PositionalData position) const {
+double SunMoonCalc::calculateTwilightAdjustment(PositionalData position) const
+{
   double adjustment = 0.0;
-  switch (twilight) {
-    case HORIZON_34arcmin:
-      // Rise, set, transit times, taking into account Sun/Moon angular radius (position[3]).
-      // The 34' factor is the standard refraction at horizon.
-      // Removing angular radius will do calculations for the center of the disk instead
-      // of the upper limb.
-      adjustment = -(34.0 / 60.0) * DEG_TO_RAD - position.angularRadius;
-      break;
-    case TWILIGHT_CIVIL:
-      adjustment = -6 * DEG_TO_RAD;
-      break;
-    case TWILIGHT_NAUTICAL:
-      adjustment = -12 * DEG_TO_RAD;
-      break;
-    case TWILIGHT_ASTRONOMICAL:
-      adjustment = -18 * DEG_TO_RAD;
-      break;
+  switch (twilight)
+  {
+  case HORIZON_34arcmin:
+    // Rise, set, transit times, taking into account Sun/Moon angular radius (position[3]).
+    // The 34' factor is the standard refraction at horizon.
+    // Removing angular radius will do calculations for the center of the disk instead
+    // of the upper limb.
+    adjustment = -(34.0 / 60.0) * DEG_TO_RAD - position.angularRadius;
+    break;
+  case TWILIGHT_CIVIL:
+    adjustment = -6 * DEG_TO_RAD;
+    break;
+  case TWILIGHT_NAUTICAL:
+    adjustment = -12 * DEG_TO_RAD;
+    break;
+  case TWILIGHT_ASTRONOMICAL:
+    adjustment = -18 * DEG_TO_RAD;
+    break;
   }
   return adjustment;
 }
 
-double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int index, const int niter, const bool sun) {
+double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int index, const int niter, const bool sun)
+{
   double step = -1;
-  for (int i = 0; i < niter; i++) {
-    if (riseSetJd == -1) return riseSetJd; // -1 means no rise/set from that location
+  for (int i = 0; i < niter; i++)
+  {
+    if (riseSetJd == -1)
+      return riseSetJd; // -1 means no rise/set from that location
     setUTDate(riseSetJd);
     double *out = nullptr;
-    if (sun) {
+    if (sun)
+    {
       out = doCalc(getSunPosition());
-    } else {
+    }
+    else
+    {
       getSunPosition();
       out = doCalc(getMoonPosition());
     }
@@ -591,7 +626,8 @@ double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int ind
     riseSetJd = out[index];
     delete[] out;
   }
-  if (step > 1.0 / SECONDS_PER_DAY) return -1; // did not converge => without rise/set/transit in this date
+  if (step > 1.0 / SECONDS_PER_DAY)
+    return -1; // did not converge => without rise/set/transit in this date
   return riseSetJd;
 }
 
@@ -604,18 +640,19 @@ double SunMoonCalc::obtainAccurateRiseSetTransit(double riseSetJd, const int ind
  * - paralactic angle (par)}
  */
 double *SunMoonCalc::getMoonDiskOrientationAngles(double lst, double sunRA, double sunDec, double moonLon,
-                                                  double moonLat, double moonRA, double moonDec) {
+                                                  double moonLat, double moonRA, double moonDec)
+{
 
-  double* arr = new double[5];
-  
+  double *arr = new double[5];
+
   // Moon's argument of latitude
   double F = radians(93.2720993 + 483202.0175273 * this->t - 0.0034029 * this->t * this->t -
-                       this->t * this->t * this->t / 3526000.0 + this->t * this->t * this->t * this->t / 863310000.0);
+                     this->t * this->t * this->t / 3526000.0 + this->t * this->t * this->t * this->t / 863310000.0);
   // Moon's inclination
   double I = radians(1.54242);
   // Moon's mean ascending node longitude
   double omega = radians(125.0445550 - 1934.1361849 * this->t + 0.0020762 * this->t * this->t +
-                           this->t * this->t * this->t / 467410.0 - this->t * this->t * this->t * this->t / 18999000.0);
+                         this->t * this->t * this->t / 467410.0 - this->t * this->t * this->t * this->t / 18999000.0);
   // Obliquity of ecliptic (approx, better formulae up)
   double eps = radians(23.43929);
 
@@ -625,20 +662,19 @@ double *SunMoonCalc::getMoonDiskOrientationAngles(double lst, double sunRA, doub
   double cosA = cos(W) * cos(moonLat);
   double A = atan2(sinA, cosA);
   double lp = normalizeRadians(A - F);
-  double sinbp = - sin(W) * cos(moonLat) * sin(I) - sin(moonLat) * cos(I);
+  double sinbp = -sin(W) * cos(moonLat) * sin(I) - sin(moonLat) * cos(I);
   double bp = asin(sinbp);
 
   // Obtain position angle of axis p
   double x = sin(I) * sin(omega);
   double y = sin(I) * cos(omega) * cos(eps) - cos(I) * sin(eps);
   double w = atan2(x, y);
-  double sinp = sqrt(x*x + y*y) * cos(moonRA - w) / cos(bp);
+  double sinp = sqrt(x * x + y * y) * cos(moonRA - w) / cos(bp);
   double p = asin(sinp);
 
   // Compute bright limb angle bl
   double bl = (PI + atan2(cos(sunDec) * sin(moonRA - sunRA),
-                          cos(sunDec) * sin(moonDec) * cos(moonRA - sunRA)
-                          - sin(sunDec) * cos(moonDec)));
+                          cos(sunDec) * sin(moonDec) * cos(moonRA - sunRA) - sin(sunDec) * cos(moonDec)));
 
   // Paralactic angle par
   y = sin(lst - moonRA);
@@ -654,31 +690,46 @@ double *SunMoonCalc::getMoonDiskOrientationAngles(double lst, double sunRA, doub
   return arr;
 }
 
-SunMoonCalc::MoonPhase SunMoonCalc::calculateMoonPhase(double lunarAge) const {
+SunMoonCalc::MoonPhase SunMoonCalc::calculateMoonPhase(double lunarAge) const
+{
   MoonPhase moonPhase = SunMoonCalc::MoonPhase();
-  if (lunarAge >= 0 && lunarAge <= LUNAR_CYCLE_DAYS
-      && (lunarAge < 1 || lunarAge > LUNAR_CYCLE_DAYS - 1)) {
+  if (lunarAge >= 0 && lunarAge <= LUNAR_CYCLE_DAYS && (lunarAge < 1 || lunarAge > LUNAR_CYCLE_DAYS - 1))
+  {
     moonPhase.index = 0;
     moonPhase.name = "Yeniay";
-  } else if (lunarAge >= 1 && lunarAge < 6.4) {
+  }
+  else if (lunarAge >= 1 && lunarAge < 6.4)
+  {
     moonPhase.index = 1;
     moonPhase.name = "Hilal";
-  } else if (lunarAge >= 6.4 && lunarAge < 8.4) {
+  }
+  else if (lunarAge >= 6.4 && lunarAge < 8.4)
+  {
     moonPhase.index = 2;
     moonPhase.name = "İlk Dördün";
-  } else if (lunarAge >= 8.4 && lunarAge < 13.8) {
+  }
+  else if (lunarAge >= 8.4 && lunarAge < 13.8)
+  {
     moonPhase.index = 3;
     moonPhase.name = "Şişkin Ay";
-  } else if (lunarAge >= 13.8 && lunarAge < 15.8) {
+  }
+  else if (lunarAge >= 13.8 && lunarAge < 15.8)
+  {
     moonPhase.index = 4;
     moonPhase.name = "Dolunay";
-  } else if (lunarAge >= 15.8 && lunarAge < 21.1) {
+  }
+  else if (lunarAge >= 15.8 && lunarAge < 21.1)
+  {
     moonPhase.index = 5;
     moonPhase.name = "Şişkin Ay";
-  } else if (lunarAge >= 21.1 && lunarAge < 23.1) {
+  }
+  else if (lunarAge >= 21.1 && lunarAge < 23.1)
+  {
     moonPhase.index = 6;
     moonPhase.name = "Son Dördün";
-  } else if (lunarAge >= 23.1 && lunarAge <= LUNAR_CYCLE_DAYS - 1) {
+  }
+  else if (lunarAge >= 23.1 && lunarAge <= LUNAR_CYCLE_DAYS - 1)
+  {
     moonPhase.index = 7;
     moonPhase.name = "Hilal";
   }
@@ -688,13 +739,18 @@ SunMoonCalc::MoonPhase SunMoonCalc::calculateMoonPhase(double lunarAge) const {
 /**
  * Reduces an angle in radians to the range (0 - 2 Pi).
  */
-double SunMoonCalc::normalizeRadians(double r) {
-  if (r < 0 && r >= -TWO_PI) return r + TWO_PI;
-  if (r >= TWO_PI && r < FOUR_PI) return r - TWO_PI;
-  if (r >= 0 && r < TWO_PI) return r;
+double SunMoonCalc::normalizeRadians(double r)
+{
+  if (r < 0 && r >= -TWO_PI)
+    return r + TWO_PI;
+  if (r >= TWO_PI && r < FOUR_PI)
+    return r - TWO_PI;
+  if (r >= 0 && r < TWO_PI)
+    return r;
 
   r -= TWO_PI * floor(r * TWO_PI_INVERSE);
-  if (r < 0.) r += TWO_PI;
+  if (r < 0.)
+    r += TWO_PI;
 
   return r;
 }
@@ -702,33 +758,38 @@ double SunMoonCalc::normalizeRadians(double r) {
 /**
  * Transforms a Julian day (rise/set/transit fields) to a common date in UTC.
  */
-time_t SunMoonCalc::fromJulian(double julianDays) const {
-  struct tm tm{};
+time_t SunMoonCalc::fromJulian(double julianDays) const
+{
+  struct tm tm
+  {
+  };
 
   // The conversion formulas are from Meeus, chapter 7.
   double Z = floor(julianDays + 0.5);
   double F = julianDays + 0.5 - Z;
   double A = Z;
-  if (Z >= 2299161) {
-    auto a = (int) ((Z - 1867216.25) / 36524.25);
+  if (Z >= 2299161)
+  {
+    auto a = (int)((Z - 1867216.25) / 36524.25);
     A += 1 + a - a / 4;
   }
   double B = A + 1524;
-  auto C = (int) ((B - 122.1) / 365.25);
-  auto D = (int) (C * 365.25);
-  auto E = (int) ((B - D) / 30.6001);
+  auto C = (int)((B - 122.1) / 365.25);
+  auto D = (int)(C * 365.25);
+  auto E = (int)((B - D) / 30.6001);
 
-  double exactDay = F + B - D - (int) (30.6001 * E);
-  auto day = (int) exactDay;
+  double exactDay = F + B - D - (int)(30.6001 * E);
+  auto day = (int)exactDay;
   int month = (E < 14) ? E - 1 : E - 13;
   int year = C - 4715;
-  if (month > 2) year--;
+  if (month > 2)
+    year--;
   double h = ((exactDay - day) * SECONDS_PER_DAY) / 3600.0;
 
-  auto hour = (int) h;
+  auto hour = (int)h;
   double m = (h - hour) * 60.0;
-  auto minute = (int) m;
-  auto second = (int) ((m - minute) * 60.0);
+  auto minute = (int)m;
+  auto second = (int)((m - minute) * 60.0);
 
   tm.tm_year = year - 1900;
   tm.tm_mon = month - 1;
@@ -741,14 +802,17 @@ time_t SunMoonCalc::fromJulian(double julianDays) const {
 }
 
 double SunMoonCalc::toJulian(const int16_t year, const uint8_t month, const uint8_t day, const uint8_t hour,
-                             const uint8_t minute, const uint8_t second) const {
+                             const uint8_t minute, const uint8_t second) const
+{
   // The conversion formulas are from Meeus, chapter 7.
   bool julian = false;
-  if (year < 1582 || (year == 1582 && month <= 10) || (year == 1582 && month == 10 && day < 15)) julian = true;
+  if (year < 1582 || (year == 1582 && month <= 10) || (year == 1582 && month == 10 && day < 15))
+    julian = true;
   int D = day;
   int M = month;
   int Y = year;
-  if (M < 3) {
+  if (M < 3)
+  {
     Y--;
     M += 12;
   }
@@ -756,7 +820,7 @@ double SunMoonCalc::toJulian(const int16_t year, const uint8_t month, const uint
   int B = julian ? 0 : 2 - A + A / 4;
 
   double dayFraction = (hour + (minute + (second / 60.0)) / 60.0) / 24.0;
-  double jd = dayFraction + (int) (365.25 * (Y + 4716)) + (int) (30.6001 * (M + 1)) + D + B - 1524.5;
+  double jd = dayFraction + (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + D + B - 1524.5;
 
   return jd;
 }
@@ -765,7 +829,8 @@ double SunMoonCalc::toJulian(const int16_t year, const uint8_t month, const uint
  * Converts the data in the struct to human readable units (km instead of astronomical units, degree instead of
  * radians, epoch instant instead of Julian Days).
  */
-SunMoonCalc::Result SunMoonCalc::translateToHumanReadable(SunMoonCalc::Result result) const {
+SunMoonCalc::Result SunMoonCalc::translateToHumanReadable(SunMoonCalc::Result result) const
+{
   result.sun.rise = fromJulian(result.sun.riseJd);
   result.sun.transit = fromJulian(result.sun.transitJd);
   result.sun.set = fromJulian(result.sun.setJd);
