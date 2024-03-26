@@ -154,7 +154,7 @@ public:
   String getLow(int index);
   String getLowRounded(int index);
   String getVisibility(int index);
-  String getVisibilityKm(int index);
+  String getVisibilityOtherUnit(int index);
   String getWeatherId(int index);
   String getDescription(int index);
   String getIcon(int index);
