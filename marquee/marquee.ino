@@ -37,13 +37,15 @@ int8_t getWifiQuality();
 String VERSION = "3.03-TR";
 String HOSTNAME = "SAAT-";
 String message = "SELAM";
+String wifiQualityS = "SINYAL GUCU: %";
+String webDisableS = "Web Arayuzu Devre Disi Birakildi";
 
 // LED Settings
 int refresh = 0;
 int spacer = 1;         // dots between letters
 int width = 5 + spacer; // The font width is 5 pixels + spacer
 Max72xxPanel matrix = Max72xxPanel(pinCS, numberOfHorizontalDisplays, numberOfVerticalDisplays);
-String Wide_Clock_Style = "2"; // 1="hh:mm Sıcaklık", 2="hh:mm:ss", 3="hh:mm"
+String Wide_Clock_Style = "2"; // 1="hh:mm Temp", 2="hh:mm:ss", 3="hh:mm"
 
 // TimeDB
 TimeDB TimeDBClient("");
@@ -115,7 +117,10 @@ static const char CHANGE_FORM3[] PROGMEM = "<p>Ekran Parlaklığı <input class=
                                            "<p>Ekran Kaydırma Hızı <select class='w3-option w3-padding' name='scrollspeed'>%SCROLLOPTIONS%</select></p>"
                                            "<p>Veri Yenileme (Dakika Cinsinden) <select class='w3-option w3-padding' name='refresh'>%OPTIONS%</select></p>"
                                            "<p>Kayan Yazı Süresi (Dakika Cinsinden) <input class='w3-border w3-margin-bottom' name='refreshDisplay' type='number' min='1' max='10' value='%REFRESH_DISPLAY%'></p>"
-                                           "<p>Tema Rengini Seçiniz <select class='w3-option w3-padding' name='theme'>%THEME_OPTIONS%</select></p>"
+                                           "<p>Tema Rengini Seçiniz <select class='w3-option w3-padding' name='theme' id='theme'></select></p>"
+                                           "<script>var s1='%THEME_OPTIONS%';var tt1='';var xmlhttp=new XMLHttpRequest();xmlhttp.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/themes.json',true);xmlhttp.onreadystatechange=function(){if(xmlhttp.readyState==4){if(xmlhttp.status==200){var obj=JSON.parse(xmlhttp.responseText);obj.sources.forEach(updateOptions);}}};"
+                                           "xmlhttp.send();"
+                                           "function updateOptions(it){if(it!=null){var se=(s1==it.id)?' selected':'';tt1+='<option value=\"'+it.id+'\"'+se+'>'+it.name+'</option>';document.getElementById('theme').innerHTML=tt1;}}</script>"
                                            "<hr><p><input name='isBasicAuth' class='w3-check w3-margin-top' type='checkbox' %IS_BASICAUTH_CHECKED%> Ayarlar Değişiklikleri için Kullanıcı Adı ve Şifre Kullan</p>"
                                            "<p><label>Kullanıcı Adı (Web Sunucu İçin)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='userid' value='%USERID%' maxlength='20'></p>"
                                            "<p><label>Şifre (Web Sunucu İçin)</label><input class='w3-input w3-border w3-margin-bottom' type='password' name='stationpassword' value='%STATIONPASSWORD%'></p>"
@@ -168,11 +173,17 @@ static const char PRAYERS_FORM[] PROGMEM = "<form class='w3-container' action='/
 static const char CURRENCY_FORM[] PROGMEM = "<form class='w3-container' action='/savecurrency' method='get'><h2>Döviz Kurları Ayarları:</h2>"
                                             "<p><input name='displaycurrencies' class='w3-check w3-margin-top' type='checkbox' %CURRENCYCHECKED%> Döviz Kurlarını Göster</p>"
                                             "<p>1.Temel Para Birimini Seçiniz <select class='w3-option w3-padding' name='basecurrency1' id='basecurrency1'></select></p>"
-                                            "<script>var s1='%BASECURRENCY1%';var tt1;var xmlhttp=new XMLHttpRequest();xmlhttp.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp.onreadystatechange=function(){    if(xmlhttp.readyState==4){if(xmlhttp.status==200){var obj=JSON.parse(xmlhttp.responseText);obj.sources.forEach(updateOptions);}}};xmlhttp.send();function updateOptions(it){if(it!=null){var se = (s1 == it.id) ? ' selected' : '';tt1 += '<option'+se+'>'+it.id+'</option>';document.getElementById('basecurrency1').innerHTML = tt1;}}</script>"
+                                            "<script>var s1='%BASECURRENCY1%';var tt1='';var xmlhttp1=new XMLHttpRequest();xmlhttp1.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',true);xmlhttp1.onreadystatechange=function(){if(xmlhttp1.readyState==4){if(xmlhttp1.status==200){var obj=JSON.parse(xmlhttp1.responseText);obj.sources.forEach(updateOptions1);}}};"
+                                            "xmlhttp1.send();"
+                                            "function updateOptions1(it){if(it!=null){var se=(s1==it.id)?' selected':'';tt1+='<option value=\"'+it.id+'\"'+se+'>'+it.name+'</option>';document.getElementById('basecurrency1').innerHTML=tt1;}}</script>"
                                             "<p>2.Temel Para Birimini Seçiniz <select class='w3-option w3-padding' name='basecurrency2' id='basecurrency2'></select></p>"
-                                            "<script>var s2='%BASECURRENCY2%';var tt2;var xmlhttp1=new XMLHttpRequest();xmlhttp1.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp1.onreadystatechange=function(){if(xmlhttp1.readyState==4){if(xmlhttp1.status==200){var obj=JSON.parse(xmlhttp1.responseText);obj.sources.forEach(updateOptions1);}}};xmlhttp1.send();function updateOptions1(it){if(it!=null){var se = (s2 == it.id) ? ' selected' : '';tt2 += '<option'+se+'>'+it.id+'</option>';document.getElementById('basecurrency2').innerHTML = tt2;}}</script>"
+                                            "<script>var s2='%BASECURRENCY2%';var tt2='';var xmlhttp2=new XMLHttpRequest();xmlhttp2.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',true);xmlhttp2.onreadystatechange=function(){if(xmlhttp2.readyState==4){if(xmlhttp2.status==200){var obj=JSON.parse(xmlhttp2.responseText);obj.sources.forEach(updateOptions2);}}};"
+                                            "xmlhttp2.send();"
+                                            "function updateOptions2(it){if(it!=null){var se=(s2==it.id)?' selected':'';tt2+='<option value=\"'+it.id+'\"'+se+'>'+it.name+'</option>';document.getElementById('basecurrency2').innerHTML=tt2;}}</script>"
                                             "<p>Dönüştürülecek Para Birimini Seçiniz <select class='w3-option w3-padding' name='targetcurrency' id='targetcurrency'></select></p>"
-                                            "<script>var s='%TARGETCURRENCY%';var tt;var xmlhttp2=new XMLHttpRequest();xmlhttp2.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',!0);xmlhttp2.onreadystatechange=function(){if(xmlhttp2.readyState==4){if(xmlhttp2.status==200){var obj=JSON.parse(xmlhttp2.responseText);obj.sources.forEach(updateOptions2);}}};xmlhttp2.send();function updateOptions2(it){if(it!=null){var se = (s == it.id) ? ' selected' : '';tt += '<option'+se+'>'+it.id+'</option>';document.getElementById('targetcurrency').innerHTML = tt;}}</script>"
+                                            "<script>var s='%TARGETCURRENCY%';var tt='';var xmlhttp=new XMLHttpRequest();xmlhttp.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/currencies.json',true);xmlhttp.onreadystatechange=function(){if(xmlhttp.readyState==4){if(xmlhttp.status==200){var obj=JSON.parse(xmlhttp.responseText);obj.sources.forEach(updateOptions);}}};"
+                                            "xmlhttp.send();"
+                                            "function updateOptions(it){if(it!=null){var se=(s==it.id)?' selected':'';tt+='<option value=\"'+it.id+'\"'+se+'>'+it.name+'</option>';document.getElementById('targetcurrency').innerHTML=tt;}}</script>"
                                             "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                             "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
@@ -192,30 +203,6 @@ static const char MATRIX_FORM_2[] PROGMEM = "<p><input name='showwind' class='w3
                                             "<p><input name='showairpollution' class='w3-check w3-margin-top' type='checkbox' %AIR_POLLUTION_CHECKED%> Hava Kirliğini Göster</p>"
                                             "<p><input name='showpressure' class='w3-check w3-margin-top' type='checkbox' %PRESSURE_CHECKED%> Barometrik Basıncı Göster</p>"
                                             "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>";
-
-static const char COLOR_THEMES[] PROGMEM = "<option>red</option>"
-                                           "<option>pink</option>"
-                                           "<option>purple</option>"
-                                           "<option>deep-purple</option>"
-                                           "<option>indigo</option>"
-                                           "<option>blue</option>"
-                                           "<option>light-blue</option>"
-                                           "<option>cyan</option>"
-                                           "<option>teal</option>"
-                                           "<option>green</option>"
-                                           "<option>light-green</option>"
-                                           "<option>lime</option>"
-                                           "<option>khaki</option>"
-                                           "<option>yellow</option>"
-                                           "<option>amber</option>"
-                                           "<option>orange</option>"
-                                           "<option>deep-orange</option>"
-                                           "<option>blue-grey</option>"
-                                           "<option>brown</option>"
-                                           "<option>grey</option>"
-                                           "<option>dark-grey</option>"
-                                           "<option>black</option>"
-                                           "<option>w3schools</option>";
 
 const int TIMEOUT = 500; // 500 = 1/2 second
 int timeoutCount = 0;
@@ -387,12 +374,12 @@ void setup()
     // Print the IP address
     String webAddress = "http://" + WiFi.localIP().toString() + ":" + String(WEBSERVER_PORT) + "/";
     Serial.println("Use this URL : " + webAddress);
-    scrollMessage(" v" + String(VERSION) + "  WIFI: " + WiFi.SSID() + "  IP: " + WiFi.localIP().toString() + "  SINYAL GUCU: " + "%" + getWifiQuality() + "  ");
+    scrollMessage(" v" + String(VERSION) + "  WIFI: " + WiFi.SSID() + "  IP: " + WiFi.localIP().toString() + "  " + wifiQualityS + getWifiQuality() + "  ");
   }
   else
   {
     Serial.println("Web Interface is Disabled");
-    scrollMessage("Web Arayuzu Devre Disi Birakildi");
+    scrollMessage(webDisableS);
   }
 
   flashLED(1, 500);
@@ -1281,9 +1268,7 @@ void handleConfigure()
   form.replace("%OPTIONS%", options);
 
   form.replace("%REFRESH_DISPLAY%", String(minutesBetweenScrolling));
-  String themeOptions = FPSTR(COLOR_THEMES);
-  themeOptions.replace(">" + String(themeColor) + "<", " selected>" + String(themeColor) + "<");
-  form.replace("%THEME_OPTIONS%", themeOptions);
+  form.replace("%THEME_OPTIONS%", themeColor);
 
   String isUseSecurityChecked = "";
   if (IS_BASIC_AUTH)
@@ -1546,8 +1531,7 @@ void sendFooter()
   html += "<i class='far fa-paper-plane'></i> Versiyon: " + String(VERSION) + "<br>";
   html += "<i class='far fa-clock'></i> Sonraki Veri Güncellemesi: " + getTimeTillUpdate() + "<br>";
   html += "<i class='fas fa-wifi'></i> WIFI: " + WiFi.SSID() + "<br>";
-  html += "<i class='fas fa-rss'></i> Sinyal Gücü: ";
-  html += "%" + String(rssi);
+  html += "<i class='fas fa-rss'></i> Sinyal Gücü: %" + String(rssi);
   html += "</footer>";
   html += "</body></html>";
   server.sendContent(html);
@@ -1628,7 +1612,7 @@ void displayWeatherData()
     html += "<div class='w3-cell w3-container' style='width:100%'><p>";
     html += "Hava Durumu: " + weatherClient.getDescription(0) + "<br>";
     html += "Bulutlanma: %" + weatherClient.getCloudcover(0) + "<br>";
-    html += "Görüş Uzaklığı: " + weatherClient.getVisibility(0) + " m (" + weatherClient.getVisibilityKm(0) + " km)<br>";
+    html += "Görüş Uzaklığı: " + weatherClient.getVisibility(0) + " m (" + weatherClient.getVisibilityOtherUnit(0) + " km)<br>";
     html += "Hava Kirliliği: " + weatherClient.getAqi(0) + "<br>";
     html += "Oda Sıcaklığı: " + (String)bmp180.readTemperature() + " °C<br>";
     html += "Sıcaklık: " + temperature + " " + getTempSymbol(true) + " (Hissedilen: " + weatherClient.getFeel(0) + " " + getTempSymbol(true) + ")" + "<br>";
@@ -1817,7 +1801,7 @@ void displayWorldClockWeatherData()
     {
       html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(1) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(1) + "'>" + "&ensp;" + worldWeatherClient.getCity(1) + ", " + worldWeatherClient.getCountry(1) + " (" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'>";
       html += "Hava Durumu: " + worldWeatherClient.getDescription(1) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(1) + ".png' alt='" + worldWeatherClient.getDescription(1) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(1) + " | " + "Nem: %" + worldWeatherClient.getHumidity(1) + " | " + "Rüzgar: " + worldWeatherClient.getWind(1) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(1) + " " + worldWeatherClient.getDirection(1) + "°" + " | " + "Kuvvetli Rüzgar: " + worldWeatherClient.getGust(1) + " " + getSpeedSymbol() + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(1) + " | " + "Basınç: " + worldWeatherClient.getPressure(1) + getPressureSymbol() + "<br>";
-      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(1) + " m (" + worldWeatherClient.getVisibilityKm(1) + " km)<br>";
+      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(1) + " m (" + worldWeatherClient.getVisibilityOtherUnit(1) + " km)<br>";
       html += "Sıcaklık: " + worldWeatherClient.getTemp(1) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(1) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(1) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(1) + " " + getTempSymbol(true) + "<br>";
       html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(1) + " / " + worldWeatherClient.getSunset(1) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(1) + ")" + "<br>";
       html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(1) + " / " + worldWeatherClient.getMoonSet(1) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(1) + ")" + "<br>";
@@ -1835,7 +1819,7 @@ void displayWorldClockWeatherData()
     {
       html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(2) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(2) + "'>" + "&ensp;" + worldWeatherClient.getCity(2) + ", " + worldWeatherClient.getCountry(2) + " (" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'>";
       html += "Hava Durumu: " + worldWeatherClient.getDescription(2) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(2) + ".png' alt='" + worldWeatherClient.getDescription(2) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(2) + " | " + "Nem: %" + worldWeatherClient.getHumidity(2) + " | " + "Rüzgar: " + worldWeatherClient.getWind(2) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(2) + " " + worldWeatherClient.getDirection(2) + "°" + " | " + "Kuvvetli Rüzgar: " + worldWeatherClient.getGust(2) + " " + getSpeedSymbol() + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(2) + " | " + "Basınç: " + worldWeatherClient.getPressure(2) + getPressureSymbol() + "<br>";
-      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(2) + " m (" + worldWeatherClient.getVisibilityKm(2) + " km)<br>";
+      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(2) + " m (" + worldWeatherClient.getVisibilityOtherUnit(2) + " km)<br>";
       html += "Sıcaklık: " + worldWeatherClient.getTemp(2) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(2) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(2) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(2) + " " + getTempSymbol(true) + "<br>";
       html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(2) + " / " + worldWeatherClient.getSunset(2) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(2) + ")" + "<br>";
       html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(2) + " / " + worldWeatherClient.getMoonSet(2) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(2) + ")" + "<br>";
@@ -1853,7 +1837,7 @@ void displayWorldClockWeatherData()
     {
       html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + worldWeatherClient.getCity(3) + ", " + worldWeatherClient.getCountry(3) + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
       html += "Hava Durumu: " + worldWeatherClient.getDescription(3) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(3) + ".png' alt='" + worldWeatherClient.getDescription(3) + "'>" + " | " + "Bulutlanma: %" + worldWeatherClient.getCloudcover(3) + " | " + "Nem: %" + worldWeatherClient.getHumidity(3) + " | " + "Rüzgar: " + worldWeatherClient.getWind(3) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(3) + " " + worldWeatherClient.getDirection(3) + "°" + " | " + "Kuvvetli Rüzgar: " + worldWeatherClient.getGust(3) + " " + getSpeedSymbol() + " | " + "Hava Kirliliği: " + worldWeatherClient.getAqi(3) + " | " + "Basınç: " + worldWeatherClient.getPressure(3) + getPressureSymbol() + "<br>";
-      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(3) + " m (" + worldWeatherClient.getVisibilityKm(3) + " km)<br>";
+      html += "Görüş Uzaklığı: " + worldWeatherClient.getVisibility(3) + " m (" + worldWeatherClient.getVisibilityOtherUnit(3) + " km)<br>";
       html += "Sıcaklık: " + worldWeatherClient.getTemp(3) + " " + getTempSymbol(true) + " (Hissedilen: " + worldWeatherClient.getFeel(3) + " " + getTempSymbol(true) + ")" + " | " + "En Yüksek/Düşük Sıcaklık: " + worldWeatherClient.getHigh(3) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(3) + " " + getTempSymbol(true) + "<br>";
       html += "Gün Doğumu/Batımı: " + worldWeatherClient.getSunrise(3) + " / " + worldWeatherClient.getSunset(3) + " (Aradaki Fark: " + worldWeatherClient.getSunDifference(3) + ")" + "<br>";
       html += "Ay Doğumu/Batımı: " + worldWeatherClient.getMoonRise(3) + " / " + worldWeatherClient.getMoonSet(3) + " (Aradaki Fark: " + worldWeatherClient.getMoonDifference(3) + ")" + "<br>";
@@ -2189,12 +2173,12 @@ void enableDisplay(boolean enable)
     }
     matrix.shutdown(false);
     matrix.fillScreen(LOW); // clear screen
-    Serial.println("Ekran AÇIK konuma getirildi: " + now());
+    Serial.println("Display was turned ON: " + now());
   }
   else
   {
     matrix.shutdown(true);
-    Serial.println("Ekran KAPALI konuma getirildi: " + now());
+    Serial.println("Display was turned OFF: " + now());
     displayOffEpoch = lastEpoch;
   }
 }
