@@ -458,7 +458,7 @@ String OpenWeatherMapClient::getVisibility(int index)
   return weathers[index].visibility;
 }
 
-String OpenWeatherMapClient::getVisibilityKm(int index)
+String OpenWeatherMapClient::getVisibilityOtherUnit(int index)
 {
   String rtnValue = "";
   int visiInt = weathers[index].visibility.toInt();
