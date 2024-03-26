@@ -2,70 +2,92 @@
     "status": "ok",
     "sources": [
         {
-            "id": "red"
+            "id": "red",
+            "name": "Kırmızı"
         },
         {
-            "id": "pink"
+            "id": "pink",
+            "name": "Pembe"
         },
         {
-            "id": "purple"
+            "id": "purple",
+            "name": "Mor"
         },
         {
-            "id": "deep-purple"
+            "id": "deep-purple",
+            "name": "Koyu Mor"
         },
         {
-            "id": "indigo"
+            "id": "indigo",
+            "name": "Çivit Mavisi"
         },
         {
-            "id": "blue"
+            "id": "blue",
+            "name": "Mavi"
         },
         {
-            "id": "light-blue"
+            "id": "light-blue",
+            "name": "Açık Mavi"
         },
         {
-            "id": "cyan"
+            "id": "cyan",
+            "name": "Camgöbeği"
         },
         {
-            "id": "teal"
+            "id": "teal",
+            "name": "Ördekbaşı"
         },
         {
-            "id": "green"
+            "id": "green",
+            "name": "Yeşil"
         },
         {
-            "id": "light-green"
+            "id": "light-green",
+            "name": "Açık Yeşil"
         },
         {
-            "id": "lime"
+            "id": "lime",
+            "name": "Limon Yeşili"
         },
         {
-            "id": "khaki"
+            "id": "khaki",
+            "name": "Haki"
         },
         {
-            "id": "yellow"
+            "id": "yellow",
+            "name": "Sarı"
         },
         {
-            "id": "orange"
+            "id": "orange",
+            "name": "Turuncu"
         },
         {
-            "id": "deep-orange"
+            "id": "deep-orange",
+            "name": "Koyu Turuncu"
         },
         {
-            "id": "blue-grey"
+            "id": "blue-grey",
+            "name": "Mavi Gri"
         },
         {
-            "id": "brown"
+            "id": "brown",
+            "name": "Kahverengi"
         },
         {
-            "id": "grey"
+            "id": "grey",
+            "name": "Gri"
         },
         {
-            "id": "dark-grey"
+            "id": "dark-grey",
+            "name": "Koyu Gri"
         },
         {
-            "id": "black"
+            "id": "black",
+            "name": "Siyah"
         },
         {
-            "id": "w3schools"
+            "id": "w3schools",
+            "name": "w3schools"
         }
     ]
 }
