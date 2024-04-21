@@ -286,3 +286,24 @@ String PrayersClient::cleanText(String text)
   text.replace("u00dc", "Ü");
   return text;
 }
+
+String PrayersClient::encodeHtmlString(String msg)
+{
+  String encodedMsg = msg;
+  // Restore special characters that are misformed to %char by the client browser
+  encodedMsg.replace(" ", "%20");
+  encodedMsg.replace("Ç", "%C3%87");
+  encodedMsg.replace("ç", "%C3%A7");
+  encodedMsg.replace("Ö", "%C3%96");
+  encodedMsg.replace("ö", "%C3%B6");
+  encodedMsg.replace("Ü", "%C3%9C");
+  encodedMsg.replace("ü", "%C3%BC");
+  encodedMsg.replace("ı", "%C4%B1");
+  encodedMsg.replace("İ", "%C4%B0");
+  encodedMsg.replace("Ş", "%C5%9E");
+  encodedMsg.replace("ş", "%C5%9F");
+  encodedMsg.replace("Ğ", "%C4%9E");
+  encodedMsg.replace("ğ", "%C4%9F");
+  encodedMsg.trim();
+  return encodedMsg;
+}
