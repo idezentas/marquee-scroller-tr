@@ -81,4 +81,5 @@ public:
   boolean getCached(int index);
   String getError(int index);
   String cleanText(String text);
+  String encodeHtmlString(String msg);
 };
