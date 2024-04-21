@@ -44,6 +44,11 @@ private:
 
   const char *servername = "api.openweathermap.org"; // remote server we will connect to
 
+  String monthsArr[12] = {"Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"};
+  String daysArr[7] = {"Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"};
+  String dirArr[16] = {"K", "KKD", "KD", "DKD", "D", "DGD", "GD", "GGD", "G", "GGB", "GB", "BGB", "B", "BKB", "KB", "KKB"};
+  String airArr[5] = {"İyi","İdare Eder","Orta","Kötü","Çok Kötü"};
+
   typedef struct
   {
     String lat;
@@ -87,7 +92,7 @@ private:
   } weather;
 
   weather weathers[5];
-  
+
   typedef struct
   {
     String sunRise;
@@ -114,6 +119,8 @@ private:
 
   String roundValue(String value);
   String zeroPad(int number);
+  String getMonthNameT(struct tm *time_local);
+  String getWeekNameT(struct tm *time_local);  
 
 public:
   OpenWeatherMapClient(String ApiKey, boolean isMetric, String CityName, String language);
