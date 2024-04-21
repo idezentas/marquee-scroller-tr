@@ -392,6 +392,85 @@ void TimeDB::convertTimezone(String apiKey, String fromTimezone, String toTimezo
   Serial.println();
 }
 
+String TimeDB::getMonthNameT(struct tm *time_local)
+{
+  String monthValue = "";
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 2:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 3:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 4:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 5:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 6:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 7:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 8:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 9:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 10:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 11:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 12:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  default:
+    monthValue = "";
+  }
+  return monthValue;
+}
+
+String TimeDB::getWeekNameT(struct tm *time_local)
+{
+  String weekdayValue = "";
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 2:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 3:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 4:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 5:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 6:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 7:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  default:
+    weekdayValue = "";
+  }
+  return weekdayValue;
+}
+
 String TimeDB::getError(int index)
 {
   return timeStruct[index].errorMessage;
@@ -434,74 +513,8 @@ String TimeDB::getTimestamp2Date(int index)
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+  monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
@@ -734,74 +747,8 @@ String TimeDB::getZoneStart(int index)
 
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+  monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
@@ -831,74 +778,8 @@ String TimeDB::getZoneEnd(int index)
 
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+  monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
@@ -910,25 +791,25 @@ String TimeDB::getDayName()
   switch (weekday())
   {
   case 1:
-    return "Pazar";
+    return daysArr[(weekday()) - 1];
     break;
   case 2:
-    return "Pazartesi";
+    return daysArr[(weekday()) - 1];
     break;
   case 3:
-    return "Salı";
+    return daysArr[(weekday()) - 1];
     break;
   case 4:
-    return "Çarşamba";
+    return daysArr[(weekday()) - 1];
     break;
   case 5:
-    return "Perşembe";
+    return daysArr[(weekday()) - 1];
     break;
   case 6:
-    return "Cuma";
+    return daysArr[(weekday()) - 1];
     break;
   case 7:
-    return "Cumartesi";
+    return daysArr[(weekday()) - 1];
     break;
   default:
     return "";
@@ -941,40 +822,40 @@ String TimeDB::getMonthName()
   switch (month())
   {
   case 1:
-    rtnValue = "Ocak";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 2:
-    rtnValue = "Şubat";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 3:
-    rtnValue = "Mart";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 4:
-    rtnValue = "Nisan";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 5:
-    rtnValue = "Mayıs";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 6:
-    rtnValue = "Haziran";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 7:
-    rtnValue = "Temmuz";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 8:
-    rtnValue = "Ağustos";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 9:
-    rtnValue = "Eylül";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 10:
-    rtnValue = "Ekim";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 11:
-    rtnValue = "Kasım";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   case 12:
-    rtnValue = "Aralık";
+    rtnValue = monthsArr[(month()) - 1];
     break;
   default:
     rtnValue = "";
@@ -1019,74 +900,8 @@ String TimeDB::getFromTimestamp2Date(int index)
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+  monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
@@ -1108,74 +923,8 @@ String TimeDB::getToTimestamp2Date(int index)
   time_t epoch_time_as_time_t = epoc;
   struct tm *time_local = localtime(&epoch_time_as_time_t);
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+  monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ", " + zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + ":" + zeroPad(second(mktime(time_local)));
 
@@ -1235,5 +984,10 @@ String TimeDB::cleanText(String text)
   text.replace("ß", "ss");
   text.replace("»", "'");
   text.replace("«", "'");
+  text.replace("ó", "o");
+  text.replace("ò", "o");
+  text.replace("Ó", "O");
+  text.replace("Ò", "O");
+  text.replace("°", (String) char(247));
   return text;
 }
