@@ -126,6 +126,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
     Serial.print("Unexpected response: ");
     Serial.println(status);
     weathers[index].error = "Weather Data Error: " + String(status);
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -134,6 +135,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
   if (!weatherClient.find(endOfHeaders))
   {
     Serial.println("Invalid response");
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -144,6 +146,7 @@ void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
     Serial.println("Weather Data Parsing failed!");
     Serial.println(error.c_str());
     weathers[index].error = "Weather Data Parsing failed!" + String(error.c_str());
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -280,6 +283,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
     Serial.print("Unexpected response: ");
     Serial.println(status);
     weathers[index].error = "Air Pollution Data Error: " + String(status);
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -288,6 +292,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
   if (!weatherClient.find(endOfHeaders))
   {
     Serial.println("Invalid response");
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -298,6 +303,7 @@ void OpenWeatherMapClient::updateCityAirPollution(String latitude, String longit
     Serial.println("Air Pollution Data Parsing failed!");
     Serial.println(error.c_str());
     weathers[index].error = "Air Pollution Data Parsing failed!" + String(error.c_str());
+    weatherClient.stop(); // stop client
     return;
   }
 
@@ -388,6 +394,85 @@ String OpenWeatherMapClient::roundValue(String value)
   float f = value.toFloat();
   int rounded = (int)(f + 0.5f);
   return String(rounded);
+}
+
+String OpenWeatherMapClient::getMonthNameT(struct tm *time_local)
+{
+  String monthValue = "";
+  switch (month(mktime(time_local)))
+  {
+  case 1:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 2:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 3:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 4:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 5:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 6:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 7:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 8:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 9:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 10:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 11:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  case 12:
+    monthValue = monthsArr[(month(mktime(time_local))) - 1];
+    break;
+  default:
+    monthValue = "";
+  }
+  return monthValue;
+}
+
+String OpenWeatherMapClient::getWeekNameT(struct tm *time_local)
+{
+  String weekdayValue = "";
+  switch (weekday(mktime(time_local)))
+  {
+  case 1:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 2:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 3:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 4:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 5:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 6:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  case 7:
+    weekdayValue = daysArr[(weekday(mktime(time_local))) - 1];
+    break;
+  default:
+    weekdayValue = "";
+  }
+  return weekdayValue;
 }
 
 void OpenWeatherMapClient::setMetric(boolean isMetric)
@@ -559,8 +644,7 @@ String OpenWeatherMapClient::getDirectionText(int index)
 {
   int num = getDirectionRounded(index).toInt();
   int val = floor((num / 22.5) + 0.5);
-  String arr[] = {"K", "KKD", "KD", "DKD", "D", "DGD", "GD", "GGD", "G", "GGB", "GB", "BGB", "B", "BKB", "KB", "KKB"};
-  return arr[(val % 16)];
+  return dirArr[(val % 16)];
 }
 
 String OpenWeatherMapClient::getWeatherId(int index)
@@ -711,25 +795,25 @@ String OpenWeatherMapClient::getWeekDay(int index, float offset)
     switch (day)
     {
     case 0:
-      rtnValue = "Pazar";
+      rtnValue = daysArr[day];
       break;
     case 1:
-      rtnValue = "Pazartesi";
+      rtnValue = daysArr[day];
       break;
     case 2:
-      rtnValue = "Salı";
+      rtnValue = daysArr[day];
       break;
     case 3:
-      rtnValue = "Çarşamba";
+      rtnValue = daysArr[day];
       break;
     case 4:
-      rtnValue = "Perşembe";
+      rtnValue = daysArr[day];
       break;
     case 5:
-      rtnValue = "Cuma";
+      rtnValue = daysArr[day];
       break;
     case 6:
-      rtnValue = "Cumartesi";
+      rtnValue = daysArr[day];
       break;
     default:
       break;
@@ -747,19 +831,19 @@ String OpenWeatherMapClient::getAqi(int index)
     switch (aqiN)
     {
     case 1:
-      rtnValue = "İyi";
+      rtnValue = airArr[(aqiN)-1];
       break;
     case 2:
-      rtnValue = "İdare Eder";
+      rtnValue = airArr[(aqiN)-1];
       break;
     case 3:
-      rtnValue = "Orta";
+      rtnValue = airArr[(aqiN)-1];
       break;
     case 4:
-      rtnValue = "Kötü";
+      rtnValue = airArr[(aqiN)-1];
       break;
     case 5:
-      rtnValue = "Çok Kötü";
+      rtnValue = airArr[(aqiN)-1];
       break;
     default:
       break;
@@ -783,74 +867,8 @@ String OpenWeatherMapClient::getSunrise(int index)
   }
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+    monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
@@ -871,74 +889,8 @@ String OpenWeatherMapClient::getSunset(int index)
   }
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+    monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
@@ -973,74 +925,8 @@ String OpenWeatherMapClient::getMoonRise(int index)
   }
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+    monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
@@ -1061,74 +947,8 @@ String OpenWeatherMapClient::getMoonSet(int index)
   }
   time_local->tm_hour += dstValue;
 
-  switch (month(mktime(time_local)))
-  {
-  case 1:
-    monthValue = "Ocak";
-    break;
-  case 2:
-    monthValue = "Şubat";
-    break;
-  case 3:
-    monthValue = "Mart";
-    break;
-  case 4:
-    monthValue = "Nisan";
-    break;
-  case 5:
-    monthValue = "Mayıs";
-    break;
-  case 6:
-    monthValue = "Haziran";
-    break;
-  case 7:
-    monthValue = "Temmuz";
-    break;
-  case 8:
-    monthValue = "Ağustos";
-    break;
-  case 9:
-    monthValue = "Eylül";
-    break;
-  case 10:
-    monthValue = "Ekim";
-    break;
-  case 11:
-    monthValue = "Kasım";
-    break;
-  case 12:
-    monthValue = "Aralık";
-    break;
-  default:
-    rtnValue = "";
-  }
-
-  switch (weekday(mktime(time_local)))
-  {
-  case 1:
-    weekdayValue = "Pazar";
-    break;
-  case 2:
-    weekdayValue = "Pazartesi";
-    break;
-  case 3:
-    weekdayValue = "Salı";
-    break;
-  case 4:
-    weekdayValue = "Çarşamba";
-    break;
-  case 5:
-    weekdayValue = "Perşembe";
-    break;
-  case 6:
-    weekdayValue = "Cuma";
-    break;
-  case 7:
-    weekdayValue = "Cumartesi";
-    break;
-  default:
-    weekdayValue = "";
-  }
+    monthValue = getMonthNameT(time_local);
+  weekdayValue = getWeekNameT(time_local);
 
   rtnValue = zeroPad(hour(mktime(time_local))) + ":" + zeroPad(minute(mktime(time_local))) + " (" + weekdayValue + ", " + String(day(mktime(time_local))) + " " + monthValue + " " + String(year(mktime(time_local))) + ")";
   return rtnValue;
@@ -1403,5 +1223,10 @@ String OpenWeatherMapClient::cleanText(String text)
   text.replace("ß", "ss");
   text.replace("»", "'");
   text.replace("«", "'");
+  text.replace("ó", "o");
+  text.replace("ò", "o");
+  text.replace("Ó", "O");
+  text.replace("Ò", "O");
+  text.replace("°", (String) char(247));
   return text;
 }
