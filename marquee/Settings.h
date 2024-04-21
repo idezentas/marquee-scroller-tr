@@ -52,7 +52,6 @@ SOFTWARE.
 #include "OctoPrintClient.h"
 #include "PiHoleClient.h"
 #include "AladhanClient.h"
-#include "CurrencyConverterClient.h"
 #include <Adafruit_BMP085.h>
 
 //******************************
@@ -122,12 +121,6 @@ boolean WORLD_TIME_ENABLED = true;
 String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
 String WorldCityName3 = "Milano,IT";   // Default City: Milano,IT
-
-// Currency Client -- Show curreny rates for the choosen currencies
-boolean CURRENCY_ENABLED = true;
-String BaseCurrency1 = "EUR";  // Default Currency: EUR
-String BaseCurrency2 = "USD";  // Default Currency: USD
-String TargetCurrency = "TRY"; // Default Currency: TRY
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
