@@ -72,6 +72,12 @@ private:
   String myLat;
   String myLon;
 
+  String monthsArr[12] = {"Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"};
+  String daysArr[7] = {"Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"};
+
+  String getMonthNameT(struct tm *time_local);
+  String getWeekNameT(struct tm *time_local);
+
   typedef struct
   {
     String errorMessage;
