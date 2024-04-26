@@ -155,7 +155,6 @@ Adafruit_BMP085 bmp180;
 
 static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' href='/'><i class='fas fa-home'></i> Anasayfa</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
-                                           "<a class='w3-bar-item w3-button' href='/displayworldclockweather'><i class='fas fa-clock'></i> Dünya Şehirleri Hava Durumu Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayprayerstime'><i class='fas fa-mosque'></i> Namaz Vakitleri Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/configure'><i class='fas fa-cog'></i> Ayarlar</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurematrix'><i class='fas fa-cog'></i> Ekran Ayarları</a>"
@@ -177,7 +176,7 @@ static const char CHANGE_FORM1[] PROGMEM = "<form class='w3-container' action='/
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='TimeZoneDB' value='%TIMEDBKEY%' maxlength='60'>"
                                            "<label>OpenWeatherMap API Anahtarı (<a href='https://openweathermap.org/' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='openWeatherMapApiKey' value='%WEATHERKEY%' maxlength='70'>"
-                                           "<p><label>Şehir Adı Giriniz</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='namecity' value='%NAMECITY%' maxlength='60'></p>";
+                                           "<p><label>Şehir Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='namecity' value='%NAMECITY%' maxlength='60'></p>";
 
 static const char CHANGE_FORM2[] PROGMEM = "<p><input name='flashseconds' class='w3-check w3-margin-top' type='checkbox' %FLASHSECONDS%> Saati gösterirken : işaretini yanıp söndür</p>"
                                            "<p><label>Mesaj (60 karaktere kadar)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='marqueeMsg' value='%MSG%' maxlength='60'></p>"
@@ -188,7 +187,7 @@ static const char CHANGE_FORM3[] PROGMEM = "<p>Ekran Parlaklığı <input class=
                                            "<p>Ekran Kaydırma Hızı <select class='w3-option w3-padding' name='scrollspeed'>%SCROLLOPTIONS%</select></p>"
                                            "<p>Veri Yenileme (Dakika Cinsinden) <select class='w3-option w3-padding' name='refresh'>%OPTIONS%</select></p>"
                                            "<p>Kayan Yazı Süresi (Dakika Cinsinden) <input class='w3-border w3-margin-bottom' name='refreshDisplay' type='number' min='1' max='10' value='%REFRESH_DISPLAY%'></p>"
-                                           "<p>Tema Rengini Seçiniz <select class='w3-option w3-padding' name='theme' id='theme'></select></p>"
+                                           "<p>Tema Rengi <select class='w3-option w3-padding' name='theme' id='theme'></select></p>"
                                            "<script>var s1='%THEME_OPTIONS%';var tt1='';var xmlhttp=new XMLHttpRequest();xmlhttp.open('GET','https://raw.githubusercontent.com/idezentas/marquee-scroller-tr/master/themes.json',true);xmlhttp.onreadystatechange=function(){if(xmlhttp.readyState==4){if(xmlhttp.status==200){var obj=JSON.parse(xmlhttp.responseText);obj.sources.forEach(updateOptions);}}};"
                                            "xmlhttp.send();"
                                            "function updateOptions(it){if(it!=null){var se=(s1==it.id)?' selected':'';tt1+='<option value=\"'+it.id+'\"'+se+'>'+it.name+'</option>';document.getElementById('theme').innerHTML=tt1;}}</script>"
@@ -230,9 +229,9 @@ static const char OCTO_FORM[] PROGMEM = "<form class='w3-container' action='/sav
 
 static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' action='/saveworldclock' method='get'><h2>Dünya Saatleri Ayarları:</h2>"
                                                "<p><input name='displayworldclock' class='w3-check w3-margin-top' type='checkbox' %WORLDCLOCKCHECKED%> Dünya Saatlerini Göster</p>"
-                                               "<p><label>1.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname1' value='%WORLDCITYNAME1%' maxlength='60'></p>"
-                                               "<p><label>2.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname2' value='%WORLDCITYNAME2%' maxlength='60'></p>"
-                                               "<p><label>3.Şehrin Adı</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname3' value='%WORLDCITYNAME3%' maxlength='60'></p>"
+                                               "<p><label>1.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname1' value='%WORLDCITYNAME1%' maxlength='60'></p>"
+                                               "<p><label>2.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname2' value='%WORLDCITYNAME2%' maxlength='60'></p>"
+                                               "<p><label>3.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname3' value='%WORLDCITYNAME3%' maxlength='60'></p>"
                                                "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                                "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
@@ -413,7 +412,6 @@ void setup()
     server.on("/configureprayers", handlePrayersConfigure);
     server.on("/display", handleDisplay);
     server.on("/displayworldclock", displayWorldClockData);
-    server.on("/displayworldclockweather", displayWorldClockWeatherData);
     server.on("/displayprayerstime", displayPrayersTimeData);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
@@ -1434,29 +1432,17 @@ void getWeatherData() // client function to send/receive GET request data..
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
     delay(1000);
-    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
-    delay(1000);
-    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(1), worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
-    delay(1000);
     worldWeatherClient.updateWeatherName(WorldCityName2, 2);
     delay(1000);
     timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
     delay(1000);
-    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
-    delay(1000);
-    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
-    delay(1000);
     worldWeatherClient.updateWeatherName(WorldCityName3, 3);
     delay(1000);
     timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
     delay(1000);
     timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
-    delay(1000);
-    worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
-    delay(1000);
-    worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(3), worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
     delay(1000);
   }
 
@@ -1782,90 +1768,6 @@ void displayWorldClockData()
       html += dstS + ": " + timezoneClient.useDST(3) + "<br>";
       html += dstBES + ": " + timezoneClient.getZoneStart(3) + " / " + timezoneClient.getZoneEnd(3) + "<br>";
       html += dstAbbS + ": " + timezoneClient.getNextAbbreviation(3) + "<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(3) + "," + worldWeatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + worldClockErS;
-      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(3) + "</strong><br></div><br>";
-    }
-    server.sendContent(String(html));
-    html = "";
-  }
-  else
-  {
-    html += "<strong>" + worldClockOffS + "</strong><br>";
-    server.sendContent(String(html));
-    html = "";
-  }
-
-  sendFooter();
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void displayWorldClockWeatherData()
-{
-  digitalWrite(externalLight, LOW);
-  String html = "";
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-  sendHeader();
-
-  if (WORLD_CLOCK_ENABLED)
-  {
-    if (worldWeatherClient.getError(1) == "")
-    {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(1) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(1) + "'>" + "&ensp;" + worldWeatherClient.getCity(1) + ", " + worldWeatherClient.getCountry(1) + " (" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'>";
-      html += weatherS + ": " + worldWeatherClient.getDescription(1) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(1) + ".png' alt='" + worldWeatherClient.getDescription(1) + "'>" + " | " + cloudsS + worldWeatherClient.getCloudcover(1) + " | " + humidityS + worldWeatherClient.getHumidity(1) + " | " + windS + ": " + worldWeatherClient.getWind(1) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(1) + " " + worldWeatherClient.getDirection(1) + "°" + " | " + gustS + ": " + worldWeatherClient.getGust(1) + " " + getSpeedSymbol() + " | " + airQualityS + ": " + worldWeatherClient.getAqi(1) + " | " + pressureS + ": " + worldWeatherClient.getPressure(1) + getPressureSymbol() + "<br>";
-      html += visibilityS + ": " + worldWeatherClient.getVisibility(1) + " m (" + worldWeatherClient.getVisibilityOtherUnit(1) + " km)<br>";
-      html += tempS + ": " + worldWeatherClient.getTemp(1) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + worldWeatherClient.getFeel(1) + " " + getTempSymbol(true) + ")" + " | " + tempHighLowS + ": " + worldWeatherClient.getHigh(1) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(1) + " " + getTempSymbol(true) + "<br>";
-      html += sunRiseSetS + ": " + worldWeatherClient.getSunrise(1) + " / " + worldWeatherClient.getSunset(1) + " (" + diffS + ": " + worldWeatherClient.getSunDifference(1) + ")" + "<br>";
-      html += moonRiseSetS + ": " + worldWeatherClient.getMoonRise(1) + " / " + worldWeatherClient.getMoonSet(1) + " (" + diffS + ": " + worldWeatherClient.getMoonDifference(1) + ")" + "<br>";
-      html += moonPhaseS + ": " + worldWeatherClient.getMoonPhase(1) + " (" + moonIlS + worldWeatherClient.getMoonIllumination(1) + ")<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(1) + "," + worldWeatherClient.getLon(1) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + worldClockErS;
-      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(1) + "</strong><br></div><br>";
-    }
-    if (worldWeatherClient.getError(2) == "")
-    {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(2) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(2) + "'>" + "&ensp;" + worldWeatherClient.getCity(2) + ", " + worldWeatherClient.getCountry(2) + " (" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'>";
-      html += weatherS + ": " + worldWeatherClient.getDescription(2) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(2) + ".png' alt='" + worldWeatherClient.getDescription(2) + "'>" + " | " + cloudsS + worldWeatherClient.getCloudcover(2) + " | " + humidityS + worldWeatherClient.getHumidity(2) + " | " + windS + ": " + worldWeatherClient.getWind(2) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(2) + " " + worldWeatherClient.getDirection(2) + "°" + " | " + gustS + ": " + worldWeatherClient.getGust(2) + " " + getSpeedSymbol() + " | " + airQualityS + ": " + worldWeatherClient.getAqi(2) + " | " + pressureS + ": " + worldWeatherClient.getPressure(2) + getPressureSymbol() + "<br>";
-      html += visibilityS + ": " + worldWeatherClient.getVisibility(2) + " m (" + worldWeatherClient.getVisibilityOtherUnit(2) + " km)<br>";
-      html += tempS + ": " + worldWeatherClient.getTemp(2) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + worldWeatherClient.getFeel(2) + " " + getTempSymbol(true) + ")" + " | " + tempHighLowS + ": " + worldWeatherClient.getHigh(2) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(2) + " " + getTempSymbol(true) + "<br>";
-      html += sunRiseSetS + ": " + worldWeatherClient.getSunrise(2) + " / " + worldWeatherClient.getSunset(2) + " (" + diffS + ": " + worldWeatherClient.getSunDifference(2) + ")" + "<br>";
-      html += moonRiseSetS + ": " + worldWeatherClient.getMoonRise(2) + " / " + worldWeatherClient.getMoonSet(2) + " (" + diffS + ": " + worldWeatherClient.getMoonDifference(2) + ")" + "<br>";
-      html += moonPhaseS + ": " + worldWeatherClient.getMoonPhase(2) + " (" + moonIlS + worldWeatherClient.getMoonIllumination(2) + ")<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(2) + "," + worldWeatherClient.getLon(2) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + worldClockErS;
-      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(2) + "</strong><br></div><br>";
-    }
-    if (worldWeatherClient.getError(3) == "")
-    {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + worldWeatherClient.getCity(3) + ", " + worldWeatherClient.getCountry(3) + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
-      html += weatherS + ": " + worldWeatherClient.getDescription(3) + " " + "<img src='http://openweathermap.org/img/w/" + worldWeatherClient.getIcon(3) + ".png' alt='" + worldWeatherClient.getDescription(3) + "'>" + " | " + cloudsS + worldWeatherClient.getCloudcover(3) + " | " + humidityS + worldWeatherClient.getHumidity(3) + " | " + windS + ": " + worldWeatherClient.getWind(3) + " " + getSpeedSymbol() + " " + worldWeatherClient.getDirectionText(3) + " " + worldWeatherClient.getDirection(3) + "°" + " | " + gustS + ": " + worldWeatherClient.getGust(3) + " " + getSpeedSymbol() + " | " + airQualityS + ": " + worldWeatherClient.getAqi(3) + " | " + pressureS + ": " + worldWeatherClient.getPressure(3) + getPressureSymbol() + "<br>";
-      html += visibilityS + ": " + worldWeatherClient.getVisibility(3) + " m (" + worldWeatherClient.getVisibilityOtherUnit(3) + " km)<br>";
-      html += tempS + ": " + worldWeatherClient.getTemp(3) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + worldWeatherClient.getFeel(3) + " " + getTempSymbol(true) + ")" + " | " + tempHighLowS + ": " + worldWeatherClient.getHigh(3) + " " + getTempSymbol(true) + " / " + worldWeatherClient.getLow(3) + " " + getTempSymbol(true) + "<br>";
-      html += sunRiseSetS + ": " + worldWeatherClient.getSunrise(3) + " / " + worldWeatherClient.getSunset(3) + " (" + diffS + ": " + worldWeatherClient.getSunDifference(3) + ")" + "<br>";
-      html += moonRiseSetS + ": " + worldWeatherClient.getMoonRise(3) + " / " + worldWeatherClient.getMoonSet(3) + " (" + diffS + ": " + worldWeatherClient.getMoonDifference(3) + ")" + "<br>";
-      html += moonPhaseS + ": " + worldWeatherClient.getMoonPhase(3) + " (" + moonIlS + worldWeatherClient.getMoonIllumination(3) + ")<br>";
       html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(3) + "," + worldWeatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
       html += "</p></div><hr>";
     }
