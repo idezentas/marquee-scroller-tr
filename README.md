@@ -48,7 +48,6 @@
 ## Features include:
 * Accurate Clock refresh off Internet Time Servers
 * Local Weather and conditions (refreshed every 10 - 30 minutes)
-* News Headlines from all the major sources
 * Configured through Web Interface
 * Display 3D print progress from your OctoPrint Server
 * Option to display Pi-hole status and graph (each pixel accross is 10 minutes)
@@ -104,7 +103,6 @@ Use the Arduino guide for details on how to installing and manage libraries http
 <TimeLib.h> --> https://github.com/PaulStoffregen/Time  
 <Adafruit_GFX.h> --> https://github.com/adafruit/Adafruit-GFX-Library  
 <Max72xxPanel.h> --> https://github.com/markruys/arduino-Max72xxPanel  
-<JsonStreamingParser.h> --> https://github.com/squix78/json-streaming-parser  
 <ArduinoJson.h> --> https://github.com/bblanchon/ArduinoJson
 <Adafruit_BMP085.h> --> https://github.com/adafruit/Adafruit-BMP085-Library
 
@@ -112,7 +110,6 @@ Use the Arduino guide for details on how to installing and manage libraries http
 Editing the **Settings.h** file is totally optional and not required.  All API Keys are now managed in the Web Interface. It is not required to edit the Settings.h file before loading and running the code.  
 * Open Weather Map free API key: http://openweathermap.org/  -- this is used to get weather data and the latitude and longitude for the current time zone. Weather API key is required for correct time.
 * TimeZoneDB free registration for API key: https://timezonedb.com/register -- this is used for setting the time and getting the correct time zone as well as managing time changes due to Day Light Savings time by regions.  This key is set and managed only through the web interface and added in version 2.10 of Marquee Scroller. TimeZoneDB key is required for correct time display.
-* News API key (free): https://newsapi.org/ -- Optional if you want to get current news headlines.
 * Your OctoPrint API Key -- optional if you use the OctoPrint status.
 * Version 2.0 supports Chained 4x1 LED displays -- configure up to 16x1 in the Settings.h file.  
 
