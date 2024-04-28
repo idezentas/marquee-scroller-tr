@@ -55,7 +55,7 @@ private:
     String error;
   } prayer;
 
-  prayer prayers[5];
+  prayer prayers[1];
 
   String roundValue(String value);
 
