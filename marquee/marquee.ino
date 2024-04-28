@@ -227,6 +227,7 @@ static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' actio
                                                "<p><label>1.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname1' value='%WORLDCITYNAME1%' maxlength='60'></p>"
                                                "<p><label>2.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname2' value='%WORLDCITYNAME2%' maxlength='60'></p>"
                                                "<p><label>3.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname3' value='%WORLDCITYNAME3%' maxlength='60'></p>"
+                                               "<p><label>4.Şehir</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='worldcityname4' value='%WORLDCITYNAME4%' maxlength='60'></p>"
                                                "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
                                                "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
@@ -793,6 +794,7 @@ void handleSaveWorldClock()
   WorldCityName1 = server.arg("worldcityname1");
   WorldCityName2 = server.arg("worldcityname2");
   WorldCityName3 = server.arg("worldcityname3");
+  WorldCityName4 = server.arg("worldcityname4");
   matrix.fillScreen(LOW); // show black
   writeCityIds();
   weatherClient.updateWeatherName(WorldCityName1, 1);
@@ -812,6 +814,12 @@ void handleSaveWorldClock()
   TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
   delay(1000);
   TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
+  delay(1000);
+  weatherClient.updateWeatherName(WorldCityName4, 4);
+  delay(1000);
+  TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(4), weatherClient.getLon(4), 4);
+  delay(1000);
+  TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(4), 4);
   delay(1000);
   redirectHome();
 }
@@ -1054,6 +1062,7 @@ void handleWorldClockConfigure()
   form.replace("%WORLDCITYNAME1%", WorldCityName1);
   form.replace("%WORLDCITYNAME2%", WorldCityName2);
   form.replace("%WORLDCITYNAME3%", WorldCityName3);
+  form.replace("%WORLDCITYNAME4%", WorldCityName4);
   server.sendContent(form);
 
   sendFooter();
@@ -1408,6 +1417,12 @@ void getWeatherData() // client function to send/receive GET request data..
     TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
     delay(1000);
     TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
+    delay(1000);
+    weatherClient.updateWeatherName(WorldCityName4, 4);
+    delay(1000);
+    TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(4), weatherClient.getLon(4), 4);
+    delay(1000);
+    TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(4), 4);
     delay(1000);
   }
 
@@ -1772,6 +1787,25 @@ void displayWorldClockData()
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
       html += reasonS + ": <strong>" + weatherClient.getError(3) + "</strong><br></div><br>";
     }
+    if (weatherClient.getError(4) == "")
+    {
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(4) + "/flat/48.png' alt='" + weatherClient.getCountry(4) + "'>" + "&ensp;" + weatherClient.getCity(4) + ", " + weatherClient.getCountry(4) + " (" + TimeDBClient.getCityName(4) + ", " + TimeDBClient.getRegionName(4) + ", " + TimeDBClient.getCountryCode(4) + ")</h2></div><div class='w3-cell-row'>";
+      html += timeNowDateS + ": " + TimeDBClient.getTimestamp2Date(4) + "<br>";
+      html += timeZoneS + ": " + TimeDBClient.getZoneName(4) + "   " + TimeDBClient.getGmtOffsetString(4) + "   (" + TimeDBClient.getToAbbreviation(4) + ")" + "<br>";
+      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + TimeDBClient.getOffsetDifferenceString(4) + "<br>";
+      html += dstS + ": " + TimeDBClient.useDST(4) + "   (" + dstBES + ": " + TimeDBClient.getZoneStart(4) + " / " + TimeDBClient.getZoneEnd(4) + ")<br>";
+      html += dstAbbS + ": " + TimeDBClient.getNextAbbreviation(4) + "<br>";
+      html += weatherS + ": " + weatherClient.getDescription(4) + "<br>";
+      html += tempS + ": " + weatherClient.getTemp(4) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + weatherClient.getFeel(4) + " " + getTempSymbol(true) + ")" + "<br>";
+      html += "<a href='https://www.google.com/maps/@" + weatherClient.getLat(4) + "," + weatherClient.getLon(4) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>" + worldClockErS;
+      html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
+      html += reasonS + ": <strong>" + weatherClient.getError(4) + "</strong><br></div><br>";
+    }
     server.sendContent(String(html));
     html = "";
   }
@@ -1781,7 +1815,6 @@ void displayWorldClockData()
     server.sendContent(String(html));
     html = "";
   }
-
   sendFooter();
   server.sendContent("");
   server.client().stop();
@@ -2024,6 +2057,7 @@ String writeCityIds()
     f.println("isPrayer=" + String(PRAYERS_ENABLED));
     f.println("prayersMethod=" + prayersMethod);
     f.println("WorldCityName3=" + WorldCityName3);
+    f.println("WorldCityName4=" + WorldCityName4);
   }
   f.close();
   readCityIds();
@@ -2323,6 +2357,12 @@ void readCityIds()
       WorldCityName3.trim();
       Serial.println("WorldCityName3= " + WorldCityName3);
     }
+    if (line.indexOf("WorldCityName4=") >= 0)
+    {
+      WorldCityName4 = line.substring(line.lastIndexOf("WorldCityName4=") + 15);
+      WorldCityName4.trim();
+      Serial.println("WorldCityName4= " + WorldCityName4);
+    }
   }
   fr.close();
   matrix.setIntensity(displayIntensity);
@@ -2330,6 +2370,7 @@ void readCityIds()
   weatherClient.updateWorldCityName1(WorldCityName1);
   weatherClient.updateWorldCityName2(WorldCityName2);
   weatherClient.updateWorldCityName3(WorldCityName3);
+  weatherClient.updateWorldCityName4(WorldCityName4);
   weatherClient.updateWeatherApiKey(APIKEY);
   weatherClient.updateLanguage(WeatherLanguage);
   weatherClient.setMetric(IS_METRIC);
