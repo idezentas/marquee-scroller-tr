@@ -103,7 +103,6 @@ String dataGetErrorS = "Veri Alınırken Hata Oluştu";
 String worldClockErS = "Dünya Saatleri Hatası";
 String worldClockOffS = "Dünya Saatleri Özelliği Devre Dışı";
 String prayerTimesS = "Namaz Vakitleri";
-String prayerTimesOffS = "Namaz Vakitleri Özelliği Devre Dışı";
 String prayerTimesErrS = "Namaz Vakitleri Hatası";
 String sourceS = "Kaynak";
 String FajrS = "İmsak";
@@ -132,11 +131,8 @@ long firstEpoch = 0;
 long displayOffEpoch = 0;
 boolean displayOn = true;
 
-TimeDB timezoneClient("");
-
 // Weather Client
 OpenWeatherMapClient weatherClient(APIKEY, IS_METRIC, CityName, WeatherLanguage);
-OpenWeatherMapClient worldWeatherClient(APIKEY, IS_METRIC, CityName, WeatherLanguage);
 
 // Prayers Time Client
 PrayersClient prayersClient(prayersMethod);
@@ -155,7 +151,6 @@ Adafruit_BMP085 bmp180;
 
 static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' href='/'><i class='fas fa-home'></i> Anasayfa</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
-                                           "<a class='w3-bar-item w3-button' href='/displayprayerstime'><i class='fas fa-mosque'></i> Namaz Vakitleri Verileri</a>"
                                            "<a class='w3-bar-item w3-button' href='/configure'><i class='fas fa-cog'></i> Ayarlar</a>"
                                            "<a class='w3-bar-item w3-button' href='/configurematrix'><i class='fas fa-cog'></i> Ekran Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configureprayers'><i class='fas fa-mosque'></i> Namaz Vakitleri Ayarları</a>"
@@ -172,7 +167,7 @@ static const char WEB_ACTION3[] PROGMEM = "</a><a class='w3-bar-item w3-button' 
                                           "<a class='w3-bar-item w3-button' href='https://github.com/idezentas/marquee-scroller-tr' target='_blank'><i class='fas fa-question-circle'></i> Hakkında</a>";
 
 static const char CHANGE_FORM1[] PROGMEM = "<form class='w3-container' action='/locations' method='get'><h2>Ayarlar:</h2>"
-                                           "<label>TimeZone DB API Anahtarı (<a href='https://timezonedb.com/register' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
+                                           "<label>TimeZoneDB API Anahtarı (<a href='https://timezonedb.com/register' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='TimeZoneDB' value='%TIMEDBKEY%' maxlength='60'>"
                                            "<label>OpenWeatherMap API Anahtarı (<a href='https://openweathermap.org/' target='_BLANK'>buradan</a> alabilirsiniz)</label>"
                                            "<input class='w3-input w3-border w3-margin-bottom' type='text' name='openWeatherMapApiKey' value='%WEATHERKEY%' maxlength='70'>"
@@ -412,7 +407,6 @@ void setup()
     server.on("/configureprayers", handlePrayersConfigure);
     server.on("/display", handleDisplay);
     server.on("/displayworldclock", displayWorldClockData);
-    server.on("/displayprayerstime", displayPrayersTimeData);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
     // Start the server
@@ -801,35 +795,23 @@ void handleSaveWorldClock()
   WorldCityName3 = server.arg("worldcityname3");
   matrix.fillScreen(LOW); // show black
   writeCityIds();
-  worldWeatherClient.updateWeatherName(WorldCityName1, 1);
+  weatherClient.updateWeatherName(WorldCityName1, 1);
   delay(1000);
-  timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
+  TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(1), weatherClient.getLon(1), 1);
   delay(1000);
-  timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
+  TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(1), 1);
   delay(1000);
-  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
+  weatherClient.updateWeatherName(WorldCityName2, 2);
   delay(1000);
-  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(1), worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
+  TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(2), weatherClient.getLon(2), 2);
   delay(1000);
-  worldWeatherClient.updateWeatherName(WorldCityName2, 2);
+  TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(2), 2);
   delay(1000);
-  timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+  weatherClient.updateWeatherName(WorldCityName3, 3);
   delay(1000);
-  timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
+  TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
   delay(1000);
-  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
-  delay(1000);
-  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(2), worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
-  delay(1000);
-  worldWeatherClient.updateWeatherName(WorldCityName3, 3);
-  delay(1000);
-  timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
-  delay(1000);
-  timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
-  delay(1000);
-  worldWeatherClient.updateCityAirPollution(worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
-  delay(1000);
-  worldWeatherClient.updateSunMoonTime(worldWeatherClient.getCityTimeStamp(3), worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+  TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
   delay(1000);
   redirectHome();
 }
@@ -845,15 +827,6 @@ void handleSavePrayers()
   writeCityIds();
   String cityEncoded = prayersClient.encodeHtmlString(CityName);
   prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
-  delay(1000);
-  String cityEncoded1 = prayersClient.encodeHtmlString(WorldCityName1);
-  prayersClient.updatePrayerTimesAddress(cityEncoded1, 1);
-  delay(1000);
-  String cityEncoded2 = prayersClient.encodeHtmlString(WorldCityName2);
-  prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
-  delay(1000);
-  String cityEncoded3 = prayersClient.encodeHtmlString(WorldCityName3);
-  prayersClient.updatePrayerTimesAddress(cityEncoded3, 3);
   delay(1000);
   redirectHome();
 }
@@ -1405,17 +1378,9 @@ void getWeatherData() // client function to send/receive GET request data..
     matrix.drawPixel(10, 7, HIGH);
     matrix.write();
     Serial.println("Getting Prayers Time Data...");
-    String cityEncoded = prayersClient.encodeHtmlString(CityName);
+    String prayerCityName = TimeDBClient.getCityName(0) + "," + TimeDBClient.getCountryCode(0);
+    String cityEncoded = prayersClient.encodeHtmlString(prayerCityName);
     prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
-    delay(1000);
-    String cityEncoded1 = prayersClient.encodeHtmlString(WorldCityName1);
-    prayersClient.updatePrayerTimesAddress(cityEncoded1, 1);
-    delay(1000);
-    String cityEncoded2 = prayersClient.encodeHtmlString(WorldCityName2);
-    prayersClient.updatePrayerTimesAddress(cityEncoded2, 2);
-    delay(1000);
-    String cityEncoded3 = prayersClient.encodeHtmlString(WorldCityName3);
-    prayersClient.updatePrayerTimesAddress(cityEncoded3, 3);
     delay(1000);
   }
 
@@ -1426,23 +1391,23 @@ void getWeatherData() // client function to send/receive GET request data..
     matrix.drawPixel(14, 7, HIGH);
     matrix.write();
     Serial.println("Getting World Time Data...");
-    worldWeatherClient.updateWeatherName(WorldCityName1, 1);
+    weatherClient.updateWeatherName(WorldCityName1, 1);
     delay(1000);
-    timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(1), worldWeatherClient.getLon(1), 1);
+    TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(1), weatherClient.getLon(1), 1);
     delay(1000);
-    timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(1), 1);
+    TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(1), 1);
     delay(1000);
-    worldWeatherClient.updateWeatherName(WorldCityName2, 2);
+    weatherClient.updateWeatherName(WorldCityName2, 2);
     delay(1000);
-    timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(2), worldWeatherClient.getLon(2), 2);
+    TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(2), weatherClient.getLon(2), 2);
     delay(1000);
-    timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(2), 2);
+    TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(2), 2);
     delay(1000);
-    worldWeatherClient.updateWeatherName(WorldCityName3, 3);
+    weatherClient.updateWeatherName(WorldCityName3, 3);
     delay(1000);
-    timezoneClient.getCityTime(TIMEDBKEY, worldWeatherClient.getLat(3), worldWeatherClient.getLon(3), 3);
+    TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
     delay(1000);
-    timezoneClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), timezoneClient.getZoneName(3), 3);
+    TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
     delay(1000);
   }
 
@@ -1631,8 +1596,7 @@ void displayWeatherData()
     html += moonRiseSetS + ": " + weatherClient.getMoonRise(0) + " / " + weatherClient.getMoonSet(0) + " (" + diffS + ": " + weatherClient.getMoonDifference(0) + ")" + "<br>";
     html += moonPhaseS + ": " + weatherClient.getMoonPhase(0) + " (" + moonIlS + weatherClient.getMoonIllumination(0) + ")<br>";
     html += timeZoneS + ": " + TimeDBClient.getZoneName(0) + "   " + TimeDBClient.getGmtOffsetString(0) + "   (" + TimeDBClient.getAbbreviation(0) + ")" + "<br>";
-    html += dstS + ": " + TimeDBClient.useDST(0) + "<br>";
-    html += dstBES + ": " + TimeDBClient.getZoneStart(0) + " / " + TimeDBClient.getZoneEnd(0) + "<br>";
+    html += dstS + ": " + TimeDBClient.useDST(0) + " (" + dstBES + ": " + TimeDBClient.getZoneStart(0) + " / " + TimeDBClient.getZoneEnd(0) + ")<br>";
     html += dstAbbS + ": " + TimeDBClient.getNextAbbreviation(0) + "<br>";
     html += timeNowDateS + ": " + time + "<br>";
     html += lastUpdateS + ": " + serverLastUpdateString + "<br>";
@@ -1642,6 +1606,34 @@ void displayWeatherData()
 
   server.sendContent(String(html)); // spit out what we got
   html = "";                        // fresh start
+
+  if (PRAYERS_ENABLED)
+  {
+    if (prayersClient.getError(0) == "")
+    {
+      String praySource = prayersClient.getMethodName(0);
+      String praySourceClear = prayersClient.cleanText(praySource);
+
+      html += "<div class='w3-cell-row' style='width:100%'><h2>" + prayerTimesS + "</h2></div><div class='w3-cell-row'><p>";
+      html += sourceS + ": " + praySourceClear + " / ID: " + prayersMethod + "<br>";
+      html += dateHGS + ": " + prayersClient.getHijriDate(0) + " / " + prayersClient.getGregorianDate(0) + "<br>";
+      html += FajrS + ": " + prayersClient.getFajr(0) + "<br>";
+      html += SunriseS + ": " + prayersClient.getSunrise(0) + "<br>";
+      html += DhuhrS + ": " + prayersClient.getDhuhr(0) + "<br>";
+      html += AsrS + ": " + prayersClient.getAsr(0) + "<br>";
+      html += MaghribS + ": " + prayersClient.getMaghrib(0) + "<br>";
+      html += IshaS + ": " + prayersClient.getIsha(0) + "<br>";
+      html += "</p></div><hr>";
+    }
+    else
+    {
+      html = "<div class='w3-cell-row'>" + prayerTimesErrS;
+      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
+      html += reasonS + ": <strong>" + prayersClient.getError(0) + "</strong><br></div><br><hr>";
+    }
+    server.sendContent(String(html));
+    html = "";
+  }
 
   if (OCTOPRINT_ENABLED)
   {
@@ -1723,59 +1715,62 @@ void displayWorldClockData()
 
   if (WORLD_CLOCK_ENABLED)
   {
-    if (worldWeatherClient.getError(1) == "")
+    if (weatherClient.getError(1) == "")
     {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(1) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(1) + "'>" + "&ensp;" + worldWeatherClient.getCity(1) + ", " + worldWeatherClient.getCountry(1) + " (" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'>";
-      html += timeNowDateS + ": " + timezoneClient.getTimestamp2Date(1) + "<br>";
-      html += timeZoneS + ": " + timezoneClient.getZoneName(1) + "   " + timezoneClient.getGmtOffsetString(1) + "   (" + timezoneClient.getToAbbreviation(1) + ")" + "<br>";
-      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + timezoneClient.getOffsetDifferenceString(1) + "<br>";
-      html += dstS + ": " + timezoneClient.useDST(1) + "<br>";
-      html += dstBES + ": " + timezoneClient.getZoneStart(1) + " / " + timezoneClient.getZoneEnd(1) + "<br>";
-      html += dstAbbS + ": " + timezoneClient.getNextAbbreviation(1) + "<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(1) + "," + worldWeatherClient.getLon(1) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(1) + "/flat/48.png' alt='" + weatherClient.getCountry(1) + "'>" + "&ensp;" + weatherClient.getCity(1) + ", " + weatherClient.getCountry(1) + " (" + TimeDBClient.getCityName(1) + ", " + TimeDBClient.getRegionName(1) + ", " + TimeDBClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'>";
+      html += timeNowDateS + ": " + TimeDBClient.getTimestamp2Date(1) + "<br>";
+      html += timeZoneS + ": " + TimeDBClient.getZoneName(1) + "   " + TimeDBClient.getGmtOffsetString(1) + "   (" + TimeDBClient.getToAbbreviation(1) + ")" + "<br>";
+      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + TimeDBClient.getOffsetDifferenceString(1) + "<br>";
+      html += dstS + ": " + TimeDBClient.useDST(1) + "   (" + dstBES + ": " + TimeDBClient.getZoneStart(1) + " / " + TimeDBClient.getZoneEnd(1) + ")<br>";
+      html += dstAbbS + ": " + TimeDBClient.getNextAbbreviation(1) + "<br>";
+      html += weatherS + ": " + weatherClient.getDescription(1) + "<br>";
+      html += tempS + ": " + weatherClient.getTemp(1) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + weatherClient.getFeel(1) + " " + getTempSymbol(true) + ")" + "<br>";
+      html += "<a href='https://www.google.com/maps/@" + weatherClient.getLat(1) + "," + weatherClient.getLon(1) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
       html += "</p></div><hr>";
     }
     else
     {
       html = "<div class='w3-cell-row'" + worldClockErS;
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(1) + "</strong><br></div><br>";
+      html += reasonS + ": <strong>" + weatherClient.getError(1) + "</strong><br></div><br>";
     }
-    if (worldWeatherClient.getError(2) == "")
+    if (weatherClient.getError(2) == "")
     {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(2) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(2) + "'>" + "&ensp;" + worldWeatherClient.getCity(2) + ", " + worldWeatherClient.getCountry(2) + " (" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'>";
-      html += timeNowDateS + ": " + timezoneClient.getTimestamp2Date(2) + "<br>";
-      html += timeZoneS + ": " + timezoneClient.getZoneName(2) + "   " + timezoneClient.getGmtOffsetString(2) + "   (" + timezoneClient.getToAbbreviation(2) + ")" + "<br>";
-      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + timezoneClient.getOffsetDifferenceString(2) + "<br>";
-      html += dstS + ": " + timezoneClient.useDST(2) + "<br>";
-      html += dstBES + ": " + timezoneClient.getZoneStart(2) + " / " + timezoneClient.getZoneEnd(2) + "<br>";
-      html += dstAbbS + ": " + timezoneClient.getNextAbbreviation(2) + "<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(2) + "," + worldWeatherClient.getLon(2) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(2) + "/flat/48.png' alt='" + weatherClient.getCountry(2) + "'>" + "&ensp;" + weatherClient.getCity(2) + ", " + weatherClient.getCountry(2) + " (" + TimeDBClient.getCityName(2) + ", " + TimeDBClient.getRegionName(2) + ", " + TimeDBClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'>";
+      html += timeNowDateS + ": " + TimeDBClient.getTimestamp2Date(2) + "<br>";
+      html += timeZoneS + ": " + TimeDBClient.getZoneName(2) + "   " + TimeDBClient.getGmtOffsetString(2) + "   (" + TimeDBClient.getToAbbreviation(2) + ")" + "<br>";
+      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + TimeDBClient.getOffsetDifferenceString(2) + "<br>";
+      html += dstS + ": " + TimeDBClient.useDST(2) + "   (" + dstBES + ": " + TimeDBClient.getZoneStart(2) + " / " + TimeDBClient.getZoneEnd(2) + ")<br>";
+      html += dstAbbS + ": " + TimeDBClient.getNextAbbreviation(2) + "<br>";
+      html += weatherS + ": " + weatherClient.getDescription(2) + "<br>";
+      html += tempS + ": " + weatherClient.getTemp(2) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + weatherClient.getFeel(2) + " " + getTempSymbol(true) + ")" + "<br>";
+      html += "<a href='https://www.google.com/maps/@" + weatherClient.getLat(2) + "," + weatherClient.getLon(2) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
       html += "</p></div><hr>";
     }
     else
     {
       html = "<div class='w3-cell-row'>" + worldClockErS;
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(2) + "</strong><br></div><br>";
+      html += reasonS + ": <strong>" + weatherClient.getError(2) + "</strong><br></div><br>";
     }
-    if (worldWeatherClient.getError(3) == "")
+    if (weatherClient.getError(3) == "")
     {
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + worldWeatherClient.getCity(3) + ", " + worldWeatherClient.getCountry(3) + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
-      html += timeNowDateS + ": " + timezoneClient.getTimestamp2Date(3) + "<br>";
-      html += timeZoneS + ": " + timezoneClient.getZoneName(3) + "   " + timezoneClient.getGmtOffsetString(3) + "   (" + timezoneClient.getToAbbreviation(3) + ")" + "<br>";
-      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + timezoneClient.getOffsetDifferenceString(3) + "<br>";
-      html += dstS + ": " + timezoneClient.useDST(3) + "<br>";
-      html += dstBES + ": " + timezoneClient.getZoneStart(3) + " / " + timezoneClient.getZoneEnd(3) + "<br>";
-      html += dstAbbS + ": " + timezoneClient.getNextAbbreviation(3) + "<br>";
-      html += "<a href='https://www.google.com/maps/@" + worldWeatherClient.getLat(3) + "," + worldWeatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
+      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(3) + "/flat/48.png' alt='" + weatherClient.getCountry(3) + "'>" + "&ensp;" + weatherClient.getCity(3) + ", " + weatherClient.getCountry(3) + " (" + TimeDBClient.getCityName(3) + ", " + TimeDBClient.getRegionName(3) + ", " + TimeDBClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'>";
+      html += timeNowDateS + ": " + TimeDBClient.getTimestamp2Date(3) + "<br>";
+      html += timeZoneS + ": " + TimeDBClient.getZoneName(3) + "   " + TimeDBClient.getGmtOffsetString(3) + "   (" + TimeDBClient.getToAbbreviation(3) + ")" + "<br>";
+      html += TimeDBClient.getZoneName(0) + " " + diffTimeS + ": " + TimeDBClient.getOffsetDifferenceString(3) + "<br>";
+      html += dstS + ": " + TimeDBClient.useDST(3) + "   (" + dstBES + ": " + TimeDBClient.getZoneStart(3) + " / " + TimeDBClient.getZoneEnd(3) + ")<br>";
+      html += dstAbbS + ": " + TimeDBClient.getNextAbbreviation(3) + "<br>";
+      html += weatherS + ": " + weatherClient.getDescription(3) + "<br>";
+      html += tempS + ": " + weatherClient.getTemp(3) + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + weatherClient.getFeel(3) + " " + getTempSymbol(true) + ")" + "<br>";
+      html += "<a href='https://www.google.com/maps/@" + weatherClient.getLat(3) + "," + weatherClient.getLon(3) + ",10000m/data=!3m1!1e3' target='_BLANK'><i class='fas fa-map-marker' style='color:red'></i> " + mapItS + "!</a><br>";
       html += "</p></div><hr>";
     }
     else
     {
       html = "<div class='w3-cell-row'>" + worldClockErS;
       html += "<p>Lütfen <a href='/configureworldclock' Dünya Saatleri Ayarlarını</a> Yapınız</p><br>";
-      html += reasonS + ": <strong>" + worldWeatherClient.getError(3) + "</strong><br></div><br>";
+      html += reasonS + ": <strong>" + weatherClient.getError(3) + "</strong><br></div><br>";
     }
     server.sendContent(String(html));
     html = "";
@@ -1787,123 +1782,6 @@ void displayWorldClockData()
     html = "";
   }
 
-  sendFooter();
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void displayPrayersTimeData()
-{
-  digitalWrite(externalLight, LOW);
-  String html = "";
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-  sendHeader();
-
-  if (PRAYERS_ENABLED)
-  {
-    if (prayersClient.getError(0) == "")
-    {
-      String praySource = prayersClient.getMethodName(0);
-      String praySourceClear = prayersClient.cleanText(praySource);
-
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + weatherClient.getCountry(0) + "/flat/48.png' alt='" + weatherClient.getCountry(0) + "'>" + "&ensp;" + prayerTimesS + " (" + TimeDBClient.getCityName(0) + ", " + TimeDBClient.getRegionName(0) + ", " + TimeDBClient.getCountryCode(0) + ")</h2></div><div class='w3-cell-row'><p>";
-      html += sourceS + ": " + praySourceClear + " / ID: " + prayersMethod + "<br>";
-      html += dateHGS + ": " + prayersClient.getHijriDate(0) + " / " + prayersClient.getGregorianDate(0) + "<br>";
-      html += FajrS + ": " + prayersClient.getFajr(0) + "<br>";
-      html += SunriseS + ": " + prayersClient.getSunrise(0) + "<br>";
-      html += DhuhrS + ": " + prayersClient.getDhuhr(0) + "<br>";
-      html += AsrS + ": " + prayersClient.getAsr(0) + "<br>";
-      html += MaghribS + ": " + prayersClient.getMaghrib(0) + "<br>";
-      html += IshaS + ": " + prayersClient.getIsha(0) + "<br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + prayerTimesErrS;
-      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
-      html += reasonS + ": <strong>" + prayersClient.getError(0) + "</strong><br></div><br><hr>";
-    }
-    if (prayersClient.getError(1) == "")
-    {
-      String praySource = prayersClient.getMethodName(1);
-      String praySourceClear = prayersClient.cleanText(praySource);
-
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(1) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(1) + "'>" + "&ensp;" + prayerTimesS + " (" + timezoneClient.getCityName(1) + ", " + timezoneClient.getRegionName(1) + ", " + timezoneClient.getCountryCode(1) + ")</h2></div><div class='w3-cell-row'><p>";
-      html += sourceS + ": " + praySourceClear + " / ID: " + prayersMethod + "<br>";
-      html += dateHGS + ": " + prayersClient.getHijriDate(1) + " / " + prayersClient.getGregorianDate(1) + "<br>";
-      html += FajrS + ": " + prayersClient.getFajr(1) + "<br>";
-      html += SunriseS + ": " + prayersClient.getSunrise(1) + "<br>";
-      html += DhuhrS + ": " + prayersClient.getDhuhr(1) + "<br>";
-      html += AsrS + ": " + prayersClient.getAsr(1) + "<br>";
-      html += MaghribS + ": " + prayersClient.getMaghrib(1) + "<br>";
-      html += IshaS + ": " + prayersClient.getIsha(1) + "<br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + prayerTimesErrS;
-      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
-      html += reasonS + ": <strong>" + prayersClient.getError(1) + "</strong><br></div><br><hr>";
-    }
-    if (prayersClient.getError(2) == "")
-    {
-      String praySource = prayersClient.getMethodName(2);
-      String praySourceClear = prayersClient.cleanText(praySource);
-
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(2) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(2) + "'>" + "&ensp;" + prayerTimesS + " (" + timezoneClient.getCityName(2) + ", " + timezoneClient.getRegionName(2) + ", " + timezoneClient.getCountryCode(2) + ")</h2></div><div class='w3-cell-row'><p>";
-      html += sourceS + ": " + praySourceClear + " / ID: " + prayersMethod + "<br>";
-      html += dateHGS + ": " + prayersClient.getHijriDate(2) + " / " + prayersClient.getGregorianDate(2) + "<br>";
-      html += FajrS + ": " + prayersClient.getFajr(2) + "<br>";
-      html += SunriseS + ": " + prayersClient.getSunrise(2) + "<br>";
-      html += DhuhrS + ": " + prayersClient.getDhuhr(2) + "<br>";
-      html += AsrS + ": " + prayersClient.getAsr(2) + "<br>";
-      html += MaghribS + ": " + prayersClient.getMaghrib(2) + "<br>";
-      html += IshaS + ": " + prayersClient.getIsha(2) + "<br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + prayerTimesErrS;
-      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
-      html += reasonS + ": <strong>" + prayersClient.getError(2) + "</strong><br></div><br><hr>";
-    }
-    if (prayersClient.getError(3) == "")
-    {
-      String praySource = prayersClient.getMethodName(3);
-      String praySourceClear = prayersClient.cleanText(praySource);
-
-      html += "<div class='w3-cell-row' style='width:100%'><h2><img src='https://flagsapi.com/" + worldWeatherClient.getCountry(3) + "/flat/48.png' alt='" + worldWeatherClient.getCountry(3) + "'>" + "&ensp;" + prayerTimesS + " (" + timezoneClient.getCityName(3) + ", " + timezoneClient.getRegionName(3) + ", " + timezoneClient.getCountryCode(3) + ")</h2></div><div class='w3-cell-row'><p>";
-      html += sourceS + ": " + praySourceClear + " / ID: " + prayersMethod + "<br>";
-      html += dateHGS + ": " + prayersClient.getHijriDate(3) + " / " + prayersClient.getGregorianDate(3) + "<br>";
-      html += FajrS + ": " + prayersClient.getFajr(3) + "<br>";
-      html += SunriseS + ": " + prayersClient.getSunrise(3) + "<br>";
-      html += DhuhrS + ": " + prayersClient.getDhuhr(3) + "<br>";
-      html += AsrS + ": " + prayersClient.getAsr(3) + "<br>";
-      html += MaghribS + ": " + prayersClient.getMaghrib(3) + "<br>";
-      html += IshaS + ": " + prayersClient.getIsha(3) + "<br>";
-      html += "</p></div><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + prayerTimesErrS;
-      html += "<p>Lütfen <a href='/configureprayers'>Namaz Vakitleri Ayarlarını</a> Yapınız<p><br>";
-      html += reasonS + ": <strong>" + prayersClient.getError(3) + "</strong><br></div><br><hr>";
-    }
-    server.sendContent(String(html));
-    html = "";
-  }
-  else
-  {
-    html += "<strong>" + prayerTimesOffS + "</strong><br>";
-    server.sendContent(String(html));
-    html = "";
-  }
   sendFooter();
   server.sendContent("");
   server.client().stop();
@@ -2449,9 +2327,9 @@ void readCityIds()
   fr.close();
   matrix.setIntensity(displayIntensity);
   prayersClient.updateMethodID(prayersMethod);
-  worldWeatherClient.updateWorldCityName1(WorldCityName1);
-  worldWeatherClient.updateWorldCityName2(WorldCityName2);
-  worldWeatherClient.updateWorldCityName3(WorldCityName3);
+  weatherClient.updateWorldCityName1(WorldCityName1);
+  weatherClient.updateWorldCityName2(WorldCityName2);
+  weatherClient.updateWorldCityName3(WorldCityName3);
   weatherClient.updateWeatherApiKey(APIKEY);
   weatherClient.updateLanguage(WeatherLanguage);
   weatherClient.setMetric(IS_METRIC);
