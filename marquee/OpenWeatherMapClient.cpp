@@ -81,6 +81,15 @@ void OpenWeatherMapClient::updateWorldCityName3(String WorldCityName3)
   }
 }
 
+void OpenWeatherMapClient::updateWorldCityName4(String WorldCityName4)
+{
+  myWorldCityName4 = WorldCityName4;
+  if (myWorldCityName4 == "")
+  {
+    myWorldCityName4 = "Sydney,AU";
+  }
+}
+
 void OpenWeatherMapClient::updateWeatherName(String CityName, int index)
 {
   WiFiClient weatherClient;
