@@ -41,6 +41,7 @@ private:
   String myWorldCityName1 = "";
   String myWorldCityName2 = "";
   String myWorldCityName3 = "";
+  String myWorldCityName4 = "";
 
   const char *servername = "api.openweathermap.org"; // remote server we will connect to
 
@@ -115,7 +116,7 @@ private:
     String moonParallacticAngle;
   } moonS;
 
-  moonS moonStruct[5];
+  moonS moonStruct[1];
 
   String roundValue(String value);
   String zeroPad(int number);
@@ -133,6 +134,7 @@ public:
   void updateWorldCityName1(String WorldCityName1);
   void updateWorldCityName2(String WorldCityName2);
   void updateWorldCityName3(String WorldCityName3);
+  void updateWorldCityName4(String WorldCityName4);
   void updateLanguage(String language);
 
   String getLat(int index);
