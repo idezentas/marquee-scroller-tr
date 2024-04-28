@@ -121,6 +121,7 @@ boolean WORLD_TIME_ENABLED = true;
 String WorldCityName1 = "London,UK"; // Default City: London,UK
 String WorldCityName2 = "Los Angeles,US"; // Default City: Los Angeles,US
 String WorldCityName3 = "Milano,IT";   // Default City: Milano,IT
+String WorldCityName4 = "Sydney,AU";   // Default City: Sydney,AU
 
 // OctoPrint Monitoring -- Monitor your 3D printer OctoPrint Server
 boolean OCTOPRINT_ENABLED = false;
