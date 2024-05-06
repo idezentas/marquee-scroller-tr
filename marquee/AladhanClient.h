@@ -60,6 +60,7 @@ private:
   String roundValue(String value);
 
 public:
+  void updatePrayerTimesLatLon(String latitude, String longitude, int index);
   void updatePrayerTimesAddress(String address, int index);
   PrayersClient(String id);
   void updateMethodID(String methodID);
