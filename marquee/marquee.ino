@@ -1387,8 +1387,7 @@ void getWeatherData() // client function to send/receive GET request data..
     matrix.drawPixel(10, 7, HIGH);
     matrix.write();
     Serial.println("Getting Prayers Time Data...");
-    String prayerCityName = TimeDBClient.getCityName(0) + "," + TimeDBClient.getCountryCode(0);
-    String cityEncoded = prayersClient.encodeHtmlString(prayerCityName);
+    String cityEncoded = prayersClient.encodeHtmlString(CityName);
     prayersClient.updatePrayerTimesAddress(cityEncoded, 0);
     delay(1000);
   }
