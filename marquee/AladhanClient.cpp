@@ -35,6 +35,114 @@ void PrayersClient::updateMethodID(String methodID)
   myMethodID = methodID;
 }
 
+void PrayersClient::updatePrayerTimesLatLon(String latitude, String longitude, int index)
+{
+  WiFiClient prayersClient;
+
+  if (latitude == "" && longitude == "")
+  {
+    prayers[index].error = "Please enter address for prayes time.";
+    Serial.println(prayers[index].error);
+    return;
+  }
+
+  String apiGetData = "GET /v1/timings/now?latitude=" + latitude + "&longitude=" + longitude + "&method=" + myMethodID + " HTTP/1.0";
+
+  Serial.println("Getting Prayers Time Data for " + latitude + ", " + longitude);
+  Serial.println(apiGetData);
+  prayers[index].cached = false;
+  prayers[index].error = "";
+  if (prayersClient.connect(servername, 80))
+  { // starts client connection, checks for connection
+    prayersClient.println(apiGetData);
+    prayersClient.println("Host: " + String(servername));
+    prayersClient.println("User-Agent: ArduinoWiFi/1.1");
+    prayersClient.println("Connection: close");
+    prayersClient.println();
+  }
+  else
+  {
+    Serial.println("Connection for prayers time data failed"); // error message if no client connect
+    Serial.println();
+    prayers[index].error = "Connection for prayers time data failed";
+    return;
+  }
+
+  while (prayersClient.connected() && !prayersClient.available())
+    delay(1); // waits for data
+
+  Serial.println("Waiting for data");
+
+  // Check HTTP status
+  char status[32] = {0};
+  prayersClient.readBytesUntil('\r', status, sizeof(status));
+  Serial.println("Response Header: " + String(status));
+  if (strcmp(status, "HTTP/1.1 200 OK") != 0)
+  {
+    Serial.print("Unexpected response: ");
+    Serial.println(status);
+    prayers[index].error = "Prayers Time Data Error: " + String(status);
+    return;
+  }
+
+  // Skip HTTP headers
+  char endOfHeaders[] = "\r\n\r\n";
+  if (!prayersClient.find(endOfHeaders))
+  {
+    Serial.println("Invalid response");
+    return;
+  }
+
+  JsonDocument root;
+  DeserializationError error = deserializeJson(root, prayersClient);
+  if (error)
+  {
+    Serial.println("Prayers Time Data Parsing failed!");
+    Serial.println(error.c_str());
+    prayers[index].error = "Prayers Time Data Parsing failed!" + String(error.c_str());
+    return;
+  }
+
+  prayersClient.stop(); // stop client
+
+  JsonObject timings_ = root["data"]["timings"];
+  prayers[index].Fajr = timings_["Fajr"].as<String>();
+  prayers[index].Sunrise = timings_["Sunrise"].as<String>();
+  prayers[index].Dhuhr = timings_["Dhuhr"].as<String>();
+  prayers[index].Asr = timings_["Asr"].as<String>();
+  prayers[index].Sunset = timings_["Sunset"].as<String>();
+  prayers[index].Maghrib = timings_["Maghrib"].as<String>();
+  prayers[index].Isha = timings_["Isha"].as<String>();
+  prayers[index].Imsak = timings_["Imsak"].as<String>();
+  prayers[index].Midnight = timings_["Midnight"].as<String>();
+
+  JsonObject hijri_ = root["data"]["date"]["hijri"];
+  prayers[index].hijriDate = hijri_["date"].as<String>();
+  prayers[index].hijriCalender = hijri_["designation"]["expanded"].as<String>();
+
+  JsonObject gregorian_ = root["data"]["date"]["gregorian"];
+  prayers[index].gregorianDate = gregorian_["date"].as<String>();
+  prayers[index].gregorianCalender = gregorian_["designation"]["expanded"].as<String>();
+
+  prayers[index].methodName = root["data"]["meta"]["method"]["name"].as<String>();
+
+  Serial.println("Fajr: " + prayers[index].Fajr);
+  Serial.println("Sunrise: " + prayers[index].Sunrise);
+  Serial.println("Dhuhr: " + prayers[index].Dhuhr);
+  Serial.println("Asr: " + prayers[index].Asr);
+  Serial.println("Maghrib: " + prayers[index].Maghrib);
+  Serial.println("Isha: " + prayers[index].Isha);
+  Serial.println("Sunset: " + prayers[index].Sunset);
+  Serial.println("Imsak: " + prayers[index].Imsak);
+  Serial.println("Midnight: " + prayers[index].Midnight);
+  Serial.println("hijriDate: " + prayers[index].hijriDate);
+  Serial.println("hijriCalender: " + prayers[index].hijriCalender);
+  Serial.println("gregorianDate: " + prayers[index].gregorianDate);
+  Serial.println("gregorianCalender: " + prayers[index].gregorianCalender);
+  Serial.println("methodName: " + prayers[index].methodName);
+  Serial.println();
+}
+
 void PrayersClient::updatePrayerTimesAddress(String address, int index)
 {
   WiFiClient prayersClient;
