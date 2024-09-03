@@ -137,17 +137,8 @@ OpenWeatherMapClient weatherClient(APIKEY, IS_METRIC, CityName, WeatherLanguage)
 // Prayers Time Client
 PrayersClient prayersClient(prayersMethod);
 
-// OctoPrint Client
-OctoPrintClient printerClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
-int printerCount = 0;
-
-// Pi-hole Client
-PiHoleClient piholeClient;
-
 ESP8266WebServer server(WEBSERVER_PORT);
 ESP8266HTTPUpdateServer serverUpdater;
-
-Adafruit_BMP085 bmp180;
 
 static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' href='/'><i class='fas fa-home'></i> Anasayfa</a>"
                                            "<a class='w3-bar-item w3-button' href='/displayworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Verileri</a>"
@@ -156,9 +147,7 @@ static const char WEB_ACTIONS1[] PROGMEM = "<a class='w3-bar-item w3-button' hre
                                            "<a class='w3-bar-item w3-button' href='/configureprayers'><i class='fas fa-mosque'></i> Namaz Vakitleri Ayarları</a>"
                                            "<a class='w3-bar-item w3-button' href='/configureworldclock'><i class='fas fa-clock'></i> Dünya Saatleri Ayarları</a>";
 
-static const char WEB_ACTIONS2[] PROGMEM = "<a class='w3-bar-item w3-button' href='/configureoctoprint'><i class='fas fa-cube'></i> OctoPrint Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/configurepihole'><i class='fas fa-network-wired'></i> Pi-hole Ayarları</a>"
-                                           "<a class='w3-bar-item w3-button' href='/pull'><i class='fas fa-cloud-download-alt'></i> Verileri Yenile</a>"
+static const char WEB_ACTIONS2[] PROGMEM = "<a class='w3-bar-item w3-button' href='/pull'><i class='fas fa-cloud-download-alt'></i> Verileri Yenile</a>"
                                            "<a class='w3-bar-item w3-button' href='/display'>";
 
 static const char WEB_ACTION3[] PROGMEM = "</a><a class='w3-bar-item w3-button' href='/systemreset' onclick='return confirm(\"Varsayılan hava durumu ayarlarına sıfırlamak istiyor musunuz?\")'><i class='fas fa-undo'></i> Ayarları Sıfırla</a>"
@@ -195,32 +184,6 @@ static const char CHANGE_FORM3[] PROGMEM = "<p>Ekran Parlaklığı <input class=
 static const char WIDECLOCK_FORM[] PROGMEM = "<form class='w3-container' action='/savewideclock' method='get'><h2>Geniş Saat Ayarları:</h2>"
                                              "<p>Geniş Saat Gösterme Formatı <select class='w3-option w3-padding' name='wideclockformat'>%WIDECLOCKOPTIONS%</select></p>"
                                              "<button class='w3-button w3-block w3-grey w3-section w3-padding' type='submit'>Kaydet</button></form>";
-
-static const char PIHOLE_FORM[] PROGMEM = "<form class='w3-container' action='/savepihole' method='get'><h2>Pi-hole Ayarları:</h2>"
-                                          "<p><input name='displaypihole' class='w3-check w3-margin-top' type='checkbox' %PIHOLECHECKED%> Pi-hole İstatistikleri Göster</p>"
-                                          "<label>Pi-hole Adresi (http:// olmadan)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='piholeAddress' id='piholeAddress' value='%PIHOLEADDRESS%' maxlength='60'>"
-                                          "<label>Pi-hole Portu</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='piholePort' id='piholePort' value='%PIHOLEPORT%' maxlength='5'  onkeypress='return isNumberKey(event)'>"
-                                          "<label>Pi-hole API Token (Pi-hole &rarr; Ayarlar &rarr; API/Web Arayüzü sayfasından)</label>"
-                                          "<input class='w3-input w3-border w3-margin-bottom' type='text' name='piApiToken' id='piApiToken' value='%PIAPITOKEN%' maxlength='65'>"
-                                          "<input type='button' value='Test Bağlantısı ve JSON Yanıtı' onclick='testPiHole()'><p id='PiHoleTest'></p>"
-                                          "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
-                                          "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
-
-static const char PIHOLE_TEST[] PROGMEM = "<script>function testPiHole(){var e=document.getElementById(\"PiHoleTest\"),t=document.getElementById(\"piholeAddress\").value,"
-                                          "n=document.getElementById(\"piholePort\").value,api=document.getElementById(\"piApiToken\").value;;"
-                                          "if(e.innerHTML=\"\",\"\"==t||\"\"==n)return e.innerHTML=\"* Address and Port are required\","
-                                          "void(e.style.background=\"\");var r=\"http://\"+t+\":\"+n;r+=\"/admin/api.php?summary=3&auth=\"+api,window.open(r,\"_blank\").focus()}</script>";
-
-static const char OCTO_FORM[] PROGMEM = "<form class='w3-container' action='/saveoctoprint' method='get'><h2>OctoPrint Ayarları:</h2>"
-                                        "<p><input name='displayoctoprint' class='w3-check w3-margin-top' type='checkbox' %OCTOCHECKED%> OctoPrint Durumunu Göster</p>"
-                                        "<p><input name='octoprintprogress' class='w3-check w3-margin-top' type='checkbox' %OCTOPROGRESSCHECKED%> OctoPrint İlerlemesini Saatle Göster</p>"
-                                        "<label>OctoPrint API Anahtarı (Sunucunuzdan Alın)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='octoPrintApiKey' value='%OCTOKEY%' maxlength='60'>"
-                                        "<label>OctoPrint Adresi (http:// olmadan)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='octoPrintAddress' value='%OCTOADDRESS%' maxlength='60'>"
-                                        "<label>OctoPrint Portu</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='octoPrintPort' value='%OCTOPORT%' maxlength='5'  onkeypress='return isNumberKey(event)'>"
-                                        "<label>OctoPrint Kullanıcı Adı (Yalnızca Haproxy Veya Basic Auth Açıksa Gereklidir)</label><input class='w3-input w3-border w3-margin-bottom' type='text' name='octoUser' value='%OCTOUSER%' maxlength='30'>"
-                                        "<label>OctoPrint Şifresi </label><input class='w3-input w3-border w3-margin-bottom' type='password' name='octoPass' value='%OCTOPASS%'>"
-                                        "<button class='w3-button w3-block w3-green w3-section w3-padding' type='submit'>Kaydet</button></form>"
-                                        "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
 
 static const char WORLD_CLOCK_FORM[] PROGMEM = "<form class='w3-container' action='/saveworldclock' method='get'><h2>Dünya Saatleri Ayarları:</h2>"
                                                "<p><input name='displayworldclock' class='w3-check w3-margin-top' type='checkbox' %WORLDCLOCKCHECKED%> Dünya Saatlerini Göster</p>"
@@ -266,7 +229,6 @@ void setup()
 {
   Serial.begin(115200);
   LittleFS.begin();
-  bmp180.begin();
   // LittleFS.remove(CONFIG);
   delay(10);
 
@@ -392,8 +354,6 @@ void setup()
     server.on("/pull", handlePull);
     server.on("/locations", handleLocations);
     server.on("/savewideclock", handleSaveWideClock);
-    server.on("/saveoctoprint", handleSaveOctoprint);
-    server.on("/savepihole", handleSavePihole);
     server.on("/saveworldclock", handleSaveWorldClock);
     server.on("/saveprayers", handleSavePrayers);
     server.on("/savematrix", handleSaveMatrix);
@@ -401,8 +361,6 @@ void setup()
     server.on("/forgetwifi", handleForgetWifi);
     server.on("/configure", handleConfigure);
     server.on("/configurewideclock", handleWideClockConfigure);
-    server.on("/configureoctoprint", handleOctoprintConfigure);
-    server.on("/configurepihole", handlePiholeConfigure);
     server.on("/configurematrix", handleMatrixConfigure);
     server.on("/configureworldclock", handleWorldClockConfigure);
     server.on("/configureprayers", handlePrayersConfigure);
@@ -465,20 +423,6 @@ void loop()
       matrix.shutdown(false);
     }
     matrix.fillScreen(LOW); // show black
-
-    if (OCTOPRINT_ENABLED)
-    {
-      if (displayOn && ((printerClient.isOperational() || printerClient.isPrinting()) || printerCount == 0))
-      {
-        // This should only get called if the printer is actually running or if it has been 2 minutes since last check
-        printerClient.getPrinterJobResults();
-      }
-      printerCount += 1;
-      if (printerCount > 2)
-      {
-        printerCount = 0;
-      }
-    }
 
     displayRefreshCount--;
     // Check to see if we need to Scroll some Data
@@ -625,24 +569,7 @@ void loop()
 
         msg += marqueeMessage + " ";
 
-        if (OCTOPRINT_ENABLED && printerClient.isPrinting())
-        {
-          msg += "  " + printerClient.getFileName() + " ";
-          msg += "(" + printerClient.getProgressCompletion() + "%)  ";
-        }
-
-        if (USE_PIHOLE)
-        {
-          piholeClient.getPiHoleData(PiHoleServer, PiHolePort, PiHoleApiKey);
-          piholeClient.getGraphData(PiHoleServer, PiHolePort, PiHoleApiKey);
-          if (piholeClient.getPiHoleStatus() != "")
-          {
-            msg += "    Pi-hole (" + piholeClient.getPiHoleStatus() + "): " + piholeClient.getAdsPercentageToday() + "% ";
-          }
-        }
-
         scrollMessage(msg);
-        drawPiholeGraph();
       }
     }
   }
@@ -742,48 +669,6 @@ void handleSaveWideClock()
   redirectHome();
 }
 
-void handleSaveOctoprint()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  OCTOPRINT_ENABLED = server.hasArg("displayoctoprint");
-  OCTOPRINT_PROGRESS = server.hasArg("octoprintprogress");
-  OctoPrintApiKey = server.arg("octoPrintApiKey");
-  OctoPrintServer = server.arg("octoPrintAddress");
-  OctoPrintPort = server.arg("octoPrintPort").toInt();
-  OctoAuthUser = server.arg("octoUser");
-  OctoAuthPass = server.arg("octoPass");
-  matrix.fillScreen(LOW); // show black
-  writeCityIds();
-  if (OCTOPRINT_ENABLED)
-  {
-    printerClient.getPrinterJobResults();
-  }
-  redirectHome();
-}
-
-void handleSavePihole()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  USE_PIHOLE = server.hasArg("displaypihole");
-  PiHoleServer = server.arg("piholeAddress");
-  PiHolePort = server.arg("piholePort").toInt();
-  PiHoleApiKey = server.arg("piApiToken");
-  Serial.println("PiHoleApiKey from save: " + PiHoleApiKey);
-  writeCityIds();
-  if (USE_PIHOLE)
-  {
-    piholeClient.getPiHoleData(PiHoleServer, PiHolePort, PiHoleApiKey);
-    piholeClient.getGraphData(PiHoleServer, PiHolePort, PiHoleApiKey);
-  }
-  redirectHome();
-}
-
 void handleSaveWorldClock()
 {
   if (!athentication())
@@ -797,25 +682,25 @@ void handleSaveWorldClock()
   WorldCityName4 = server.arg("worldcityname4");
   matrix.fillScreen(LOW); // show black
   writeCityIds();
-  weatherClient.updateWeatherName(WorldCityName1, 1);
+  weatherClient.updateWeatherName(encodeHtmlString(WorldCityName1), 1);
   delay(1000);
   TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(1), weatherClient.getLon(1), 1);
   delay(1000);
   TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(1), 1);
   delay(1000);
-  weatherClient.updateWeatherName(WorldCityName2, 2);
+  weatherClient.updateWeatherName(encodeHtmlString(WorldCityName2), 2);
   delay(1000);
   TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(2), weatherClient.getLon(2), 2);
   delay(1000);
   TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(2), 2);
   delay(1000);
-  weatherClient.updateWeatherName(WorldCityName3, 3);
+  weatherClient.updateWeatherName(encodeHtmlString(WorldCityName3), 3);
   delay(1000);
   TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
   delay(1000);
   TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
   delay(1000);
-  weatherClient.updateWeatherName(WorldCityName4, 4);
+  weatherClient.updateWeatherName(encodeHtmlString(WorldCityName4), 4);
   delay(1000);
   TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(4), weatherClient.getLon(4), 4);
   delay(1000);
@@ -946,88 +831,6 @@ void handleWideClockConfigure()
     form.replace("%WIDECLOCKOPTIONS%", clockOptions);
     server.sendContent(form);
   }
-
-  sendFooter();
-
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void handleOctoprintConfigure()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  digitalWrite(externalLight, LOW);
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-
-  sendHeader();
-
-  String form = FPSTR(OCTO_FORM);
-  String isOctoPrintDisplayedChecked = "";
-  if (OCTOPRINT_ENABLED)
-  {
-    isOctoPrintDisplayedChecked = "checked='checked'";
-  }
-  form.replace("%OCTOCHECKED%", isOctoPrintDisplayedChecked);
-  String isOctoPrintProgressChecked = "";
-  if (OCTOPRINT_PROGRESS)
-  {
-    isOctoPrintProgressChecked = "checked='checked'";
-  }
-  form.replace("%OCTOPROGRESSCHECKED%", isOctoPrintProgressChecked);
-  form.replace("%OCTOKEY%", OctoPrintApiKey);
-  form.replace("%OCTOADDRESS%", OctoPrintServer);
-  form.replace("%OCTOPORT%", String(OctoPrintPort));
-  form.replace("%OCTOUSER%", OctoAuthUser);
-  form.replace("%OCTOPASS%", OctoAuthPass);
-  server.sendContent(form);
-
-  sendFooter();
-
-  server.sendContent("");
-  server.client().stop();
-  digitalWrite(externalLight, HIGH);
-}
-
-void handlePiholeConfigure()
-{
-  if (!athentication())
-  {
-    return server.requestAuthentication();
-  }
-  digitalWrite(externalLight, LOW);
-
-  server.sendHeader("Cache-Control", "no-cache, no-store");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  server.send(200, "text/html", "");
-
-  sendHeader();
-
-  server.sendContent(FPSTR(PIHOLE_TEST));
-
-  String form = FPSTR(PIHOLE_FORM);
-  String isPiholeDisplayedChecked = "";
-  if (USE_PIHOLE)
-  {
-    isPiholeDisplayedChecked = "checked='checked'";
-  }
-  form.replace("%PIHOLECHECKED%", isPiholeDisplayedChecked);
-  form.replace("%PIHOLEADDRESS%", PiHoleServer);
-  form.replace("%PIHOLEPORT%", String(PiHolePort));
-  form.replace("%PIAPITOKEN%", PiHoleApiKey);
-
-  server.sendContent(form);
-  form = "";
 
   sendFooter();
 
@@ -1399,25 +1202,25 @@ void getWeatherData() // client function to send/receive GET request data..
     matrix.drawPixel(14, 7, HIGH);
     matrix.write();
     Serial.println("Getting World Time Data...");
-    weatherClient.updateWeatherName(WorldCityName1, 1);
+    weatherClient.updateWeatherName(encodeHtmlString(WorldCityName1), 1);
     delay(1000);
     TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(1), weatherClient.getLon(1), 1);
     delay(1000);
     TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(1), 1);
     delay(1000);
-    weatherClient.updateWeatherName(WorldCityName2, 2);
+    weatherClient.updateWeatherName(encodeHtmlString(WorldCityName2), 2);
     delay(1000);
     TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(2), weatherClient.getLon(2), 2);
     delay(1000);
     TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(2), 2);
     delay(1000);
-    weatherClient.updateWeatherName(WorldCityName3, 3);
+    weatherClient.updateWeatherName(encodeHtmlString(WorldCityName3), 3);
     delay(1000);
     TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(3), weatherClient.getLon(3), 3);
     delay(1000);
     TimeDBClient.convertTimezone(TIMEDBKEY, TimeDBClient.getZoneName(0), TimeDBClient.getZoneName(3), 3);
     delay(1000);
-    weatherClient.updateWeatherName(WorldCityName4, 4);
+    weatherClient.updateWeatherName(encodeHtmlString(WorldCityName4), 4);
     delay(1000);
     TimeDBClient.getCityTime(TIMEDBKEY, weatherClient.getLat(4), weatherClient.getLon(4), 4);
     delay(1000);
@@ -1603,7 +1406,6 @@ void displayWeatherData()
     html += cloudsS + weatherClient.getCloudcover(0) + "<br>";
     html += visibilityS + ": " + weatherClient.getVisibility(0) + " m (" + weatherClient.getVisibilityOtherUnit(0) + " km)<br>";
     html += airQualityS + ": " + weatherClient.getAqi(0) + "<br>";
-    html += tempRoomS + ": " + (String)bmp180.readTemperature() + " " + getTempSymbol(true) + "<br>";
     html += tempS + ": " + temperature + " " + getTempSymbol(true) + " (" + tempFeelS + ": " + weatherClient.getFeel(0) + " " + getTempSymbol(true) + ")" + "<br>";
     html += tempHighLowS + ": " + weatherClient.getHigh(0) + " " + getTempSymbol(true) + " / " + weatherClient.getLow(0) + " " + getTempSymbol(true) + "<br>";
     html += sunRiseSetS + ": " + weatherClient.getSunrise(0) + " / " + weatherClient.getSunset(0) + " (" + diffS + ": " + weatherClient.getSunDifference(0) + ")" + "<br>";
@@ -1646,66 +1448,6 @@ void displayWeatherData()
       html += reasonS + ": <strong>" + prayersClient.getError(0) + "</strong><br></div><br><hr>";
     }
     server.sendContent(String(html));
-    html = "";
-  }
-
-  if (OCTOPRINT_ENABLED)
-  {
-    html = "<div class='w3-cell-row'><b>" + octoProgS + ":</b> ";
-    if (printerClient.isPrinting())
-    {
-      int val = printerClient.getProgressPrintTimeLeft().toInt();
-      int hours = numberOfHours(val);
-      int minutes = numberOfMinutes(val);
-      int seconds = numberOfSeconds(val);
-      html += octoOnPrS + "</br>" + octoEstTimeS + ": " + zeroPad(hours) + ":" + zeroPad(minutes) + ":" + zeroPad(seconds) + "<br>";
-
-      val = printerClient.getProgressPrintTime().toInt();
-      hours = numberOfHours(val);
-      minutes = numberOfMinutes(val);
-      seconds = numberOfSeconds(val);
-      html += octoPrtTimeS + ": " + zeroPad(hours) + ":" + zeroPad(minutes) + ":" + zeroPad(seconds) + "<br>";
-      html += printerClient.getState() + " " + printerClient.getFileName() + "</br>";
-      html += "<style>#myProgress {width: 100%;background-color: #ddd;}#myBar {width: " + printerClient.getProgressCompletion() + "%;height: 30px;background-color: #4CAF50;}</style>";
-      html += "<div id=\"myProgress\"><div id=\"myBar\" class=\"w3-medium w3-center\">" + printerClient.getProgressCompletion() + "%</div></div>";
-    }
-    else if (printerClient.isOperational())
-    {
-      html += printerClient.getState();
-    }
-    else if (printerClient.getError() != "")
-    {
-      html += printerClient.getError();
-    }
-    else
-    {
-      html += octoNConS;
-    }
-    html += "</div><br><hr>";
-    server.sendContent(String(html));
-    html = "";
-  }
-
-  if (USE_PIHOLE)
-  {
-    if (piholeClient.getError() == "")
-    {
-      html = "<div class='w3-cell-row'><b>Pi-hole</b><br>";
-      html += piHoleTQS + "(" + piholeClient.getUniqueClients() + " " + piHoleCS + "): <b>" + piholeClient.getDnsQueriesToday() + "</b><br>";
-      html += piHoleQBS + ": <b>" + piholeClient.getAdsBlockedToday() + "</b><br>";
-      html += piHoleQBPS + ": <b>" + piholeClient.getAdsPercentageToday() + "%</b><br>";
-      html += piHoleBDS + ": <b>" + piholeClient.getDomainsBeingBlocked() + "</b><br>";
-      html += statusS + ": <b>" + piholeClient.getPiHoleStatus() + "</b><br>";
-      html += "</div><br><hr>";
-    }
-    else
-    {
-      html = "<div class='w3-cell-row'>" + piHoleErS;
-      html += "Lütfen <a href='/configurepihole' title='Configure'>Pi-hole Ayarlarını</a> Yapınız <a href='/configurepihole' title='Configure'><i class='fas fa-cog'></i></a><br>";
-      html += statusS + ": " + dataGetErrorS + "<br>";
-      html += reasonS + ": " + piholeClient.getError() + "<br></div><br><hr>";
-    }
-    server.sendContent(html);
     html = "";
   }
 
@@ -2021,13 +1763,6 @@ String writeCityIds()
     f.println("isMetric=" + String(IS_METRIC));
     f.println("refreshRate=" + String(minutesBetweenDataRefresh));
     f.println("minutesBetweenScrolling=" + String(minutesBetweenScrolling));
-    f.println("isOctoPrint=" + String(OCTOPRINT_ENABLED));
-    f.println("isOctoProgress=" + String(OCTOPRINT_PROGRESS));
-    f.println("octoKey=" + OctoPrintApiKey);
-    f.println("octoServer=" + OctoPrintServer);
-    f.println("octoPort=" + String(OctoPrintPort));
-    f.println("octoUser=" + OctoAuthUser);
-    f.println("octoPass=" + OctoAuthPass);
     f.println("www_username=" + String(www_username));
     f.println("www_password=" + String(www_password));
     f.println("IS_BASIC_AUTH=" + String(IS_BASIC_AUTH));
@@ -2042,10 +1777,6 @@ String writeCityIds()
     f.println("SHOW_FEEL_TEMP=" + String(SHOW_FEEL_TEMP));
     f.println("SHOW_RISE_SET=" + String(SHOW_RISE_SET));
     f.println("SHOW_TIMEZONE=" + String(SHOW_TIMEZONE));
-    f.println("USE_PIHOLE=" + String(USE_PIHOLE));
-    f.println("PiHoleServer=" + PiHoleServer);
-    f.println("PiHolePort=" + String(PiHolePort));
-    f.println("PiHoleApiKey=" + String(PiHoleApiKey));
     f.println("themeColor=" + themeColor);
     f.println("SHOW_AIR_POLLUTION=" + String(SHOW_AIR_POLLUTION));
     f.println("isWorldClock=" + String(WORLD_CLOCK_ENABLED));
@@ -2165,45 +1896,6 @@ void readCityIds()
       displayScrollSpeed = line.substring(line.lastIndexOf("scrollSpeed=") + 12).toInt();
       Serial.println("displayScrollSpeed= " + String(displayScrollSpeed));
     }
-    if (line.indexOf("isOctoPrint=") >= 0)
-    {
-      OCTOPRINT_ENABLED = line.substring(line.lastIndexOf("isOctoPrint=") + 12).toInt();
-      Serial.println("OCTOPRINT_ENABLED= " + String(OCTOPRINT_ENABLED));
-    }
-    if (line.indexOf("isOctoProgress=") >= 0)
-    {
-      OCTOPRINT_PROGRESS = line.substring(line.lastIndexOf("isOctoProgress=") + 15).toInt();
-      Serial.println("OCTOPRINT_PROGRESS= " + String(OCTOPRINT_PROGRESS));
-    }
-    if (line.indexOf("octoKey=") >= 0)
-    {
-      OctoPrintApiKey = line.substring(line.lastIndexOf("octoKey=") + 8);
-      OctoPrintApiKey.trim();
-      Serial.println("OctoPrintApiKey= " + OctoPrintApiKey);
-    }
-    if (line.indexOf("octoServer=") >= 0)
-    {
-      OctoPrintServer = line.substring(line.lastIndexOf("octoServer=") + 11);
-      OctoPrintServer.trim();
-      Serial.println("OctoPrintServer= " + OctoPrintServer);
-    }
-    if (line.indexOf("octoPort=") >= 0)
-    {
-      OctoPrintPort = line.substring(line.lastIndexOf("octoPort=") + 9).toInt();
-      Serial.println("OctoPrintPort= " + String(OctoPrintPort));
-    }
-    if (line.indexOf("octoUser=") >= 0)
-    {
-      OctoAuthUser = line.substring(line.lastIndexOf("octoUser=") + 9);
-      OctoAuthUser.trim();
-      Serial.println("OctoAuthUser= " + OctoAuthUser);
-    }
-    if (line.indexOf("octoPass=") >= 0)
-    {
-      OctoAuthPass = line.substring(line.lastIndexOf("octoPass=") + 9);
-      OctoAuthPass.trim();
-      Serial.println("OctoAuthPass= " + OctoAuthPass);
-    }
     if (line.indexOf("www_username=") >= 0)
     {
       String temp = line.substring(line.lastIndexOf("www_username=") + 13);
@@ -2284,28 +1976,6 @@ void readCityIds()
       CityName.trim();
       Serial.println("CityName: " + CityName);
     }
-    if (line.indexOf("USE_PIHOLE=") >= 0)
-    {
-      USE_PIHOLE = line.substring(line.lastIndexOf("USE_PIHOLE=") + 11).toInt();
-      Serial.println("USE_PIHOLE= " + String(USE_PIHOLE));
-    }
-    if (line.indexOf("PiHoleServer=") >= 0)
-    {
-      PiHoleServer = line.substring(line.lastIndexOf("PiHoleServer=") + 13);
-      PiHoleServer.trim();
-      Serial.println("PiHoleServer=" + String(PiHoleServer));
-    }
-    if (line.indexOf("PiHolePort=") >= 0)
-    {
-      PiHolePort = line.substring(line.lastIndexOf("PiHolePort=") + 11).toInt();
-      Serial.println("PiHolePort= " + String(PiHolePort));
-    }
-    if (line.indexOf("PiHoleApiKey=") >= 0)
-    {
-      PiHoleApiKey = line.substring(line.lastIndexOf("PiHoleApiKey=") + 13);
-      PiHoleApiKey.trim();
-      Serial.println("PiHoleApiKey= " + String(PiHoleApiKey));
-    }
     if (line.indexOf("themeColor=") >= 0)
     {
       themeColor = line.substring(line.lastIndexOf("themeColor=") + 11);
@@ -2374,7 +2044,6 @@ void readCityIds()
   weatherClient.updateLanguage(WeatherLanguage);
   weatherClient.setMetric(IS_METRIC);
   weatherClient.updateCityName(CityName);
-  printerClient.updateOctoPrintClient(OctoPrintApiKey, OctoPrintServer, OctoPrintPort, OctoAuthUser, OctoAuthPass);
 }
 
 void scrollMessage(String msg)
@@ -2416,62 +2085,6 @@ void scrollMessage(String msg)
   matrix.setCursor(0, 0);
 }
 
-void drawPiholeGraph()
-{
-  if (!USE_PIHOLE || piholeClient.getBlockedCount() == 0)
-  {
-    return;
-  }
-  int count = piholeClient.getBlockedCount();
-  int high = 0;
-  int row = matrix.width() - 1;
-  int yval = 0;
-
-  int totalRows = count - matrix.width();
-
-  if (totalRows < 0)
-  {
-    totalRows = 0;
-  }
-
-  // get the high value for the sample that will be on the screen
-  for (int inx = count; inx >= totalRows; inx--)
-  {
-    if (piholeClient.getBlockedAds()[inx] > high)
-    {
-      high = (int)piholeClient.getBlockedAds()[inx];
-    }
-  }
-
-  int currentVal = 0;
-  for (int inx = (count - 1); inx >= totalRows; inx--)
-  {
-    currentVal = (int)piholeClient.getBlockedAds()[inx];
-    yval = map(currentVal, 0, high, 7, 0);
-    // Serial.println("Value: " + String(currentVal));
-    // Serial.println("x: " + String(row) + " y:" + String(yval) + " h:" + String(8-yval));
-    matrix.drawFastVLine(row, yval, 8 - yval, HIGH);
-    if (row == 0)
-    {
-      break;
-    }
-    row--;
-  }
-  matrix.write();
-  for (int wait = 0; wait < 500; wait++)
-  {
-    if (WEBSERVER_ENABLED)
-    {
-      server.handleClient();
-    }
-    if (ENABLE_OTA)
-    {
-      ArduinoOTA.handle();
-    }
-    delay(20);
-  }
-}
-
 void centerPrint(String msg)
 {
   centerPrint(msg, false);
@@ -2487,11 +2100,6 @@ void centerPrint(String msg, boolean extraStuff)
     if (!IS_24HOUR && IS_PM && isPM())
     {
       matrix.drawPixel(matrix.width() - 1, 6, HIGH);
-    }
-    if (OCTOPRINT_ENABLED && OCTOPRINT_PROGRESS && printerClient.isPrinting())
-    {
-      int numberOfLightPixels = (printerClient.getProgressCompletion().toFloat() / float(100)) * (matrix.width() - 1);
-      matrix.drawFastHLine(0, 7, numberOfLightPixels, HIGH);
     }
   }
 
